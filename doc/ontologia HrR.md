@@ -48,9 +48,10 @@ battiti_cardiaci
 
 Pippor:
 
-posizione (sarà fornita da noi)
+posizione inziale(di stazionamento) (sarà fornita da noi)
 
 numeri_specialisti(bho)
+
 
 KB:
 
