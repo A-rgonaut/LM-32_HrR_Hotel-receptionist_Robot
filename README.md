@@ -9,7 +9,7 @@
 This project was developed for the **Artificial Intelligence 2** examination of Prof. **Valeria Seidita** and **Robotics** examination of Prof. **Antonio Chella**, during the **2025/2026** Academic Year at the **Università degli Studi di Palermo**, **Computer Engineering (LM-32, 2035)** course.
 
 ## 👥 **Authors**
-_Andrea Spinelli - Gabriele Bova - Vincenzo Zizzo_
+_Andrea Spinelli - Gabriele Bova - Paolo Manuele Gulotta - Vincenzo Zizzo_
 
 ## 🛠️ **Technologies Used**
 
