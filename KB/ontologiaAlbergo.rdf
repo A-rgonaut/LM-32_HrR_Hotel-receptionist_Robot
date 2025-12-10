@@ -1,0 +1,529 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6/"
+     xml:base="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#ASSOCIATA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#ASSOCIATA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Prenotazione"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#AVVIENE -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#AVVIENE">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#CONNESSO -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#CONNESSO">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EFFETTUA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EFFETTUA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Prenotazione"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#GENERA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#GENERA">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Robot"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Suggerimento"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#GESTIBILE_DA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#GESTIBILE_DA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#HA_INTERESSE -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#HA_INTERESSE">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Interesse"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#INDOSSA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#INDOSSA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Braccialetto"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#INERENTE -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#INERENTE">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Suggerimento"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#INVIATO_A -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#INVIATO_A">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Suggerimento"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#NOTIFICA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#NOTIFICA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Robot"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#PREVEDE -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#PREVEDE">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#PrevisioneMeteo"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#RILEVA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#RILEVA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Braccialetto"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#RISOLVIBILE_DA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#RISOLVIBILE_DA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#SEGNALA -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#SEGNALA">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#SOFFRE_DI -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#SOFFRE_DI">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Patologia"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#battiti -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#battiti">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#cognome -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#cognome">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#comune -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#comune">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#condizione -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#condizione">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#PrevisioneMeteo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#data_ora -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#data_ora">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#PrevisioneMeteo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#eta -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#eta">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#fine -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#fine">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Prenotazione"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#id -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#id">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Braccialetto"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Prenotazione"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Robot"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Suggerimento"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#inizio -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#inizio">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Prenotazione"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#lingua -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#lingua">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#meteoRichiesto -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#meteoRichiesto">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#modalita -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#modalita">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#nome -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#nome">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Interesse"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Patologia"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Robot"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#numero_tel -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#numero_tel">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#oggetto -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#oggetto">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#pressione -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#pressione">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#sogliaBPM_Allerta -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#sogliaBPM_Allerta">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Patologia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#sogliaBPM_Anomala -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#sogliaBPM_Anomala">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Patologia"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#specializzazione -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#specializzazione">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#tempImpostata -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#tempImpostata">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#tempStanza -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#tempStanza">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#temperatura -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#temperatura">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#tipo -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#tipo">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#x -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#x">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#y -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#y">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Braccialetto -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Braccialetto"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EmergenzaSanitaria"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#EventoLocale"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Guasto"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Interesse -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Interesse"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Luogo"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Patologia -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Patologia"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Persona"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Prenotazione -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Prenotazione"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#PrevisioneMeteo -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#PrevisioneMeteo"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Robot -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Robot"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Specialista"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Suggerimento -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-6#Suggerimento"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+
