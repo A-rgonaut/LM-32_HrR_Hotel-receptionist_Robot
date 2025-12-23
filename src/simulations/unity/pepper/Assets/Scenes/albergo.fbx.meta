@@ -1,0 +1,250 @@
+fileFormatVersion: 2
+guid: 7b96893357f7fbe4fabe4fc9fff23ca8
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BricksDragfacedRunning008_2K.001
+    second: {fileID: 2100000, guid: d0ef93c4bbca8114c8ba1b92d8ea7a70, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CityStreetAsphaltGenericClean001_2K.001
+    second: {fileID: 2100000, guid: 973c8d64b001cbc4881d91171df0e7c5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: FabricLeatherCowhide001_2K.001
+    second: {fileID: 2100000, guid: 50cab1bd22e9b894691016b3de79363b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteFloorPoured_7656_2K.001
+    second: {fileID: 2100000, guid: 56ec1e6400dcdda41b73236c123330d9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteWorn_8690_2K.001
+    second: {fileID: 2100000, guid: 008d107331e1a804496aec59637a43da, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_TilesCeramicWhite_6956_2K.001
+    second: {fileID: 2100000, guid: 55062208c14227d4782a5386588b7376, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_WoodVeneerOak_7760_2K.001
+    second: {fileID: 2100000, guid: f10b9f1d87db97e4f8b5ffbca06cc60b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TilesMosaicYubi003_2K.001
+    second: {fileID: 2100000, guid: ad1b42d80261cbf428d75034a07992ca, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BricksDragfacedRunning008_NRM_2K
+    second: {fileID: 2800000, guid: 406c629b64252ab4c8b198c27913660f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: BricksDragfacedRunning008_REFL_2K
+    second: {fileID: 2800000, guid: 02bcca0a8888d22459f9509843bd5cac, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: CityStreetAsphaltGenericClean001_NRM_2K
+    second: {fileID: 2800000, guid: cf3ed421a07f2a34a87cffa02084a9cd, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: CityStreetAsphaltGenericClean001_REFL_2K
+    second: {fileID: 2800000, guid: dcf08e6a4e6d2fa47a770a850b0dc8eb, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: FabricLeatherCowhide001_NRM_2K
+    second: {fileID: 2800000, guid: 65cde6d174868d8409ef3c9dcfbb1bff, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: FabricLeatherCowhide001_REFL_2K
+    second: {fileID: 2800000, guid: c85b438a5c7198b49b2ca0978a749b64, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteFloorPoured_7656_Metallic
+    second: {fileID: 2800000, guid: 627f9a039c240ff48a500695ef3ac709, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteFloorPoured_7656_Normal
+    second: {fileID: 2800000, guid: 913547785a8f610449a6e8c0e36ba317, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteFloorPoured_7656_Roughness
+    second: {fileID: 2800000, guid: 47ff156861ef71b41810359180f3f7f0, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteWorn_8690_Metallic
+    second: {fileID: 2800000, guid: 673817797851afc43bfeba700b74774d, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteWorn_8690_Normal
+    second: {fileID: 2800000, guid: 1ed1eccf896d6134b8f46e9b717ea301, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_ConcreteWorn_8690_Roughness
+    second: {fileID: 2800000, guid: 1479ed26379d1d749ad82a5aaa41193c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_TilesCeramicWhite_6956_Metallic
+    second: {fileID: 2800000, guid: 73e7180ec3b4853469873f282dd28bb8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_TilesCeramicWhite_6956_Normal
+    second: {fileID: 2800000, guid: ed6ae7a5b877007418a200aa95c992e6, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_TilesCeramicWhite_6956_Roughness
+    second: {fileID: 2800000, guid: dc5dc029bb8d0f34096a730e2da00a83, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_WoodVeneerOak_7760_Metallic
+    second: {fileID: 2800000, guid: e20b9c2a190f6f94586f04e86c30f590, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_WoodVeneerOak_7760_Normal
+    second: {fileID: 2800000, guid: 427068ed40e562c49a5c038e5edac373, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Poliigon_WoodVeneerOak_7760_Roughness
+    second: {fileID: 2800000, guid: 074152866c25027498a7c62e623e71e1, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: TilesMosaicYubi003_NRM_2K
+    second: {fileID: 2800000, guid: a4ce670789728ac46813f18eb30fbbfe, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: TilesMosaicYubi003_REFL_2K
+    second: {fileID: 2800000, guid: d34da5105285d5a42a7bc65ad7f6bfc9, type: 3}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
