@@ -11,9 +11,7 @@
      xmlns:swrla="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#"
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
      xmlns:terms="http://purl.org/dc/terms/">
-    <owl:Ontology rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13">
-        <owl:imports rdf:resource="http://www.w3.org/2004/02/skos/core"/>
-    </owl:Ontology>
+    <owl:Ontology rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13"/>
     
 
 
@@ -31,6 +29,12 @@
     <!-- http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled -->
 
     <owl:AnnotationProperty rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
     
 
 
@@ -473,7 +477,10 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Citta">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
+        <skos:altLabel xml:lang="it">aperitivo</skos:altLabel>
         <skos:altLabel xml:lang="it">museo</skos:altLabel>
+        <skos:altLabel xml:lang="it">shopping</skos:altLabel>
+        <skos:altLabel xml:lang="it">teatro</skos:altLabel>
         <skos:altLabel xml:lang="it">vino</skos:altLabel>
     </owl:Class>
     
@@ -578,6 +585,8 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Mare">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
         <skos:altLabel xml:lang="it">barca</skos:altLabel>
+        <skos:altLabel xml:lang="it">pesce</skos:altLabel>
+        <skos:altLabel xml:lang="it">snorkeling</skos:altLabel>
     </owl:Class>
     
 
@@ -586,7 +595,10 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Montagna">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
+        <skos:altLabel xml:lang="it">arrampicata</skos:altLabel>
         <skos:altLabel xml:lang="it">escursione</skos:altLabel>
+        <skos:altLabel xml:lang="it">sci</skos:altLabel>
+        <skos:altLabel xml:lang="it">stella</skos:altLabel>
         <skos:altLabel xml:lang="it">trekking</skos:altLabel>
     </owl:Class>
     
