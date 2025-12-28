@@ -1,4 +1,17 @@
 
 datasets
 
-# munnizza
+#Unity
+
+Library
+Logs
+Temp
+UserSettings
+.vscode
+*.csproj
+*.sln
+.DS_Store
+
+#
+
+.env
