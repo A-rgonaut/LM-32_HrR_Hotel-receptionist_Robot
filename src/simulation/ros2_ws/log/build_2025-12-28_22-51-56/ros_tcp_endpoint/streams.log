@@ -1,0 +1,37 @@
+[1.680s] Invoking command in '/home/paolo/ros2_ws/src/ROS-TCP-Endpoint': PYTHONPATH=/home/paolo/ros2_ws/build/ros_tcp_endpoint/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/ros_tcp_endpoint build --build-base /home/paolo/ros2_ws/build/ros_tcp_endpoint/build install --record /home/paolo/ros2_ws/build/ros_tcp_endpoint/install.log --install-scripts $base/lib/ros_tcp_endpoint --single-version-externally-managed install_data
+[1.879s] /usr/lib/python3/dist-packages/setuptools/dist.py:744: SetuptoolsDeprecationWarning: Invalid dash-separated options
+[1.879s] !!
+[1.879s] 
+[1.879s]         ********************************************************************************
+[1.879s]         Usage of dash-separated 'script-dir' will not be supported in future
+[1.879s]         versions. Please use the underscore name 'script_dir' instead.
+[1.879s] 
+[1.879s]         This deprecation is overdue, please update your project and remove deprecated
+[1.879s]         calls to avoid build errors in the future.
+[1.879s] 
+[1.879s]         See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+[1.879s]         ********************************************************************************
+[1.880s] 
+[1.880s] !!
+[1.880s]   opt = self.warn_dash_deprecation(opt, section)
+[2.022s] running egg_info
+[2.041s] writing ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/PKG-INFO
+[2.042s] writing dependency_links to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/dependency_links.txt
+[2.042s] writing entry points to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/entry_points.txt
+[2.043s] writing requirements to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/requires.txt
+[2.043s] writing top-level names to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/top_level.txt
+[2.081s] reading manifest file '../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/SOURCES.txt'
+[2.083s] adding license file 'LICENSE'
+[2.084s] writing manifest file '../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/SOURCES.txt'
+[2.084s] running build
+[2.084s] running build_py
+[2.086s] running install
+[2.094s] running install_lib
+[2.119s] running install_data
+[2.119s] running install_egg_info
+[2.140s] removing '/home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages/ros_tcp_endpoint-0.0.1-py3.12.egg-info' (and everything under it)
+[2.140s] Copying ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info to /home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages/ros_tcp_endpoint-0.0.1-py3.12.egg-info
+[2.142s] running install_scripts
+[2.286s] Installing default_server_endpoint script to /home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/ros_tcp_endpoint
+[2.286s] writing list of installed files to '/home/paolo/ros2_ws/build/ros_tcp_endpoint/install.log'
+[2.363s] Invoked command in '/home/paolo/ros2_ws/src/ROS-TCP-Endpoint' returned '0': PYTHONPATH=/home/paolo/ros2_ws/build/ros_tcp_endpoint/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/ros_tcp_endpoint build --build-base /home/paolo/ros2_ws/build/ros_tcp_endpoint/build install --record /home/paolo/ros2_ws/build/ros_tcp_endpoint/install.log --install-scripts $base/lib/ros_tcp_endpoint --single-version-externally-managed install_data

@@ -1,0 +1,24 @@
+[1.866s] Invoking command in '/home/paolo/ros2_ws/src/progetto': PYTHONPATH=/home/paolo/ros2_ws/build/progetto/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/progetto build --build-base /home/paolo/ros2_ws/build/progetto/build install --record /home/paolo/ros2_ws/build/progetto/install.log --single-version-externally-managed install_data
+[2.206s] running egg_info
+[2.228s] writing ../../build/progetto/progetto.egg-info/PKG-INFO
+[2.231s] writing dependency_links to ../../build/progetto/progetto.egg-info/dependency_links.txt
+[2.231s] writing entry points to ../../build/progetto/progetto.egg-info/entry_points.txt
+[2.231s] writing requirements to ../../build/progetto/progetto.egg-info/requires.txt
+[2.232s] writing top-level names to ../../build/progetto/progetto.egg-info/top_level.txt
+[2.287s] reading manifest file '../../build/progetto/progetto.egg-info/SOURCES.txt'
+[2.290s] writing manifest file '../../build/progetto/progetto.egg-info/SOURCES.txt'
+[2.290s] running build
+[2.290s] running build_py
+[2.291s] copying progetto/Arbitraggio.py -> /home/paolo/ros2_ws/build/progetto/build/lib/progetto
+[2.292s] running install
+[2.299s] running install_lib
+[2.323s] copying /home/paolo/ros2_ws/build/progetto/build/lib/progetto/Arbitraggio.py -> /home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto
+[2.325s] byte-compiling /home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto/Arbitraggio.py to Arbitraggio.cpython-312.pyc
+[2.330s] running install_data
+[2.331s] running install_egg_info
+[2.360s] removing '/home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto-0.0.0-py3.12.egg-info' (and everything under it)
+[2.360s] Copying ../../build/progetto/progetto.egg-info to /home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto-0.0.0-py3.12.egg-info
+[2.362s] running install_scripts
+[2.523s] Installing progetto script to /home/paolo/ros2_ws/install/progetto/lib/progetto
+[2.523s] writing list of installed files to '/home/paolo/ros2_ws/build/progetto/install.log'
+[2.589s] Invoked command in '/home/paolo/ros2_ws/src/progetto' returned '0': PYTHONPATH=/home/paolo/ros2_ws/build/progetto/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/progetto build --build-base /home/paolo/ros2_ws/build/progetto/build install --record /home/paolo/ros2_ws/build/progetto/install.log --single-version-externally-managed install_data

@@ -1,0 +1,94 @@
+[0.000000] (-) TimerEvent: {}
+[0.001607] (progetto) JobQueued: {'identifier': 'progetto', 'dependencies': OrderedDict()}
+[0.002000] (ros_tcp_endpoint) JobQueued: {'identifier': 'ros_tcp_endpoint', 'dependencies': OrderedDict()}
+[0.002061] (progetto) JobStarted: {'identifier': 'progetto'}
+[0.022330] (ros_tcp_endpoint) JobStarted: {'identifier': 'ros_tcp_endpoint'}
+[0.099475] (-) TimerEvent: {}
+[0.200276] (-) TimerEvent: {}
+[0.301041] (-) TimerEvent: {}
+[0.402089] (-) TimerEvent: {}
+[0.502560] (-) TimerEvent: {}
+[0.602948] (-) TimerEvent: {}
+[0.703320] (-) TimerEvent: {}
+[0.803908] (-) TimerEvent: {}
+[0.904430] (-) TimerEvent: {}
+[1.005061] (-) TimerEvent: {}
+[1.105568] (-) TimerEvent: {}
+[1.205935] (-) TimerEvent: {}
+[1.306337] (-) TimerEvent: {}
+[1.406698] (-) TimerEvent: {}
+[1.507051] (-) TimerEvent: {}
+[1.607594] (-) TimerEvent: {}
+[1.708177] (-) TimerEvent: {}
+[1.808746] (-) TimerEvent: {}
+[1.909347] (-) TimerEvent: {}
+[1.912400] (ros_tcp_endpoint) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/ros_tcp_endpoint', 'build', '--build-base', '/home/paolo/ros2_ws/build/ros_tcp_endpoint/build', 'install', '--record', '/home/paolo/ros2_ws/build/ros_tcp_endpoint/install.log', '--install-scripts', '$base/lib/ros_tcp_endpoint', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/paolo/ros2_ws/src/ROS-TCP-Endpoint', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'paolo', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'WT_PROFILE_ID': '{61752947-e628-5a11-89cb-da8427410da7}', 'HOME': '/home/paolo', 'OLDPWD': '/home/paolo', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'WSL_DISTRO_NAME': 'Ubuntu', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/paolo/ros2_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'paolo', 'NAME': 'sus-Asus', 'WSL_INTEROP': '/run/WSL/1249_interop', 'PULSE_SERVER': 'unix:/mnt/wslg/PulseServer', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm-256color', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Users/paolo/AppData/Local/Programs/Python/Python310/Scripts/:/mnt/c/Users/paolo/AppData/Local/Programs/Python/Python310/:/mnt/c/Users/paolo/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/paolo/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/paolo/AppData/Local/Pandoc/:/mnt/c/Users/paolo/AppData/Local/GitHubDesktop/bin:/snap/bin', 'WT_SESSION': 'c758af7f-86ee-404c-ab00-aacfe088411d', 'XDG_RUNTIME_DIR': '/run/user/1000/', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'AMENT_PREFIX_PATH': '/home/paolo/ros2_ws/install/ros_tcp_endpoint:/home/paolo/ros2_ws/install/progetto:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/paolo/ros2_ws/build/ros_tcp_endpoint', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/paolo/ros2_ws/build/ros_tcp_endpoint/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages:/home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages:/home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'WSL2_GUI_APPS_ENABLED': '1', 'HOSTTYPE': 'x86_64', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor', 'WSLENV': 'WT_SESSION:WT_PROFILE_ID:'}, 'shell': False}
+[1.926205] (progetto) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/progetto', 'build', '--build-base', '/home/paolo/ros2_ws/build/progetto/build', 'install', '--record', '/home/paolo/ros2_ws/build/progetto/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/paolo/ros2_ws/src/progetto', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'paolo', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'WT_PROFILE_ID': '{61752947-e628-5a11-89cb-da8427410da7}', 'HOME': '/home/paolo', 'OLDPWD': '/home/paolo', 'ROS_PYTHON_VERSION': '3', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'WSL_DISTRO_NAME': 'Ubuntu', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/paolo/ros2_ws/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'paolo', 'NAME': 'sus-Asus', 'WSL_INTEROP': '/run/WSL/1249_interop', 'PULSE_SERVER': 'unix:/mnt/wslg/PulseServer', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'TERM': 'xterm-256color', 'PATH': '/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/Program Files/Common Files/Oracle/Java/javapath:/mnt/c/Windows/system32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0/:/mnt/c/Windows/System32/OpenSSH/:/mnt/c/Program Files/Git/cmd:/mnt/c/Users/paolo/AppData/Local/Programs/Python/Python310/Scripts/:/mnt/c/Users/paolo/AppData/Local/Programs/Python/Python310/:/mnt/c/Users/paolo/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/paolo/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/paolo/AppData/Local/Pandoc/:/mnt/c/Users/paolo/AppData/Local/GitHubDesktop/bin:/snap/bin', 'WT_SESSION': 'c758af7f-86ee-404c-ab00-aacfe088411d', 'XDG_RUNTIME_DIR': '/run/user/1000/', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'AMENT_PREFIX_PATH': '/home/paolo/ros2_ws/install/ros_tcp_endpoint:/home/paolo/ros2_ws/install/progetto:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'PWD': '/home/paolo/ros2_ws/build/progetto', 'XDG_DATA_DIRS': '/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/paolo/ros2_ws/build/progetto/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages:/home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages:/home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'WSL2_GUI_APPS_ENABLED': '1', 'HOSTTYPE': 'x86_64', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor', 'WSLENV': 'WT_SESSION:WT_PROFILE_ID:'}, 'shell': False}
+[2.009618] (-) TimerEvent: {}
+[2.089997] (ros_tcp_endpoint) StderrLine: {'line': b'/usr/lib/python3/dist-packages/setuptools/dist.py:744: SetuptoolsDeprecationWarning: Invalid dash-separated options\n'}
+[2.090338] (ros_tcp_endpoint) StderrLine: {'line': b'!!\n'}
+[2.090490] (ros_tcp_endpoint) StderrLine: {'line': b'\n'}
+[2.090629] (ros_tcp_endpoint) StderrLine: {'line': b'        ********************************************************************************\n'}
+[2.090765] (ros_tcp_endpoint) StderrLine: {'line': b"        Usage of dash-separated 'script-dir' will not be supported in future\n"}
+[2.090899] (ros_tcp_endpoint) StderrLine: {'line': b"        versions. Please use the underscore name 'script_dir' instead.\n"}
+[2.091031] (ros_tcp_endpoint) StderrLine: {'line': b'\n'}
+[2.091161] (ros_tcp_endpoint) StderrLine: {'line': b'        This deprecation is overdue, please update your project and remove deprecated\n'}
+[2.091290] (ros_tcp_endpoint) StderrLine: {'line': b'        calls to avoid build errors in the future.\n'}
+[2.091417] (ros_tcp_endpoint) StderrLine: {'line': b'\n'}
+[2.091546] (ros_tcp_endpoint) StderrLine: {'line': b'        See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.\n'}
+[2.091760] (ros_tcp_endpoint) StderrLine: {'line': b'        ********************************************************************************\n'}
+[2.092068] (ros_tcp_endpoint) StderrLine: {'line': b'\n'}
+[2.092237] (ros_tcp_endpoint) StderrLine: {'line': b'!!\n'}
+[2.092386] (ros_tcp_endpoint) StderrLine: {'line': b'  opt = self.warn_dash_deprecation(opt, section)\n'}
+[2.109734] (-) TimerEvent: {}
+[2.210326] (-) TimerEvent: {}
+[2.233290] (ros_tcp_endpoint) StdoutLine: {'line': b'running egg_info\n'}
+[2.241687] (progetto) StdoutLine: {'line': b'running egg_info\n'}
+[2.258815] (ros_tcp_endpoint) StdoutLine: {'line': b'writing ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/PKG-INFO\n'}
+[2.259039] (ros_tcp_endpoint) StdoutLine: {'line': b'writing dependency_links to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/dependency_links.txt\n'}
+[2.259394] (ros_tcp_endpoint) StdoutLine: {'line': b'writing entry points to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/entry_points.txt\n'}
+[2.259902] (ros_tcp_endpoint) StdoutLine: {'line': b'writing requirements to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/requires.txt\n'}
+[2.260170] (ros_tcp_endpoint) StdoutLine: {'line': b'writing top-level names to ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/top_level.txt\n'}
+[2.263003] (progetto) StdoutLine: {'line': b'writing ../../build/progetto/progetto.egg-info/PKG-INFO\n'}
+[2.264451] (progetto) StdoutLine: {'line': b'writing dependency_links to ../../build/progetto/progetto.egg-info/dependency_links.txt\n'}
+[2.265478] (progetto) StdoutLine: {'line': b'writing entry points to ../../build/progetto/progetto.egg-info/entry_points.txt\n'}
+[2.266168] (progetto) StdoutLine: {'line': b'writing requirements to ../../build/progetto/progetto.egg-info/requires.txt\n'}
+[2.266328] (progetto) StdoutLine: {'line': b'writing top-level names to ../../build/progetto/progetto.egg-info/top_level.txt\n'}
+[2.304564] (ros_tcp_endpoint) StdoutLine: {'line': b"reading manifest file '../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/SOURCES.txt'\n"}
+[2.305650] (progetto) StdoutLine: {'line': b"reading manifest file '../../build/progetto/progetto.egg-info/SOURCES.txt'\n"}
+[2.306131] (ros_tcp_endpoint) StdoutLine: {'line': b"adding license file 'LICENSE'\n"}
+[2.306667] (ros_tcp_endpoint) StdoutLine: {'line': b"writing manifest file '../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info/SOURCES.txt'\n"}
+[2.307173] (ros_tcp_endpoint) StdoutLine: {'line': b'running build\n'}
+[2.307419] (ros_tcp_endpoint) StdoutLine: {'line': b'running build_py\n'}
+[2.307673] (ros_tcp_endpoint) StdoutLine: {'line': b'running install\n'}
+[2.308184] (progetto) StdoutLine: {'line': b"writing manifest file '../../build/progetto/progetto.egg-info/SOURCES.txt'\n"}
+[2.308668] (progetto) StdoutLine: {'line': b'running build\n'}
+[2.309064] (progetto) StdoutLine: {'line': b'running build_py\n'}
+[2.309238] (progetto) StdoutLine: {'line': b'copying progetto/Arbitraggio.py -> /home/paolo/ros2_ws/build/progetto/build/lib/progetto\n'}
+[2.309996] (progetto) StdoutLine: {'line': b'running install\n'}
+[2.310547] (-) TimerEvent: {}
+[2.315069] (ros_tcp_endpoint) StdoutLine: {'line': b'running install_lib\n'}
+[2.320525] (progetto) StdoutLine: {'line': b'running install_lib\n'}
+[2.337307] (ros_tcp_endpoint) StdoutLine: {'line': b'running install_data\n'}
+[2.337957] (ros_tcp_endpoint) StdoutLine: {'line': b'running install_egg_info\n'}
+[2.340365] (progetto) StdoutLine: {'line': b'copying /home/paolo/ros2_ws/build/progetto/build/lib/progetto/Arbitraggio.py -> /home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto\n'}
+[2.341857] (progetto) StdoutLine: {'line': b'byte-compiling /home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto/Arbitraggio.py to Arbitraggio.cpython-312.pyc\n'}
+[2.344988] (progetto) StdoutLine: {'line': b'running install_data\n'}
+[2.345628] (progetto) StdoutLine: {'line': b'running install_egg_info\n'}
+[2.364898] (ros_tcp_endpoint) StdoutLine: {'line': b"removing '/home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages/ros_tcp_endpoint-0.0.1-py3.12.egg-info' (and everything under it)\n"}
+[2.365543] (ros_tcp_endpoint) StdoutLine: {'line': b'Copying ../../build/ros_tcp_endpoint/ros_tcp_endpoint.egg-info to /home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/python3.12/site-packages/ros_tcp_endpoint-0.0.1-py3.12.egg-info\n'}
+[2.367217] (ros_tcp_endpoint) StdoutLine: {'line': b'running install_scripts\n'}
+[2.368176] (progetto) StdoutLine: {'line': b"removing '/home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto-0.0.0-py3.12.egg-info' (and everything under it)\n"}
+[2.368760] (progetto) StdoutLine: {'line': b'Copying ../../build/progetto/progetto.egg-info to /home/paolo/ros2_ws/install/progetto/lib/python3.12/site-packages/progetto-0.0.0-py3.12.egg-info\n'}
+[2.370421] (progetto) StdoutLine: {'line': b'running install_scripts\n'}
+[2.410783] (-) TimerEvent: {}
+[2.511319] (-) TimerEvent: {}
+[2.517681] (ros_tcp_endpoint) StdoutLine: {'line': b'Installing default_server_endpoint script to /home/paolo/ros2_ws/install/ros_tcp_endpoint/lib/ros_tcp_endpoint\n'}
+[2.518143] (ros_tcp_endpoint) StdoutLine: {'line': b"writing list of installed files to '/home/paolo/ros2_ws/build/ros_tcp_endpoint/install.log'\n"}
+[2.521981] (progetto) StdoutLine: {'line': b'Installing progetto script to /home/paolo/ros2_ws/install/progetto/lib/progetto\n'}
+[2.522662] (progetto) StdoutLine: {'line': b"writing list of installed files to '/home/paolo/ros2_ws/build/progetto/install.log'\n"}
+[2.564442] (ros_tcp_endpoint) CommandEnded: {'returncode': 0}
+[2.593416] (ros_tcp_endpoint) JobEnded: {'identifier': 'ros_tcp_endpoint', 'rc': 0}
+[2.596411] (progetto) CommandEnded: {'returncode': 0}
+[2.605962] (progetto) JobEnded: {'identifier': 'progetto', 'rc': 0}
+[2.606607] (-) EventReactorShutdown: {}

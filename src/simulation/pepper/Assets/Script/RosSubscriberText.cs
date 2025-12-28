@@ -5,7 +5,7 @@ using RosMessageTypes.Std; // Assicurati di aver generato i messaggi Std
 
 public class RosSubscriberText : MonoBehaviour
 {
-    public string topicName = "chatter"; // Il nome del topic ROS 2
+    public string topicName = "dialogo_robot"; // Il nome del topic ROS 2
     public TextMeshProUGUI textDisplay;   // Trascina qui il tuo oggetto Text (TMP)
 
     void Start()

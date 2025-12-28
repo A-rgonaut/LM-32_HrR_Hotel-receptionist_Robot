@@ -1,8 +1,11 @@
 using UnityEngine;
 using TMPro;
+using Unity.Robotics.ROSTCPConnector;
+using RosMessageTypes.Std; // Per il messaggio String
 
 public class CharacterSelector : MonoBehaviour
 {
+    ROSConnection ros;
     [System.Serializable]
     public class CharacterData
     {
@@ -14,12 +17,15 @@ public class CharacterSelector : MonoBehaviour
 
     public CharacterData[] characters;
 
-    // NUOVO: Questa variabile memorizza chi è attivo in questo momento
+    // NUOVO: Questa variabile memorizza chi ï¿½ attivo in questo momento
     private int _currentCharacterIndex = 0;
+    public string topicName = "bottone"; // Il nome del topic ROS 2
 
     void Start()
     {
         ActivateCharacter(0);
+        ros = ROSConnection.GetOrCreateInstance();
+        ros.RegisterPublisher<StringMsg>(topicName);
     }
 
     public void ActivateCharacter(int indexToActivate)
@@ -33,6 +39,7 @@ public class CharacterSelector : MonoBehaviour
             {
                 characters[i].cam.SetActive(true);
                 // Print di conferma cambio personaggio
+
                 Debug.Log($"Selezionato -> ID: {characters[i].id} | Nome: {characters[i].nome} | Cognome: {characters[i].cognome}");
             }
             else
@@ -42,7 +49,7 @@ public class CharacterSelector : MonoBehaviour
         }
     }
 
-    // NUOVO: Questa è la funzione per il tuo NUOVO pulsante d'azione
+    // NUOVO: Questa ï¿½ la funzione per il tuo NUOVO pulsante d'azione
     public void EseguiAzionePersonaggio(GameObject buttonClicked)
     {
         // Recuperiamo i dati del personaggio attivo usando l'indice salvato
@@ -50,6 +57,9 @@ public class CharacterSelector : MonoBehaviour
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
 
         // Facciamo la print richiesta
-        Debug.Log($"Utente {attivo.id} {attivo.nome} {attivo.cognome} ha avviato lo scenario {testoComponent.text}");
+        StringMsg msg = new StringMsg( $"Utente {attivo.id} {attivo.nome} {attivo.cognome} ha avviato lo scenario {testoComponent.text}");
+        
+        ros.Publish(topicName, msg);
+        Debug.Log(msg);
     }
 }

@@ -23855,7 +23855,7 @@ GameObject:
   - component: {fileID: 1314828843}
   - component: {fileID: 1314828846}
   - component: {fileID: 1314828845}
-  - component: {fileID: 1314828844}
+  - component: {fileID: 1314828847}
   m_Layer: 5
   m_Name: chat_output
   m_TagString: Untagged
@@ -23882,20 +23882,6 @@ RectTransform:
   m_AnchoredPosition: {x: -1075, y: -550}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1314828844
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1314828842}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c76198040224aa419480760b7ec36f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RosSubscriberText
-  topicName: chatter
-  textDisplay: {fileID: 1314828845}
 --- !u!114 &1314828845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23995,6 +23981,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1314828842}
   m_CullTransparentMesh: 1
+--- !u!114 &1314828847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314828842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c76198040224aa419480760b7ec36f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RosSubscriberText
+  topicName: dialogo_robot
+  textDisplay: {fileID: 1314828845}
 --- !u!1001 &1314989160
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25220,7 +25220,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1375486246}
-  - component: {fileID: 1375486245}
+  - component: {fileID: 1375486247}
   m_Layer: 0
   m_Name: ROSTextPub
   m_TagString: Untagged
@@ -25228,19 +25228,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1375486245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1375486244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e09d12dce3324b429e005d998c5af4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RosTextPublisher
-  topicName: chat_topic
 --- !u!4 &1375486246
 Transform:
   m_ObjectHideFlags: 0
@@ -25256,6 +25243,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 451891379}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1375486247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1375486244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e09d12dce3324b429e005d998c5af4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RosTextPublisher
+  topicName: dialogo_umano
 --- !u!1 &1376602823
 GameObject:
   m_ObjectHideFlags: 0
@@ -25900,9 +25900,9 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1375486245}
+      - m_Target: {fileID: 1375486247}
         m_TargetAssemblyTypeName: RosTextPublisher, Assembly-CSharp
-        m_MethodName: PublishMessagfe
+        m_MethodName: PublishMessage
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -32020,6 +32020,7 @@ MonoBehaviour:
     nome: Mr
     cognome: President
     cam: {fileID: 609732784}
+  topicName: bottone
 --- !u!4 &1683058389
 Transform:
   m_ObjectHideFlags: 0
