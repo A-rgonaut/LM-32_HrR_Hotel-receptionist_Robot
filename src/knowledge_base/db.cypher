@@ -26,7 +26,7 @@ CREATE
 (o)-[:HA_INTERESSE]->(i2),
 
 (e1:EventoLocale {nome: "Degustazione Cantina Cellaro", data_ora: datetime("2026-01-14T21:00:00")}),
-(e2:EventoLocale {nome: "Escursione Monte Genuardo", data_ora: datetime("2026-01-14T09:00:00")),
+(e2:EventoLocale {nome: "Escursione Monte Genuardo", data_ora: datetime("2026-01-14T09:00:00")}),
 (e3:EventoLocale {nome: "Visita Valle dei Templi", data_ora: datetime("2026-01-14T16:00:00")}),
 
 (sug1:Suggerimento {data_ora: datetime()}),
@@ -102,7 +102,7 @@ CREATE
 
 (es1:BattitiElevati {
     data_ora: datetime(),
-    bpm: 158,
+    bpm: 158
 }),
 (es2:PressioneElevata {
     data_ora: datetime(),
