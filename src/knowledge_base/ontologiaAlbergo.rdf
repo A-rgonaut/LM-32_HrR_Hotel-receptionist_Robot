@@ -72,9 +72,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#HA -->
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#HA_INTERESSE -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#HA">
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#HA_INTERESSE">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
     </owl:ObjectProperty>
@@ -99,9 +99,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_AD -->
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_A -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_AD">
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_A">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Suggerimento"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
     </owl:ObjectProperty>
@@ -240,6 +240,15 @@
     
 
 
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#gradi -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#gradi">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PrevisioneMeteo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#idoneo -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#idoneo">
@@ -258,15 +267,23 @@
     
 
 
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#modalita -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#modalita">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Persona"/>
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Robot"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Stanza"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
     
@@ -281,37 +298,92 @@
     
 
 
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione -->
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#perdita -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione">
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#perdita">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Lavandino"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PressioneElevata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_allerta -->
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_allerta -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_allerta">
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_anomala -->
-
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_anomala">
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_allerta">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_attuale -->
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_anomala -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_attuale">
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_anomala">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_attuale -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_attuale">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PressioneElevata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_allerta -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_allerta">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_anomala -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_anomala">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_attuale -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_attuale">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#principio_incendio -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#principio_incendio">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Phon"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     </owl:DatatypeProperty>
     
 
@@ -321,6 +393,24 @@
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#specialita">
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Specialista"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#temperatura_impostata -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#temperatura_impostata">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#temperatura_stanza -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#temperatura_stanza">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
     
 
@@ -411,9 +501,33 @@
     
 
 
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoCitta -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoCitta">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMare -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMare">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMontagna -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMontagna">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
+    </owl:Class>
     
 
 
@@ -574,6 +688,12 @@
     <rdf:Description rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
+    <rdf:Description rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/dt">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/m">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
     <rdf:Description rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/e">
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
@@ -640,7 +760,7 @@
                                                         <rdf:first>
                                                             <rdf:Description>
                                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_AD"/>
+                                                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_A"/>
                                                                 <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/s"/>
                                                                 <swrl:argument2 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev"/>
                                                             </rdf:Description>
@@ -679,6 +799,115 @@
                         <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#idoneo"/>
                         <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/s"/>
                         <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrl:argument2>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
+    <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
+        <rdfs:comment></rdfs:comment>
+        <rdfs:label>S3</rdfs:label>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Suggerimento"/>
+                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/s"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_A"/>
+                                <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/s"/>
+                                <swrl:argument2 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMontagna"/>
+                                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_ora"/>
+                                                <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev"/>
+                                                <swrl:argument2 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/dt"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PrevisioneMeteo"/>
+                                                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/m"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                        <rdf:first>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_ora"/>
+                                                                <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/m"/>
+                                                                <swrl:argument2 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/dt"/>
+                                                            </rdf:Description>
+                                                        </rdf:first>
+                                                        <rdf:rest>
+                                                            <rdf:Description>
+                                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                                <rdf:first>
+                                                                    <rdf:Description>
+                                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                                                                        <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#condizione"/>
+                                                                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/m"/>
+                                                                        <swrl:argument2>sereno</swrl:argument2>
+                                                                    </rdf:Description>
+                                                                </rdf:first>
+                                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                            </rdf:Description>
+                                                        </rdf:rest>
+                                                    </rdf:Description>
+                                                </rdf:rest>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+                        <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#idoneo"/>
+                        <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/s"/>
+                        <swrl:argument2 rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrl:argument2>
                     </rdf:Description>
                 </rdf:first>
                 <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
@@ -760,7 +989,7 @@
                                                         <rdf:first>
                                                             <rdf:Description>
                                                                 <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
-                                                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_AD"/>
+                                                                <swrl:propertyPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#RIFERITO_A"/>
                                                                 <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/s"/>
                                                                 <swrl:argument2 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev"/>
                                                             </rdf:Description>
