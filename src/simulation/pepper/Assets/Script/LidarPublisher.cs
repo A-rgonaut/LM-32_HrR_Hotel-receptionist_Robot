@@ -95,7 +95,7 @@ public class LidarPublisher : MonoBehaviour
         // 3. Output su Console Unity
         if (objectDetected)
         {
-            Debug.Log(consoleOutput + "RILEVATO OSTACOLO!");
+            // Debug.Log(consoleOutput + "RILEVATO OSTACOLO!");
         }
         else
         {

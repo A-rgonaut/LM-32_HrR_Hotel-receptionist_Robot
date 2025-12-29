@@ -12,13 +12,14 @@ class InteragisciScenarioA(InteragisciConOspite):
             if parole.intersection(parola):
                 return lang
         return None
-    
+
     def aggiorna_lingua(self, kb):
-        query = """MATCH (o:Ospite {id: $id})
+        query = """MATCH (o:Ospite)
+                   WHERE id(o) = $id
                    SET o.lingua = $lingua
                    RETURN o.lingua"""
         parametri = {
-            "id":     self.contesto['ospite'].id,
+            "id":     0,  # self.contesto['ospite'].id,
             "lingua": self.contesto['ospite'].lingua
         }
         aggiornato = kb.interrogaGraphDatabase(query, parametri)
@@ -33,4 +34,4 @@ class InteragisciScenarioA(InteragisciConOspite):
                 self.nodo.parla(super().dialogo_scriptato(tipo="errore_lingua"))
                 return
             self.contesto['ospite'].lingua = lingua
-            self.aggiorna_lingua(kb)
+            print(self.aggiorna_lingua(kb))

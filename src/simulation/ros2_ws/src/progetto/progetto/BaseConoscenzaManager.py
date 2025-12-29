@@ -7,6 +7,9 @@ load_dotenv()
 
 class BaseConoscenzaManager:
     def __init__(self, use_ontology=True, use_neo4j=True):
+        self.ontology = None
+        self.neo4j_driver = None
+
         self.use_ontology = use_ontology
         if self.use_ontology:
             self.init_ontology()
@@ -14,9 +17,6 @@ class BaseConoscenzaManager:
         self.use_neo4j = use_neo4j
         if self.use_neo4j:
             self.init_neo4j()
-
-        self.ontology = None
-        self.neo4j_driver = None
 
     def init_ontology(self):
         path = os.getenv("PATH_ONTO")
