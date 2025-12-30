@@ -19,7 +19,7 @@ public class RosSubscriberText : MonoBehaviour
     {
         // Questa funzione viene chiamata ogni volta che arriva un messaggio
         // AGGIORNAMENTO: Unity richiede che le modifiche alla UI avvengano sul thread principale
-        textDisplay.text = "Messaggio: " + msg.data;
+        textDisplay.text += "Messaggio: " + msg.data + "\n";
         
         Debug.Log("Ricevuto da ROS 2: " + msg.data);
     }

@@ -1,17 +1,21 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\",
+  "WorkspaceRootPath": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|c:\\users\\andre\\onedrive\\documenti\\unity\\pepper\\assets\\script\\characterselector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Library\\PackageCache\\com.unity.robotics.ros-tcp-connector@bdad6c87bd9e\\Runtime\\TcpConnector\\ROSConnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Library\\PackageCache\\com.unity.robotics.ros-tcp-connector@bdad6c87bd9e\\Runtime\\TcpConnector\\ROSConnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|c:\\users\\andre\\onedrive\\desktop\\log\\tmp\\lm-32_hrr_hotel-receptionist_robot\\src\\simulation\\pepper\\assets\\script\\characterselector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\characterselector.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\assets\\script\\characterprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\assets\\script\\characterprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\characterprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\assets\\script\\npccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\assets\\script\\npccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D863A817-E49D-1CE7-C795-AE83366AD491}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\npccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -27,10 +31,23 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "ROSConnection.cs",
+              "DocumentMoniker": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Library\\PackageCache\\com.unity.robotics.ros-tcp-connector@bdad6c87bd9e\\Runtime\\TcpConnector\\ROSConnection.cs",
+              "RelativeDocumentMoniker": "Library\\PackageCache\\com.unity.robotics.ros-tcp-connector@bdad6c87bd9e\\Runtime\\TcpConnector\\ROSConnection.cs",
+              "ToolTip": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Library\\PackageCache\\com.unity.robotics.ros-tcp-connector@bdad6c87bd9e\\Runtime\\TcpConnector\\ROSConnection.cs",
+              "RelativeToolTip": "Library\\PackageCache\\com.unity.robotics.ros-tcp-connector@bdad6c87bd9e\\Runtime\\TcpConnector\\ROSConnection.cs",
+              "ViewState": "AgIAAEQDAAAAAAAAAAAtwFUDAABXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:39:39.937Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "CharacterSelector.cs",
-              "DocumentMoniker": "C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\Assets\\Script\\CharacterSelector.cs",
+              "DocumentMoniker": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Assets\\Script\\CharacterSelector.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\CharacterSelector.cs",
-              "ToolTip": "C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\Assets\\Script\\CharacterSelector.cs",
+              "ToolTip": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Assets\\Script\\CharacterSelector.cs",
               "RelativeToolTip": "Assets\\Script\\CharacterSelector.cs",
               "ViewState": "AgIAAB0AAAAAAAAAAAAgwDYAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -39,11 +56,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "CharacterProfile.cs",
-              "DocumentMoniker": "C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\Assets\\Script\\CharacterProfile.cs",
+              "DocumentMoniker": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Assets\\Script\\CharacterProfile.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\CharacterProfile.cs",
-              "ToolTip": "C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\Assets\\Script\\CharacterProfile.cs",
+              "ToolTip": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Assets\\Script\\CharacterProfile.cs",
               "RelativeToolTip": "Assets\\Script\\CharacterProfile.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -51,11 +68,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "NPCController.cs",
-              "DocumentMoniker": "C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\Assets\\Script\\NPCController.cs",
+              "DocumentMoniker": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Assets\\Script\\NPCController.cs",
               "RelativeDocumentMoniker": "Assets\\Script\\NPCController.cs",
-              "ToolTip": "C:\\Users\\andre\\OneDrive\\Documenti\\Unity\\pepper\\Assets\\Script\\NPCController.cs",
+              "ToolTip": "C:\\Users\\andre\\OneDrive\\Desktop\\log\\tmp\\LM-32_HrR_Hotel-receptionist_Robot\\src\\simulation\\pepper\\Assets\\Script\\NPCController.cs",
               "RelativeToolTip": "Assets\\Script\\NPCController.cs",
               "ViewState": "AgIAABEAAAAAAAAAAAAAwBwAAABAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
