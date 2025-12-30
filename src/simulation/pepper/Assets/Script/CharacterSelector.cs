@@ -59,7 +59,7 @@ public class CharacterSelector : MonoBehaviour
         // Facciamo la print richiesta
         StringMsg msg = new StringMsg( $"Utente {attivo.id} {attivo.nome} {attivo.cognome} ha avviato lo scenario {testoComponent.text}");
         
-        ros.Publish(topicName, msg);
         Debug.Log(msg);
+        ros.Publish(topicName, msg);
     }
 }
