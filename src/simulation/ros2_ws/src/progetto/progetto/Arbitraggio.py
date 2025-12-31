@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from progetto.InteragisciScenarioA import InteragisciScenarioA
+# from progetto.InteragisciScenarioB import InteragisciScenarioB
+# from progetto.InteragisciScenarioC import InteragisciScenarioC
 from progetto.BaseConoscenzaManager import BaseConoscenzaManager
 from progetto.LLMManager import LLMManager
 
@@ -63,8 +65,8 @@ class Arbitraggio(Node):
         mappa_bottoni = {
             #"Utente 0 Pepper  ha avviato lo scenario Scenario A": "InteragisciScenarioA",
             "a": "InteragisciScenarioA",
-            "b": "InteragisciScenarioB",
-            "c": "InteragisciScenarioC",
+            # "b": "InteragisciScenarioB",
+            # "c": "InteragisciScenarioC",
         }
         scenario = mappa_bottoni.get(bottone_premuto)
         if not scenario:
@@ -77,11 +79,14 @@ class Arbitraggio(Node):
             return
         if self.comportamento_attivo != scenario:
             self.attiva_scenario(scenario)
+        else:
+            self.get_logger().info(f"Scenario '{nome_scenario}' già attivo.")
 
     def attiva_scenario(self, nome):
         self.comportamento_attivo = nome
         scenario = self.comportamenti[nome]
         scenario.reset()
+        self.get_logger().info("Scenario resettato. In attesa che l'utente parli (Ciao/Hello)...")
 
     def parla(self, testo):
         msg = String()
@@ -97,6 +102,8 @@ def main(args=None):
     except KeyboardInterrupt:
         arbitraggio.get_logger().info("Interruzione Arbitraggio...")
     finally:
+        if hasattr(arbitraggio, 'kb'):
+            arbitraggio.kb.close()
         arbitraggio.destroy_node()
         rclpy.shutdown()
 

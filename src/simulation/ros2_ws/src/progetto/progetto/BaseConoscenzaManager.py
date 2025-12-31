@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-from owlready2 import get_ontology, default_world, sync_reasoner
+from owlready2 import get_ontology, default_world, sync_reasoner, AnnotationProperty
 
 load_dotenv()
 
@@ -53,7 +53,7 @@ class BaseConoscenzaManager:
         except Exception as e:
             print(f"Errore query SPARQL: {e}")
             return []
-    """
+
     def avvia_reasoner(self):
         if self.use_ontology and self.ontology:
             print("Avvio reasoner...")
@@ -70,11 +70,44 @@ class BaseConoscenzaManager:
             return False
         cls_figlio = self.ontology[nome_figlio]
         cls_genitore = self.ontology[nome_genitore]
-        if not cls_figlio or not cls_genitore:
-            print(f"Errore: Classi {nome_figlio} o {nome_genitore} non trovate nell'ontologia.")
-            return False
-        return issubclass(cls_figlio, cls_genitore)
-    """
+        if cls_figlio and cls_genitore:
+            return issubclass(cls_figlio, cls_genitore)
+        print(f"Errore: Classi {nome_figlio} o {nome_genitore} non trovate nell'ontologia.")
+        return False
+
+    def trova_classe_da_sinonimo(self, testo, nome_radice):
+        if not self.ontology:
+            return None
+        onto = self.ontology
+        clean_text = testo.lower().strip()
+        # 1. Definizione dinamica SKOS (se non esiste già)
+        skos = onto.get_namespace("http://www.w3.org/2004/02/skos/core#")
+        with onto:
+            # Controllo preventivo per non ridefinire se già presente
+            if not onto["altLabel"]:
+                class altLabel(AnnotationProperty):
+                    namespace = skos
+        # 2. Recupero Classe Radice
+        root_class = onto[nome_radice]
+        if not root_class:
+            print(f"Classe radice '{nome_radice}' non trovata.")
+            return None
+        # 3. Tentativo A: Ricerca Esatta
+        candidate = onto[clean_text]
+        if candidate and self.verifica_sottoclasse(candidate.name, nome_radice):
+            return candidate.name
+        # 4. Tentativo B: Ricerca profonda (Label e Sinonimi)
+        for cls in root_class.descendants():
+            # Recupera label e altLabel in modo sicuro
+            # getattr(cls, 'altLabel', []) evita crash se la proprietà manca
+            if cls.name.lower() == clean_text:
+                return cls.name
+            sinonimi = [str(s).lower() for s in getattr(cls, 'altLabel', [])]
+            labels = [str(l).lower() for l in cls.label]
+            if clean_text in sinonimi or clean_text in labels:
+                return cls.name
+        return None
+
     def interrogaGraphDatabase(self, query_cypher, parameters=None):
         if not self.use_neo4j or not self.neo4j_driver:
             print("Richiesta Neo4j ignorata: driver non attivo o disabilitato.")

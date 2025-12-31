@@ -8,7 +8,7 @@ class InteragisciConOspite():
         self.contesto = {}
 
     def dialogo_scriptato(self, tipo):
-        lingua = self.contesto['lingua']
+        lingua = self.contesto['ospite'].lingua
         if tipo == "benvenuto":
             nome      = self.contesto['ospite'].nome
             cognome   = self.contesto['ospite'].cognome
@@ -31,9 +31,10 @@ class InteragisciConOspite():
                 return f"Thanks {nome}, I am here for you."
         elif tipo == "errore_lingua":
             return "Non ho capito la lingua, puoi ripetere? (Prova 'Ciao'). I don't understand the language, could you repeat? (Try 'Hello')."
+        # Ho capito che ti interessa '{nome_interesse_clean}', ma non è presente tra i servizi dell'albergo.
 
     def rileva_conferma(self, testo):
-        lingua = self.contesto['lingua']
+        lingua = self.contesto['ospite'].lingua
         t = testo.lower()
         if lingua == 'IT':
             return t in ["si", "sì", "certo", "ok"]
