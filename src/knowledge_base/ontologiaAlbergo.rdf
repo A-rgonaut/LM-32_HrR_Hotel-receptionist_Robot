@@ -783,7 +783,7 @@
                                                                 <rdf:first>
                                                                     <rdf:Description>
                                                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                                                                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Montagna"/>
+                                                                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMontagna"/>
                                                                         <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev"/>
                                                                     </rdf:Description>
                                                                 </rdf:first>
@@ -1012,7 +1012,7 @@
                                                                 <rdf:first>
                                                                     <rdf:Description>
                                                                         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
-                                                                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Montagna"/>
+                                                                        <swrl:classPredicate rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMontagna"/>
                                                                         <swrl:argument1 rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13/ev"/>
                                                                     </rdf:Description>
                                                                 </rdf:first>
