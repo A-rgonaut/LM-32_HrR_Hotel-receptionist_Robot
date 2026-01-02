@@ -80,7 +80,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_interesse_raw}'")
             return None
 
-    def salva_interesse(self, kb, nome_interesse):
+    def salva_interesse(self, kb):
         query = """
         MATCH (o:Ospite)
         WHERE id(o) = $id
@@ -89,9 +89,9 @@ class InteragisciScenarioA(InteragisciConOspite):
         """
         kb.interrogaGraphDatabase(query, {
             'id': self.contesto['ospite'].id,
-            'nome_interesse': nome_interesse
+            'nome_interesse': self.contesto['interesse']
         })
-        self.nodo.get_logger().info(f"[DB] Salvato interesse '{nome_interesse}' per l'ospite.")
+        self.nodo.get_logger().info(f"[DB] Salvato interesse '{self.contesto['interesse']}' per l'ospite.")
 
     def recupera_dati_per_suggerimento(self, kb):
         query = """
@@ -279,9 +279,8 @@ class InteragisciScenarioA(InteragisciConOspite):
                 self.stato = "CONFERMA"
         elif self.stato == "CONFERMA":
             if super().rileva_conferma(testo):
-                interesse_da_salvare = self.contesto.get('interesse')
-                if interesse_da_salvare:
-                    self.salva_interesse(kb, interesse_da_salvare)
+                if self.contesto['interesse']:
+                    self.salva_interesse(kb)
                     self.stato = "SUGGERISCI_EVENTO_LOCALE"
                     self.esegui("", kb, llm)  # Presidente?
             else:
