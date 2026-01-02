@@ -6,6 +6,8 @@ from progetto.InteragisciScenarioA import InteragisciScenarioA
 # from progetto.InteragisciScenarioC import InteragisciScenarioC
 from progetto.BaseConoscenzaManager import BaseConoscenzaManager
 from progetto.LLMManager import LLMManager
+from progetto.utils import Ospite
+import json
 
 class Arbitraggio(Node):
     def __init__(self):
@@ -59,33 +61,39 @@ class Arbitraggio(Node):
             scenario.esegui(testo, self.kb, self.llm)
 
     def arbitra(self, msg):
-        #bottone_premuto = msg.data.lower().strip()
         self.get_logger().info(msg.data)
-        bottone_premuto = "a"
-        mappa_bottoni = {
-            #"Utente 0 Pepper  ha avviato lo scenario Scenario A": "InteragisciScenarioA",
-            "a": "InteragisciScenarioA",
-            # "b": "InteragisciScenarioB",
-            # "c": "InteragisciScenarioC",
-        }
-        scenario = mappa_bottoni.get(bottone_premuto)
-        if not scenario:
-            return
-        if scenario == 'InteragisciScenarioC':
-            if self.comportamento_attivo != "InteragisciScenarioC":
-                self.attiva_scenario("InteragisciScenarioC")
-            return
-        if self.comportamento_attivo == "InteragisciScenarioC":
-            return
-        if self.comportamento_attivo != scenario:
-            self.attiva_scenario(scenario)
-        else:
-            self.get_logger().info(f"Scenario '{nome_scenario}' già attivo.")
+        try:
+            dati = json.loads(msg.data)
+            ospite = Ospite(int(dati["id"]), dati["nome"], dati["cognome"], 30, None)
+            bottone_premuto = dati["bottone"]
+            mappa_bottoni = {
+                "Scenario A": "InteragisciScenarioA",
+                # "b": "InteragisciScenarioB",
+                # "c": "InteragisciScenarioC",
+            }
+            scenario = mappa_bottoni.get(bottone_premuto)
+            if not scenario:
+                self.get_logger().warning(f"Bottone '{bottone_premuto}' non riconosciuto.")
+                return
+            if scenario == 'InteragisciScenarioC':
+                if self.comportamento_attivo != "InteragisciScenarioC":
+                    self.attiva_scenario("InteragisciScenarioC", ospite)
+                return
+            if self.comportamento_attivo == "InteragisciScenarioC":
+                return
+            if self.comportamento_attivo != scenario:
+                self.attiva_scenario(scenario, ospite)
+            else:
+                self.get_logger().info(f"Scenario '{scenario}' gia attivo.")
+        except json.JSONDecodeError:
+            self.get_logger().error("Errore nel formato JSON ricevuto da Unity.")
+        except Exception as e:
+            self.get_logger().error(f"Errore in arbitra: {e}")
 
-    def attiva_scenario(self, nome):
+    def attiva_scenario(self, nome, ospite):
         self.comportamento_attivo = nome
         scenario = self.comportamenti[nome]
-        scenario.reset()
+        scenario.reset(ospite)
         self.get_logger().info("Scenario resettato. In attesa che l'utente parli (Ciao/Hello)...")
 
     def parla(self, testo):

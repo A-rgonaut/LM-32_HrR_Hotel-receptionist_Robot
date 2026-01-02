@@ -1,11 +1,15 @@
+import string
+
 class InteragisciConOspite():
     def __init__(self, nodo):
         self.nodo = nodo
-        self.reset()
+        self.stato = None
+        self.contesto = {}
 
-    def reset(self):
+    def reset(self, ospite):
         self.stato = "INIZIO"
         self.contesto = {}
+        self.contesto["ospite"] = ospite
 
     def dialogo_scriptato(self, tipo):
         lingua = self.contesto['ospite'].lingua
@@ -35,11 +39,40 @@ class InteragisciConOspite():
 
     def rileva_conferma(self, testo):
         lingua = self.contesto['ospite'].lingua
-        t = testo.lower()
-        if lingua == 'IT':
-            return t in ["si", "sì", "certo", "ok"]
-        elif lingua == 'EN':
-            return t in ["yes", "yeah", "sure", "ok"]
+        testo_clean = testo.lower().translate(str.maketrans('', '', string.punctuation))
+        parole = set(testo_clean.split())
+        keywords = {
+            'IT': {
+                'POS': {
+                    'si', 'sì', 'certo', 'ok', 'va bene', 'ovvio', 'sicuro',
+                    'confermo', 'esatto', 'perfetto', 'ottimo', 'volentieri',
+                    'assolutamente', 'procedi', 'dai', 'certamente'
+                },
+                'NEG': {
+                    'no', 'negativo', 'sbagliato', 'ferma', 'annulla', 'non',
+                    'basta', 'errore', 'aspetta', 'mai', 'neanche', 'per nulla'
+                }
+            },
+            'EN': {
+                'POS': {
+                    'yes', 'yeah', 'yup', 'sure', 'ok', 'okay', 'fine', 'correct',
+                    'confirm', 'perfect', 'great', 'absolutely', 'go ahead',
+                    'right', 'yep', 'of course'
+                },
+                'NEG': {
+                    'no', 'nope', 'nah', 'negative', 'wrong', 'stop', 'cancel',
+                    'wait', 'never', 'not'
+                }
+            }
+        }
+        vocab_pos = keywords[lingua]['POS']
+        vocab_neg = keywords[lingua]['NEG']
+        has_pos = not parole.isdisjoint(vocab_pos)
+        has_neg = not parole.isdisjoint(vocab_neg)
+        if has_pos and not has_neg:
+            return True
+        if has_neg and not has_pos:
+            return False
         return False
 
     def esegui(self, testo):
