@@ -218,8 +218,8 @@ class InteragisciScenarioA(InteragisciConOspite):
         try:
             owl_path = self.costruisci_mondo_owl(kb)
         except Exception as e:
-             self.nodo.get_logger().error(f"Errore OWL: {e}")
-             return
+            self.nodo.get_logger().error(f"Errore OWL: {e}")
+            return
         candidati = self.contesto.get('mapping_nomi_eventi', [])
         report_ragionamento = []
         for cand in candidati:
