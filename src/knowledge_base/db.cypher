@@ -77,19 +77,23 @@ CREATE
 (g1:Condizionatore {
     tipo: "elettrico",
     data_ora: datetime(),
-    temperatura_stanza: 17,
-    temperatura_impostata: 26,
-    modalita: "HEAT"
+    tempo_acceso: 35,
+    temperatura_stanza: 18,
+    temperatura_impostata: 22,
+    modalita: "HEAT",
+    idoneo: true
 }),
 (g2:Lavandino {
     tipo: "idraulico",
     data_ora: datetime(),
-    perdita: true
+    perdita: true,
+    idoneo: true
 }),
 (g3:Phon {
     tipo: "elettrico",
     data_ora: datetime(),
-    principio_incendio: true
+    principio_incendio: true,
+    idoneo: true
 }),
 
 (o)-[:SEGNALA]->(g1),
