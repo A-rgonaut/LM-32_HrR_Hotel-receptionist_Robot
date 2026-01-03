@@ -12,7 +12,8 @@ class InteragisciConOspite():
         self.contesto["ospite"] = ospite
 
     def dialogo_scriptato(self, tipo):
-        lingua = self.contesto['ospite'].lingua
+        if tipo != "errore_lingua":
+            lingua = self.contesto['ospite'].lingua
         if tipo == "benvenuto":
             nome      = self.contesto['ospite'].nome
             cognome   = self.contesto['ospite'].cognome
@@ -73,7 +74,7 @@ class InteragisciConOspite():
             return True
         if has_neg and not has_pos:
             return False
-        return False
+        return None
 
     def esegui(self, testo):
         raise NotImplementedError("Ogni InteragisciScenario deve implementare la propria logica.")

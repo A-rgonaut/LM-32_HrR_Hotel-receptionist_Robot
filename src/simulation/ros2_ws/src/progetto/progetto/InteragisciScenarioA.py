@@ -255,6 +255,16 @@ class InteragisciScenarioA(InteragisciConOspite):
         else:
             self.nodo.parla("Ho analizzato gli eventi ma non ho trovato indicazioni specifiche (né positive né negative).")
 
+    def salva_suggerimento(self, kb):  # TODO
+        # (idoneo = true lo mette il reasoner)
+        query = ""
+        parametri = None
+        return False
+
+    def recupera_eta(self, kb):
+        query = "MATCH (o:Ospite) WHERE id(o) = $id RETURN o.eta"
+        return kb.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})[0]['o.eta']
+
     def esegui(self, testo, kb, llm):
         self.nodo.get_logger().info(f"[ScenarioA] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
@@ -262,7 +272,10 @@ class InteragisciScenarioA(InteragisciConOspite):
             if lingua is None:
                 self.nodo.parla(super().dialogo_scriptato(tipo="errore_lingua"))
                 return
-            self.contesto['ospite'].lingua = lingua
+            p = self.contesto['ospite']
+            eta = self.recupera_eta(kb)
+            self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, eta, lingua)
+            print(self.contesto['ospite'])
             print(self.aggiorna_lingua(kb))
             if self.recupera_dati_prenotazione(kb):
                 self.nodo.parla(super().dialogo_scriptato(tipo="benvenuto"))

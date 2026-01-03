@@ -1,12 +1,21 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+
+# --- COMPORTAMENTI ---
 from progetto.InteragisciScenarioA import InteragisciScenarioA
 # from progetto.InteragisciScenarioB import InteragisciScenarioB
-# from progetto.InteragisciScenarioC import InteragisciScenarioC
+from progetto.InteragisciScenarioC import InteragisciScenarioC
+# from progetto.Localizza import Localizza
+# from progetto.Pianifica import Pianifica
+from progetto.RicaricaBatteria import RicaricaBatteria
+from progetto.Riposo import Riposo
+# --- ------------- ---
+
 from progetto.BaseConoscenzaManager import BaseConoscenzaManager
 from progetto.LLMManager import LLMManager
-from progetto.utils import Ospite
+from progetto.utils import Persona
+
 import json
 
 class Arbitraggio(Node):
@@ -37,11 +46,12 @@ class Arbitraggio(Node):
         )
 
         self.comportamenti = {
-            #"Riposo": Riposo(self),
             "InteragisciScenarioA": InteragisciScenarioA(self),
             #"InteragisciScenarioB": InteragisciScenarioB(self),
-            #"InteragisciScenarioC": InteragisciScenarioC(self),
-            #"InteragisciConPersonale": InteragisciConPersonale(self)
+            "InteragisciScenarioC": InteragisciScenarioC(self),
+            #"InteragisciConPersonale": InteragisciConPersonale(self),
+            "Riposo": Riposo(self),
+            "RicaricaBatteria": RicaricaBatteria(self)
         }
 
         self.comportamento_attivo = "Riposo"
@@ -52,24 +62,23 @@ class Arbitraggio(Node):
         testo = msg.data.strip()
         if not testo:
             return
-        if self.comportamento_attivo == "Riposo":
-            self.parla("Sono a riposo. Seleziona uno scenario su Unity.")
-            return
         scenario = self.comportamenti.get(self.comportamento_attivo)
         if scenario:
-            self.get_logger().info(f" {testo}")
+            self.get_logger().info(f"Testo: {testo}")
             scenario.esegui(testo, self.kb, self.llm)
+        else:
+            self.get_logger().error(f"Comportamento '{self.comportamento_attivo}' non trovato!")
 
     def arbitra(self, msg):
         self.get_logger().info(msg.data)
         try:
             dati = json.loads(msg.data)
-            ospite = Ospite(int(dati["id"]), dati["nome"], dati["cognome"], 30, None)
+            ospite = Persona(int(dati["id"]), dati["nome"], dati["cognome"])
             bottone_premuto = dati["bottone"]
             mappa_bottoni = {
                 "Scenario A": "InteragisciScenarioA",
-                # "b": "InteragisciScenarioB",
-                # "c": "InteragisciScenarioC",
+                # "Scenario B": "InteragisciScenarioB",
+                "Scenario C": "InteragisciScenarioC",
             }
             scenario = mappa_bottoni.get(bottone_premuto)
             if not scenario:
