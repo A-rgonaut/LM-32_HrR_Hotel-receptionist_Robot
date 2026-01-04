@@ -1,4 +1,5 @@
 from progetto.InteragisciConOspite import InteragisciConOspite
+from progetto.utils import Ospite
 
 class InteragisciScenarioC(InteragisciConOspite):
     def esegui(self, testo, kb, llm):

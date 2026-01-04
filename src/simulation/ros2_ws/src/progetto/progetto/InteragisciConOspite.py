@@ -1,4 +1,6 @@
 import string
+import os
+import subprocess
 
 class InteragisciConOspite():
     def __init__(self, nodo):
@@ -75,6 +77,29 @@ class InteragisciConOspite():
         if has_neg and not has_pos:
             return False
         return None
+
+    def chiedi_spiegazione_a_java(self, owl_path, nome_classe_iri, proprieta, valore):
+        from dotenv import load_dotenv
+        load_dotenv()
+        base_java_path = os.getenv("PATH_JAVA_PROJECT")
+        jar_file = f'{base_java_path}/{os.getenv("PATH_JAVA_FILE")}'
+        dependencies = f'{base_java_path}/{os.getenv("PATH_JAVA_DEPENDENCIES")}'
+        classpath = f"{jar_file}:{dependencies}"
+        main_class = os.getenv("PATH_JAVA_MAIN")
+        cmd = ["java", "-cp", classpath, main_class, owl_path, nome_classe_iri, proprieta, valore]
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+            output = result.stdout
+            marker_start = "--- START AXIOMS ---"
+            marker_end   = "--- END AXIOMS ---"
+            if marker_start in output and marker_end in output:
+                part1 = output.split(marker_start)[1]
+                axioms = part1.split(marker_end)[0].strip()
+                return axioms
+            return None
+        except Exception as e:
+            self.nodo.get_logger().error(f"Errore chiamata Java: {e}")
+            return None
 
     def esegui(self, testo):
         raise NotImplementedError("Ogni InteragisciScenario deve implementare la propria logica.")

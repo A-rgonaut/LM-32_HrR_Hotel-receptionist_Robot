@@ -42,6 +42,22 @@ class LLMManager():
                 - "Odio il mare, preferisco le chiese" -> "cultura"
                 - "Mi piace nuotare" -> "mare"
                 """
+            elif scenario == "B":
+                # dal testo dobbiamo rilevare il guasto a cosa può essere indirizzato
+                # freddo -> allora il problema sta nel condizionatore
+                # LLM per prendere la parola
+                system_instruction = """
+                Agisci come un assistente tecnico. Analizza la frase del cliente e identifica esclusivamente il comfort che desidera ottenere.
+                Logica di analisi:
+                Se il cliente dice di avere freddo o che il riscaldamento è rotto -> Caldo
+                Se il cliente dice di avere caldo o che il condizionatore è rotto -> Freddo
+                Se la richiesta non riguarda la temperatura (es. perdita d'acqua) -> N/A
+                Vincoli: Rispondi con una sola parola.
+                Esempi:
+                'Si gela qui dentro' -> Caldo
+                'Il condizionatore non rinfresca' -> Freddo
+                'La caldaia perde' -> N/A
+                """
         elif tipo == "explainability":
             if scenario == "A":
                 system_instruction = """
@@ -78,6 +94,22 @@ class LLMManager():
                 OUTPUT:
                 "Le consiglio vivamente l'escursione in montagna! Le previsioni meteo indicano cielo sereno, condizioni perfette per godersi il panorama."
                 """
+        # elif tipo == "estrazione_temperatura":
+            # if scenario == "B":
+                '''
+                system_instruction = """
+                Agisci come un estrattore di dati tecnici. Il tuo compito è individuare la temperatura impostata o desiderata dall'utente all'interno della frase ed estrarre solo il numero.
+                Regole rigorose:
+                - Restituisci esclusivamente il numero in cifre.
+                - Non includere simboli (come °, °C, gradi) o testo.
+                - Se nella frase sono presenti più numeri (es. una data e una temperatura), estrai solo quello riferito alla temperatura.
+                - Se non viene indicata alcuna temperatura, rispondi: N/A.
+                Esempi:
+                - 'Ho impostato il termostato a 22 gradi' -> 22
+                - 'Vorrei 21.5 gradi in ufficio' -> 21.5
+                - 'Oggi 03/01/2026 ho messo a 20°C' -> 20
+                """
+                '''
         try:
             response = self.client.models.generate_content(
                 model="gemini-2.5-flash",

@@ -2,7 +2,6 @@ from progetto.InteragisciConOspite import InteragisciConOspite
 from progetto.utils import Ospite
 
 import os
-import subprocess
 from datetime import datetime
 import string
 
@@ -187,29 +186,6 @@ class InteragisciScenarioA(InteragisciConOspite):
             onto.save(file=temp_file)
             return temp_file
 
-    def chiedi_spiegazione_a_java(self, owl_path, nome_evento_iri, proprieta, valore):
-        from dotenv import load_dotenv
-        load_dotenv()
-        base_java_path = os.getenv("PATH_JAVA_PROJECT")
-        jar_file = f'{base_java_path}/{os.getenv("PATH_JAVA_FILE")}'
-        dependencies = f'{base_java_path}/{os.getenv("PATH_JAVA_DEPENDENCIES")}'
-        classpath = f"{jar_file}:{dependencies}"
-        main_class = os.getenv("PATH_JAVA_MAIN")
-        cmd = ["java", "-cp", classpath, main_class, owl_path, nome_evento_iri, proprieta, valore]
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, check=False)
-            output = result.stdout
-            marker_start = "--- START AXIOMS ---"
-            marker_end   = "--- END AXIOMS ---"
-            if marker_start in output and marker_end in output:
-                part1 = output.split(marker_start)[1]
-                axioms = part1.split(marker_end)[0].strip()
-                return axioms
-            return None
-        except Exception as e:
-            self.nodo.get_logger().error(f"Errore chiamata Java: {e}")
-            return None
-
     def suggerisci_evento_locale(self, kb, llm):
         self.nodo.parla("Un attimo, analizzo tutti gli eventi disponibili...")
         if not self.recupera_dati_per_suggerimento(kb):
@@ -270,7 +246,7 @@ class InteragisciScenarioA(InteragisciConOspite):
         if self.stato == "INIZIO":
             lingua = self.rileva_lingua(testo)
             if lingua is None:
-                self.nodo.parla(super().dialogo_scriptato(tipo="errore_lingua"))
+                self.nodo.parla(self.dialogo_scriptato(tipo="errore_lingua"))
                 return
             p = self.contesto['ospite']
             eta = self.recupera_eta(kb)
@@ -278,7 +254,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             print(self.contesto['ospite'])
             print(self.aggiorna_lingua(kb))
             if self.recupera_dati_prenotazione(kb):
-                self.nodo.parla(super().dialogo_scriptato(tipo="benvenuto"))
+                self.nodo.parla(self.dialogo_scriptato(tipo="benvenuto"))
                 self.stato = "RILEVA_INTERESSE"
             else:
                 self.nodo.parla("Non trovo nessuna prenotazione attiva.")
@@ -288,10 +264,10 @@ class InteragisciScenarioA(InteragisciConOspite):
             if interesse:
                 self.nodo.get_logger().info(interesse)
                 self.contesto['interesse'] = interesse
-                self.nodo.parla(super().dialogo_scriptato(tipo="conferma_interesse"))
+                self.nodo.parla(self.dialogo_scriptato(tipo="conferma_interesse"))
                 self.stato = "CONFERMA"
         elif self.stato == "CONFERMA":
-            if super().rileva_conferma(testo):
+            if self.rileva_conferma(testo):
                 if self.contesto['interesse']:
                     self.salva_interesse(kb)
                     self.stato = "SUGGERISCI_EVENTO_LOCALE"
@@ -303,6 +279,6 @@ class InteragisciScenarioA(InteragisciConOspite):
             self.suggerisci_evento_locale(kb, llm)
             self.stato = "FINE"
         elif self.stato == "FINE":
-            self.nodo.parla(super().dialogo_scriptato(tipo="arrivederci"))
+            self.nodo.parla(self.dialogo_scriptato(tipo="arrivederci"))
         else:
             self.nodo.get_logger().info("self.stato NON VALIDO.")
