@@ -15,9 +15,19 @@ CREATE
 
 (r1:Robot {nome: "Pippor"}),
 
-(pat1:Cardiopatia {bpm_anomala: 100, bpm_allerta: 150}),
+(pat1:Cardiopatia {bpm_anomala: 100, bpm_allerta: 150, soglia_urgente: 1.5}),
+(pat2:Ipertensione {pressione_min_allerta: 90, pressione_min_anomala: 100, pressione_max_allerta: 140, pressione_max_anomala: 160, soglia_urgente: 1.0}),
 
 (o)-[:SOFFRE_DI]->(pat1),
+
+(si1:Sintomo {nome: "Palpitazioni", punteggio_base: 0.5, punteggio_aggravante: 1.5}),
+(si2:Sintomo {nome: "Vertigini", punteggio_base: 0.3, punteggio_aggravante: 1.2}),
+(si3:Sintomo {nome: "Pressione Toracica", punteggio_base: 0.2, punteggio_aggravante: 0.8}),
+
+(si1)-[:CRITICA_PER]->(pat1),
+(si2)-[:CRITICA_PER]->(pat2),
+(si3)-[:CRITICA_PER]->(pat1),
+(si3)-[:CRITICA_PER]->(pat2),
 
 (i1:Citta {nome: "vino"}),
 (i2:Montagna {nome: "trekking"}),
@@ -45,7 +55,7 @@ CREATE
 (sug2)-[:INVIATO_A]->(o),
 (sug3)-[:INVIATO_A]->(o),
 
-(s1:Specialista {nome: "Giuseppe", cognome: "Verdi", specialita: "elettricista", numero_telefono: "333 3333 333"}),
+(s1:Specialista {nome: "Giuseppe", cognome: "Verdi", specialita: "elettrico", numero_telefono: "333 3333 333"}),
 (s2:Specialista {nome: "Francesco", cognome: "Bianchi", specialita: "idraulico", numero_telefono: "333 4433 333"}),
 (s3:Specialista {nome: "Giulio", cognome: "Neri", specialita: "medico", numero_telefono: "333 5533 333"}),
 
@@ -74,31 +84,76 @@ CREATE
 (m22:PrevisioneMeteo {data_ora: datetime("2026-01-14T22:00:00"), condizione: "sereno", gradi: 9.9}),
 (m23:PrevisioneMeteo {data_ora: datetime("2026-01-14T23:00:00"), condizione: "sereno", gradi: 10.0}),
 
-(g1:Condizionatore {
+(a1:Anomalia {
+    nome: "Puzza di bruciato",
+    punteggio_base: 0.5,
+    punteggio_aggravante: 2.0
+}),
+(a2:Anomalia {
+    nome: "Fa rumore forte",
+    punteggio_base: 0.1,
+    punteggio_aggravante: 0.9
+}),
+(a3:Anomalia {
+    nome: "Perde acqua",
+    punteggio_base: 0.3,
+    punteggio_aggravante: 1.2
+}),
+(a4:Anomalia {
+    nome: "Non emette aria fredda",
+    punteggio_base: 0.1,
+    punteggio_aggravante: 1.9
+}),
+
+(o)-[:AVVERTE]->(a1),
+(o)-[:AVVERTE]->(a2),
+(o)-[:AVVERTE]->(a3),
+(o)-[:AVVERTE]->(a4),
+
+(og1:Condizionatore {
     tipo: "elettrico",
-    data_ora: datetime(),
     tempo_acceso: 35,
     temperatura_stanza: 18,
     temperatura_impostata: 22,
     modalita: "HEAT",
-    idoneo: true
+    soglia_assistenza: 2.0
 }),
-(g2:Lavandino {
+(og2:Lavandino {
     tipo: "idraulico",
-    data_ora: datetime(),
-    perdita: true,
-    idoneo: true
+    soglia_assistenza: 1.0
 }),
-(g3:Phon {
+(og3:Phon {
     tipo: "elettrico",
+    soglia_assistenza: 2.0
+}),
+
+(a1)-[:DANNOSO_PER]->(og3),
+(a2)-[:DANNOSO_PER]->(og1),
+(a2)-[:DANNOSO_PER]->(og2),
+(a2)-[:DANNOSO_PER]->(og3),
+(a3)-[:DANNOSO_PER]->(og2),
+(a4)-[:DANNOSO_PER]->(og1),
+
+(g1:Guasto {
     data_ora: datetime(),
-    principio_incendio: true,
-    idoneo: true
+    assistenza: true
+}),
+(g2:Guasto {
+    data_ora: datetime(),
+    assistenza: true
+}),
+(g3:Guasto {
+    data_ora: datetime(),
+    assistenza: true
 }),
 
 (o)-[:SEGNALA]->(g1),
 (o)-[:SEGNALA]->(g2),
 (o)-[:SEGNALA]->(g3),
+
+(g1)-[:INERENTE_A]->(og1),
+(g2)-[:INERENTE_A]->(og2),
+(g3)-[:INERENTE_A]->(og3),
 
 (r1)-[:NOTIFICA]->(s1),
 (r1)-[:NOTIFICA]->(s2),
@@ -106,12 +161,14 @@ CREATE
 
 (es1:BattitiElevati {
     data_ora: datetime(),
-    bpm: 158
+    bpm: 158,
+    urgente: true
 }),
 (es2:PressioneElevata {
     data_ora: datetime(),
     pressione_min: 131,
-    pressione_max: 153
+    pressione_max: 153,
+    urgente: true
 }),
 
 (r1)-[:RILEVA]->(es1),
