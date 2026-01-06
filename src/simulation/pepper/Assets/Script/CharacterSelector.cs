@@ -40,7 +40,7 @@ public class CharacterSelector : MonoBehaviour
 
     private int _currentCharacterIndex = 0;
     public string buttonTopicName = "bottone";
-    public string healthTopicName = "health_row";
+    public string healthTopicName = "health_raw";
 
     private Coroutine vitalsCoroutine;
 
@@ -84,7 +84,7 @@ public class CharacterSelector : MonoBehaviour
             CharacterData data = characters[_currentCharacterIndex];
 
             // --- MODIFICA RICHIESTA ---
-            // Se l'ID è 0, non calcolare nulla e non inviare nulla.
+            // Se l'ID ï¿½ 0, non calcolare nulla e non inviare nulla.
             if (data.id == 0)
             {
                 // Opzionale: Mostriamo dei trattini per indicare che non ci sono dati
@@ -115,9 +115,9 @@ public class CharacterSelector : MonoBehaviour
             // 4. JSON
             string json = $@"{{
                 ""id"": {data.id},
-                ""bpm"": {currentBPM},
-                ""pas"": {currentPAS},
-                ""pad"": {currentPAD},
+                ""hr"": {currentBPM},
+                ""pmax"": {currentPAS},
+                ""pmin"": {currentPAD},
                 ""x"": {pos.x.ToString("F2", culture)},
                 ""y"": {pos.y.ToString("F2", culture)},
                 ""z"": {pos.z.ToString("F2", culture)}
@@ -125,7 +125,7 @@ public class CharacterSelector : MonoBehaviour
 
             json = json.Replace("\n", "").Replace("\r", "").Replace(" ", "");
 
-            Debug.Log(json);
+            //Debug.Log(json);
 
             // 5. Invio ROS
             ros.Publish(healthTopicName, new StringMsg(json));
@@ -138,10 +138,10 @@ public class CharacterSelector : MonoBehaviour
     {
         CharacterData attivo = characters[_currentCharacterIndex];
         // Per sicurezza, impediamo l'invio anche dal pulsante se ID=0 (nel caso i bottoni fossero rimasti attivi per errore)
-        if (attivo.id == 0) return;
+        //if (attivo.id == 0) return;
 
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
-        StringMsg msg = new StringMsg($"{{\"id\":{attivo.id},\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+        StringMsg msg = new StringMsg($"{{\"id\":{0},\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
         ros.Publish(buttonTopicName, msg);
     }
 }

@@ -18,16 +18,19 @@ public class DiffDriveRobot : MonoBehaviour
     public float publishRate = 10f;
 
     [Header("Safety Watchdog")]
-    public float commandTimeout = 0.5f; // Tempo massimo senza comandi prima dello stop
+    public float commandTimeout = 0.5f; // Tempo massimo senza comandi
+    
+    [Tooltip("Decelerazione in rad/s^2. Valori bassi = frenata dolce. Valori alti = frenata brusca.")]
+    public float brakingDeceleration = 2.0f; // NUOVO: Forza della frenata
+
     private float lastCmdReceivedTime;
-    private bool isStopped = false; // Per evitare di settare 0 continuamente
+    private bool isStopped = false; 
 
     private ROSConnection ros;
     private float timeElapsed;
 
     void Awake()
     {
-        // Fix per i decimali (punto vs virgola)
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
     }
@@ -35,26 +38,20 @@ public class DiffDriveRobot : MonoBehaviour
     void Start()
     {
         ros = ROSConnection.GetOrCreateInstance();
-
-        // Sottoscrizioni
         ros.Subscribe<Float64Msg>(leftWheelCmdTopic, LeftWheelCmdCallback);
         ros.Subscribe<Float64Msg>(rightWheelCmdTopic, RightWheelCmdCallback);
-
-        // Publisher
         ros.RegisterPublisher<JointStateMsg>(wheelsStateTopic);
 
-        // Inizializza il timer
         lastCmdReceivedTime = Time.time;
-
-        Debug.Log("DiffDriveRobot avviato. In attesa di comandi ROS...");
+        Debug.Log("DiffDriveRobot avviato.");
     }
 
     void FixedUpdate()
     {
-        // 1. Controllo di Sicurezza (Watchdog)
+        // 1. Controllo Watchdog e Frenata
         CheckConnectionWatchdog();
 
-        // 2. Pubblicazione Stato Ruote
+        // 2. Pubblicazione Stato
         timeElapsed += Time.fixedDeltaTime;
         if (timeElapsed >= 1.0f / publishRate)
         {
@@ -63,65 +60,71 @@ public class DiffDriveRobot : MonoBehaviour
         }
     }
 
-    // --- NUOVO METODO DI SICUREZZA ---
     void CheckConnectionWatchdog()
     {
-        // Se è passato troppo tempo dall'ultimo comando ricevuto
+        // Se Ã¨ scaduto il tempo limite...
         if (Time.time - lastCmdReceivedTime > commandTimeout)
         {
-            // Se non siamo già fermi, fermiamo tutto
+            // ... e se il robot non Ã¨ ancora completamente fermo
             if (!isStopped)
             {
-                Debug.LogWarning($"[Safety] Nessun comando ricevuto per {commandTimeout}s. STOP DI EMERGENZA.");
-                SetSpeed(leftWheel, 0);
-                SetSpeed(rightWheel, 0);
-                isStopped = true;
+                // LOGICA DI FRENATA PROGRESSIVA
+                
+                // 1. Recuperiamo la velocitÃ  target attuale (convertendo da deg a rad per coerenza)
+                float currentLeftVel = leftWheel.xDrive.targetVelocity * Mathf.Deg2Rad;
+                float currentRightVel = rightWheel.xDrive.targetVelocity * Mathf.Deg2Rad;
+
+                // 2. Calcoliamo quanto ridurre la velocitÃ  in questo frame
+                float step = brakingDeceleration * Time.fixedDeltaTime;
+
+                // 3. Ci avviciniamo a 0 gradualmente
+                float newLeftVel = Mathf.MoveTowards(currentLeftVel, 0f, step);
+                float newRightVel = Mathf.MoveTowards(currentRightVel, 0f, step);
+
+                // 4. Applichiamo la nuova velocitÃ  ridotta
+                SetSpeed(leftWheel, newLeftVel);
+                SetSpeed(rightWheel, newRightVel);
+
+                // 5. Se entrambe sono praticamente a 0, dichiariamo lo stop completo
+                if (Mathf.Approximately(newLeftVel, 0f) && Mathf.Approximately(newRightVel, 0f))
+                {
+                    Debug.LogWarning("[Safety] Robot fermato dolcemente.");
+                    isStopped = true;
+                }
             }
         }
     }
 
     void LeftWheelCmdCallback(Float64Msg msg)
     {
-        // Resetta il timer del watchdog
         lastCmdReceivedTime = Time.time;
-        isStopped = false;
-
-        // LOG: Vediamo se arriva il comando
-        // Debug.Log($"[ROS -> Unity] CMD Sinistra: {msg.data} rad/s");
+        isStopped = false; // Se arrivano comandi, riattiviamo il controllo
         SetSpeed(leftWheel, (float)msg.data);
     }
 
     void RightWheelCmdCallback(Float64Msg msg)
     {
-        // Resetta il timer del watchdog
         lastCmdReceivedTime = Time.time;
         isStopped = false;
-
-        // LOG: Vediamo se arriva il comando
-        // Debug.Log($"[ROS -> Unity] CMD Destra: {msg.data} rad/s");
         SetSpeed(rightWheel, (float)msg.data);
     }
 
     void SetSpeed(ArticulationBody wheel, float speedRadS)
     {
-        // NOTA BENE: Qui assumiamo che la ruota giri sull'asse X (xDrive).
         var drive = wheel.xDrive;
-        drive.targetVelocity = speedRadS * Mathf.Rad2Deg; // Conversione rad/s -> deg/s
+        drive.targetVelocity = speedRadS * Mathf.Rad2Deg; 
         wheel.xDrive = drive;
     }
 
     void PublishWheelStates()
     {
         JointStateMsg stateMsg = new JointStateMsg();
-
-        // I nomi devono corrispondere a quelli definiti nel URDF/ROS
-        stateMsg.name = new string[] { "right_wheel_joint", "left_wheel_joint" }; // Assicurati che i nomi siano corretti
-
-        // Prende la velocità attuale (in rad/s, Unity la fornisce già convertita se configurato bene)
-        double velRight = rightWheel.jointVelocity[0];
-        double velLeft = leftWheel.jointVelocity[0];
-
-        stateMsg.velocity = new double[] { velRight, velLeft };
+        stateMsg.name = new string[] { "right_wheel_joint", "left_wheel_joint" }; // Verifica i nomi nel tuo URDF
+        
+        stateMsg.velocity = new double[] { 
+            rightWheel.jointVelocity[0], 
+            leftWheel.jointVelocity[0] 
+        };
 
         ros.Publish(wheelsStateTopic, stateMsg);
     }

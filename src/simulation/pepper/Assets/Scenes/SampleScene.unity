@@ -846,6 +846,8 @@ MonoBehaviour:
   rightWheelCmdTopic: /right_wheel_cmd
   wheelsStateTopic: /wheels_state
   publishRate: 10
+  commandTimeout: 0.5
+  brakingDeceleration: 2
 --- !u!4 &80914602
 Transform:
   m_ObjectHideFlags: 0
@@ -32672,7 +32674,7 @@ MonoBehaviour:
   padText: {fileID: 1993981057}
   noiseRange: 5
   buttonTopicName: bottone
-  healthTopicName: health_row
+  healthTopicName: health_raw
 --- !u!4 &1683058389
 Transform:
   m_ObjectHideFlags: 0
