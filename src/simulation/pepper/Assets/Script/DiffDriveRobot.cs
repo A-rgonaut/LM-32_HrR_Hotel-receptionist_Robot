@@ -17,6 +17,11 @@ public class DiffDriveRobot : MonoBehaviour
     public string wheelsStateTopic = "/wheels_state";
     public float publishRate = 10f;
 
+    [Header("Safety Watchdog")]
+    public float commandTimeout = 0.5f; // Tempo massimo senza comandi prima dello stop
+    private float lastCmdReceivedTime;
+    private bool isStopped = false; // Per evitare di settare 0 continuamente
+
     private ROSConnection ros;
     private float timeElapsed;
 
@@ -38,11 +43,18 @@ public class DiffDriveRobot : MonoBehaviour
         // Publisher
         ros.RegisterPublisher<JointStateMsg>(wheelsStateTopic);
 
+        // Inizializza il timer
+        lastCmdReceivedTime = Time.time;
+
         Debug.Log("DiffDriveRobot avviato. In attesa di comandi ROS...");
     }
 
     void FixedUpdate()
     {
+        // 1. Controllo di Sicurezza (Watchdog)
+        CheckConnectionWatchdog();
+
+        // 2. Pubblicazione Stato Ruote
         timeElapsed += Time.fixedDeltaTime;
         if (timeElapsed >= 1.0f / publishRate)
         {
@@ -51,26 +63,48 @@ public class DiffDriveRobot : MonoBehaviour
         }
     }
 
+    // --- NUOVO METODO DI SICUREZZA ---
+    void CheckConnectionWatchdog()
+    {
+        // Se è passato troppo tempo dall'ultimo comando ricevuto
+        if (Time.time - lastCmdReceivedTime > commandTimeout)
+        {
+            // Se non siamo già fermi, fermiamo tutto
+            if (!isStopped)
+            {
+                Debug.LogWarning($"[Safety] Nessun comando ricevuto per {commandTimeout}s. STOP DI EMERGENZA.");
+                SetSpeed(leftWheel, 0);
+                SetSpeed(rightWheel, 0);
+                isStopped = true;
+            }
+        }
+    }
+
     void LeftWheelCmdCallback(Float64Msg msg)
     {
+        // Resetta il timer del watchdog
+        lastCmdReceivedTime = Time.time;
+        isStopped = false;
+
         // LOG: Vediamo se arriva il comando
-        Debug.Log($"[ROS -> Unity] CMD Sinistra: {msg.data} rad/s");
+        // Debug.Log($"[ROS -> Unity] CMD Sinistra: {msg.data} rad/s");
         SetSpeed(leftWheel, (float)msg.data);
     }
 
     void RightWheelCmdCallback(Float64Msg msg)
     {
+        // Resetta il timer del watchdog
+        lastCmdReceivedTime = Time.time;
+        isStopped = false;
+
         // LOG: Vediamo se arriva il comando
-        Debug.Log($"[ROS -> Unity] CMD Destra: {msg.data} rad/s");
+        // Debug.Log($"[ROS -> Unity] CMD Destra: {msg.data} rad/s");
         SetSpeed(rightWheel, (float)msg.data);
     }
 
     void SetSpeed(ArticulationBody wheel, float speedRadS)
     {
         // NOTA BENE: Qui assumiamo che la ruota giri sull'asse X (xDrive).
-        // Se la tua ruota è impostata su Z nell'editor, questo codice non funzionerà.
-        // Vedi punto "2. Configurazione Fisica" sotto.
-
         var drive = wheel.xDrive;
         drive.targetVelocity = speedRadS * Mathf.Rad2Deg; // Conversione rad/s -> deg/s
         wheel.xDrive = drive;
@@ -79,7 +113,9 @@ public class DiffDriveRobot : MonoBehaviour
     void PublishWheelStates()
     {
         JointStateMsg stateMsg = new JointStateMsg();
-        stateMsg.name = new string[] { "right_wheel", "left_wheel" };
+
+        // I nomi devono corrispondere a quelli definiti nel URDF/ROS
+        stateMsg.name = new string[] { "right_wheel_joint", "left_wheel_joint" }; // Assicurati che i nomi siano corretti
 
         // Prende la velocità attuale (in rad/s, Unity la fornisce già convertita se configurato bene)
         double velRight = rightWheel.jointVelocity[0];
@@ -88,8 +124,5 @@ public class DiffDriveRobot : MonoBehaviour
         stateMsg.velocity = new double[] { velRight, velLeft };
 
         ros.Publish(wheelsStateTopic, stateMsg);
-
-        // LOG: Decommenta se vuoi vedere cosa esce (può intasare la console)
-        // Debug.Log($"[Unity -> ROS] Encoder: L={velLeft:F2}, R={velRight:F2}");
     }
 }

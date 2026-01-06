@@ -108,9 +108,9 @@ public class CharacterSelector : MonoBehaviour
             Vector3 pos = target.position;
 
             // 3. UI Update
-            if (bpmText != null) bpmText.text = currentBPM.ToString();
-            if (pasText != null) pasText.text = currentPAS.ToString();
-            if (padText != null) padText.text = currentPAD.ToString();
+            if (bpmText != null) bpmText.text = "BPM: " + currentBPM.ToString();
+            if (pasText != null) pasText.text = "PAS: " + currentPAS.ToString();
+            if (padText != null) padText.text = "PAD: " + currentPAD.ToString();
 
             // 4. JSON
             string json = $@"{{
