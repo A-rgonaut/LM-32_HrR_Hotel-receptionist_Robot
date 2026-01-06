@@ -9,7 +9,7 @@ from math import sin, cos, atan2
 
 class DiffRobotController(Node):
     def __init__(self):
-        super().__init__("diff_robot_controller")
+        super().__init__("DiffRobotController")
 
         self.L          = 0.20
         self.R          = 0.05
@@ -35,6 +35,8 @@ class DiffRobotController(Node):
         self.theta = self.init_theta
 
         self.current_time = self.get_clock().now()
+
+        self.get_logger().info('DiffRobotController avviato.')
 
     def compute_odometry(self, encoder_msgs):
         now = self.get_clock().now()
