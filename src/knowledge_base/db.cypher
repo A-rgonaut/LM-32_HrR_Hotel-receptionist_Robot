@@ -4,14 +4,21 @@ CREATE
 
 (o:Ospite {nome: "Peppe", cognome: "Rossi", eta: 30, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
 
-(l1:Hall {x: 0.0, y: 0.0}),
-(l2:Stanza {x: 15.0, y: 5.0, nome: "Camera 1"}),
-(l3:CoffeeRoom {x: 25.0, y: 10.0}),
+(l1:Hall {x: 0.0, y: 10.0}),
+(l2:CoffeeRoom {x: 0.0, y: -5.0}),
+(l3:Stanza {x: 7.0, y: 4.2, nome: "Camera 1"}),
+(l4:Stanza {x: 7.0, y: -1.8, nome: "Camera 2"}),
+(l5:Stanza {x: 7.0, y: -7.8, nome: "Camera 3"}),
+(l6:Stanza {x: 2.5, y: -12.3, nome: "Camera 4"}),
+(l7:Stanza {x: -2.5, y: -12.3, nome: "Camera 5"}),
+(l8:Stanza {x: -7.0, y: 4.2, nome: "Camera 6"}),
+(l9:Stanza {x: -7.0, y: -1.8, nome: "Camera 7"}),
+(l10:Stanza {x: -7.0, y: -7.8, nome: "Camera 8"}),
 
 (p1:Prenotazione {data_inizio: datetime("2026-01-12T15:00:00"), data_fine: datetime("2026-01-16T12:00:00")}),
 
 (o)-[:EFFETTUA]->(p1),
-(p1)-[:ASSOCIATA_A]->(l2),
+(p1)-[:ASSOCIATA_A]->(l3),
 
 (r1:Robot {nome: "Pippor"}),
 

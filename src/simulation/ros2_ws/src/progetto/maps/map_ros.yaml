@@ -1,5 +1,5 @@
 image: map_ros.png
-resolution: 0.0390625
+resolution: 0.0390625  # 10 / 256
 origin: [-20.0, -20.0, 0.0]
 negate: 0
 occupied_thresh: 0.65

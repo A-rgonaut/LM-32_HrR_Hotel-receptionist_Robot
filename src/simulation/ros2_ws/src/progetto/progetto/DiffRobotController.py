@@ -11,8 +11,8 @@ class DiffRobotController(Node):
     def __init__(self):
         super().__init__("DiffRobotController")
 
-        self.L          = 0.20
-        self.R          = 0.05
+        self.L          = 0.28    # m
+        self.R          = 0.0715  # m
         self.init_x     = 0.0
         self.init_y     = 0.0
         self.init_theta = 0.0
