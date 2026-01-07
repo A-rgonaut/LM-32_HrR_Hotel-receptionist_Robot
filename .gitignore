@@ -19,3 +19,7 @@ UserSettings
 #
 
 .env
+
+.vs
+.vsconfig
+obj
