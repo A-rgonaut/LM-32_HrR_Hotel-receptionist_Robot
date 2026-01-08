@@ -2,7 +2,7 @@ from progetto.InteragisciConOspite import InteragisciConOspite
 from progetto.utils import Ospite
 
 class InteragisciScenarioC(InteragisciConOspite):
-    def esegui(self, testo, kb, llm):
+    def esegui(self, testo, sincro):
         self.nodo.get_logger().info(f"[ScenarioB] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
             self.stato = "FINE"

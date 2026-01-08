@@ -181,7 +181,7 @@ class BraccialettiManager(Node):
         clean_hr   = self.handle_single_signal(ospite, 'hr',   raw_hr,   hr_valid,   ospite.kf_hr,   dt, current_time)
         clean_pmin = self.handle_single_signal(ospite, 'pmin', raw_pmin, pmin_valid, ospite.kf_pmin, dt, current_time)
         clean_pmax = self.handle_single_signal(ospite, 'pmax', raw_pmax, pmax_valid, ospite.kf_pmax, dt, current_time)
-        self.get_logger().info(f"{clean_hr} {clean_pmin} {clean_pmax}")
+        # self.get_logger().info(f"{clean_hr} {clean_pmin} {clean_pmax}")
         if clean_hr is None or clean_pmin is None or clean_pmax is None:
             self.get_logger().debug("Dati insufficienti o braccialetto rimosso")
             return
@@ -199,13 +199,9 @@ class BraccialettiManager(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = BraccialettiManager()
-    try:
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

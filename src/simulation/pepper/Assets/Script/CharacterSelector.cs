@@ -141,7 +141,7 @@ public class CharacterSelector : MonoBehaviour
         //if (attivo.id == 0) return;
 
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
-        StringMsg msg = new StringMsg($"{{\"id\":{0},\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+        StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
         ros.Publish(buttonTopicName, msg);
     }
 }

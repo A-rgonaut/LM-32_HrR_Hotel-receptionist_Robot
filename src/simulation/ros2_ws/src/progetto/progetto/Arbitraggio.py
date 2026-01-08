@@ -1,6 +1,8 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import ReentrantCallbackGroup
 
 # --- COMPORTAMENTI ---
 from progetto.InteragisciScenarioA import InteragisciScenarioA
@@ -12,38 +14,24 @@ from progetto.RicaricaBatteria import RicaricaBatteria
 from progetto.Riposo import Riposo
 # --- ------------- ---
 
-from progetto.BaseConoscenzaManager import BaseConoscenzaManager
-from progetto.LLMManager import LLMManager
+from progetto.SincronizzaManager import SincronizzaManager
 from progetto.utils import Persona
 
 import json
+import traceback
 
 class Arbitraggio(Node):
     def __init__(self):
         super().__init__('Arbitraggio')
 
-        self.kb = BaseConoscenzaManager()
-        self.llm = LLMManager()
+        self.sincro = SincronizzaManager(self)
 
-        self.pub = self.create_publisher(
-            String,
-            'dialogo_robot',
-            10
-        )
-
-        self.sub = self.create_subscription(
-            String,
-            'dialogo_umano',
-            self.processa_input,
-            10
-        )
-
-        self.bottone = self.create_subscription(
-            String,
-            'bottone',
-            self.arbitra,
-            10
-        )
+        self.cb_group = ReentrantCallbackGroup()
+        self.pub = self.create_publisher(String, 'dialogo_robot', 10)
+        self.sub = self.create_subscription(String, 'dialogo_umano',
+            self.processa_input, 10, callback_group=self.cb_group)
+        self.bottone = self.create_subscription(String, 'bottone',
+            self.arbitra, 10, callback_group=self.cb_group)
 
         self.comportamenti = {
             "InteragisciScenarioA": InteragisciScenarioA(self),
@@ -65,7 +53,12 @@ class Arbitraggio(Node):
         scenario = self.comportamenti.get(self.comportamento_attivo)
         if scenario:
             self.get_logger().info(f"Testo: {testo}")
-            scenario.esegui(testo, self.kb, self.llm)
+            try:
+                scenario.esegui(testo, self.sincro)
+            except Exception as e:
+                self.get_logger().error(
+                    f"Eccezione in {self.comportamento_attivo}.esegui: {e}\n{traceback.format_exc()}"
+                )
         else:
             self.get_logger().error(f"Comportamento '{self.comportamento_attivo}' non trovato!")
 
@@ -114,13 +107,13 @@ class Arbitraggio(Node):
 def main(args=None):
     rclpy.init(args=args)
     arbitraggio = Arbitraggio()
+    executor = MultiThreadedExecutor(num_threads=4)
+    executor.add_node(arbitraggio)
     try:
-        rclpy.spin(arbitraggio)
+        executor.spin()
     except KeyboardInterrupt:
         arbitraggio.get_logger().info("Interruzione Arbitraggio...")
     finally:
-        if hasattr(arbitraggio, 'kb'):
-            arbitraggio.kb.close()
         arbitraggio.destroy_node()
         rclpy.shutdown()
 

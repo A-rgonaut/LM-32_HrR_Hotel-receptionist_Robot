@@ -27,7 +27,11 @@ setup(
         'console_scripts': [
             'arbitraggio = progetto.Arbitraggio:main',
             'braccialetti = progetto.BraccialettiManager:main',
-            'controller = progetto.DiffRobotController:main'
+            'controller = progetto.DiffRobotController:main',
+            # 'pianifica = progetto.Pianifica:main',
+            'server_llm = progetto.ServerLLM:main',
+            'server_neo4j = progetto.ServerNeo4j:main',
+            'server_onto = progetto.ServerOntologia:main'
         ],
     },
 )
