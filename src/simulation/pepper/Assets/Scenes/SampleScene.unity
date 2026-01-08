@@ -40516,7 +40516,7 @@ Transform:
   m_GameObject: {fileID: 980137307}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7, y: -1, z: 13}
+  m_LocalPosition: {x: 0, y: -1, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43294,10 +43294,10 @@ MonoBehaviour:
       - m_Target: {fileID: 1683058388}
         m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
         m_MethodName: EseguiAzionePersonaggio
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1052094850}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: EseguiAzionePersonaggio()
@@ -60138,6 +60138,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 980137308}
+  - {fileID: 1877952058}
   - {fileID: 954234217}
   - {fileID: 486947923}
   - {fileID: 1517040691}
@@ -61828,10 +61829,10 @@ MonoBehaviour:
       - m_Target: {fileID: 1683058388}
         m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
         m_MethodName: EseguiAzionePersonaggio
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: EseguiAzionePersonaggio()
@@ -75761,10 +75762,10 @@ MonoBehaviour:
       - m_Target: {fileID: 1683058388}
         m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
         m_MethodName: EseguiAzionePersonaggio
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1816968519}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: EseguiAzionePersonaggio()
@@ -78797,6 +78798,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1877414841}
   m_Mesh: {fileID: 3135150116082798107, guid: 95cac277c5a04ef43add167566755e63, type: 3}
+--- !u!1 &1877952057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1877952058}
+  m_Layer: 0
+  m_Name: A_reception_tv
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1877952058
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877952057}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -10, y: -1, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442590675}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1879230134
 GameObject:
   m_ObjectHideFlags: 0
@@ -88722,16 +88754,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPCController
   agent: {fileID: 0}
-  waitTime: 2
+  waitTime: 0.5
   corridorPoints:
   - {fileID: 980137308}
+  - {fileID: 1877952058}
   - {fileID: 954234217}
   - {fileID: 486947923}
   - {fileID: 1517040691}
   - {fileID: 271070504}
+  roomPoints:
   - {fileID: 801550675}
-  roomPoints: []
-  roomVisitChance: 30
+  roomVisitChance: 9
 --- !u!136 &2086635034
 CapsuleCollider:
   m_ObjectHideFlags: 0
