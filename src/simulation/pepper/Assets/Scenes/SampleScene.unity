@@ -52471,6 +52471,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1256141612}
   m_Mesh: {fileID: -5772777157333200073, guid: 95cac277c5a04ef43add167566755e63, type: 3}
+--- !u!1 &1256520120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1256520121}
+  m_Layer: 0
+  m_Name: A_meeting_point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1256520121
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1256520120}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8, y: 0, z: 13.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1442590675}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1259288906
 GameObject:
   m_ObjectHideFlags: 0
@@ -60112,6 +60143,7 @@ Transform:
   - {fileID: 1517040691}
   - {fileID: 271070504}
   - {fileID: 801550675}
+  - {fileID: 1256520121}
   m_Father: {fileID: 1579348381}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1448407283 stripped
@@ -61798,11 +61830,23 @@ MonoBehaviour:
         m_MethodName: EseguiAzionePersonaggio
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1495419910}
+          m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: EseguiAzionePersonaggio()
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1683058388}
+        m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
+        m_MethodName: MandaAttivoAlPuntoSpeciale
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1495419913
@@ -68866,6 +68910,7 @@ MonoBehaviour:
     avgBPM: 75
     avgPAS: 120
     avgPAD: 80
+    emergencyPoint: {fileID: 0}
   - id: 1
     nome: Peppe
     cognome: Rossi
@@ -68874,6 +68919,7 @@ MonoBehaviour:
     avgBPM: 75
     avgPAS: 120
     avgPAD: 80
+    emergencyPoint: {fileID: 0}
   - id: 2
     nome: Carletta
     cognome: Bianchi
@@ -68882,6 +68928,7 @@ MonoBehaviour:
     avgBPM: 75
     avgPAS: 120
     avgPAD: 80
+    emergencyPoint: {fileID: 0}
   - id: 3
     nome: Mr
     cognome: President
@@ -68890,6 +68937,7 @@ MonoBehaviour:
     avgBPM: 75
     avgPAS: 120
     avgPAD: 80
+    emergencyPoint: {fileID: 0}
   actionButtons:
   - {fileID: 1495419910}
   - {fileID: 1052094850}
@@ -68903,6 +68951,7 @@ MonoBehaviour:
   noiseRange: 5
   buttonTopicName: bottone
   healthTopicName: health_raw
+  emergencyPoint: {fileID: 1256520121}
 --- !u!4 &1683058389
 Transform:
   m_ObjectHideFlags: 0
@@ -88592,7 +88641,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0ba62b5df9fd63141b0a6be1f33aa24b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 17.4266
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0ba62b5df9fd63141b0a6be1f33aa24b, type: 3}
       propertyPath: m_LocalRotation.w

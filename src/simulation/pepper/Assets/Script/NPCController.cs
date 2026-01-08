@@ -1,12 +1,12 @@
 using UnityEngine;
-using UnityEngine.AI; // FONDAMENTALE per il NavMesh
+using UnityEngine.AI;
 using System.Collections.Generic;
 
 public class NPCController : MonoBehaviour
 {
     [Header("Impostazioni Movimento")]
     public NavMeshAgent agent;
-    public float waitTime = 2.0f; // Tempo di attesa quando arriva a destinazione
+    public float waitTime = 2.0f;
 
     [Header("Punti Corridoio (Loop)")]
     public Transform[] corridorPoints;
@@ -16,21 +16,23 @@ public class NPCController : MonoBehaviour
 
     [Header("Probabilità")]
     [Range(0, 100)]
-    public int roomVisitChance = 30; // 30% di probabilità di entrare in una stanza
+    public int roomVisitChance = 30;
 
     private int currentCorridorIndex = 0;
     private bool isWaiting = false;
     private bool visitingRoom = false;
+
+    // NUOVO: Variabile per sapere se siamo in modalità manuale
+    private bool isPatrolling = true;
 
     private Animator animator;
 
     void Start()
     {
         if (agent == null) agent = GetComponent<NavMeshAgent>();
-
         animator = GetComponent<Animator>();
 
-        // Inizia andando al primo punto del corridoio
+        // Inizia il pattugliamento normale
         MoveToNextCorridorPoint();
     }
 
@@ -40,51 +42,69 @@ public class NPCController : MonoBehaviour
         {
             animator.SetFloat("Speed", agent.velocity.magnitude);
         }
-        // Se sta aspettando, non fare nulla
+
+        // NUOVO: Se non stiamo pattugliando (siamo in modalità manuale), 
+        // usciamo dall'Update per non far ripartire la logica automatica.
+        if (!isPatrolling) return;
+
         if (isWaiting) return;
 
-        // Controlla se l'agente è arrivato a destinazione
-        // (remainingDistance diventa molto basso quando è arrivato)
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
             StartCoroutine(WaitAndDecide());
         }
     }
 
+    // --- NUOVO METODO: Chiamato dal CharacterSelector ---
+    public void GoToTargetAndStay(Transform targetPoint)
+    {
+        // 1. Fermiamo qualsiasi ragionamento in corso (coroutine di attesa)
+        StopAllCoroutines();
+
+        // 2. Disattiviamo la logica di pattugliamento automatica
+        isPatrolling = false;
+        isWaiting = false;
+
+        // 3. Impostiamo la destinazione specifica
+        if (targetPoint != null)
+        {
+            agent.SetDestination(targetPoint.position);
+        }
+    }
+
+    // (Opzionale) Se volessi farlo riprendere a pattugliare in futuro
+    public void ResumePatrol()
+    {
+        isPatrolling = true;
+        MoveToNextCorridorPoint();
+    }
+    // ----------------------------------------------------
+
     System.Collections.IEnumerator WaitAndDecide()
     {
         isWaiting = true;
-
-        // Aspetta un po' (simula che si guardi in giro)
         yield return new WaitForSeconds(waitTime);
-
-        // DECISIONE: Dove vado adesso?
 
         if (visitingRoom)
         {
-            // Se ero in una stanza, devo tornare al corridoio
             visitingRoom = false;
             MoveToNextCorridorPoint();
         }
         else
         {
-            // Se sono nel corridoio, tiro un dado
             int randomValue = Random.Range(0, 100);
 
             if (randomValue < roomVisitChance && roomPoints.Length > 0)
             {
-                // VINTO: Entra in una stanza a caso
                 visitingRoom = true;
                 MoveToRandomRoom();
             }
             else
             {
-                // PERSO: Continua il giro del corridoio
                 currentCorridorIndex = (currentCorridorIndex + 1) % corridorPoints.Length;
                 MoveToNextCorridorPoint();
             }
         }
-
         isWaiting = false;
     }
 

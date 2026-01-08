@@ -1,15 +1,18 @@
-using UnityEngine;
-using TMPro;
-using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Std;
 using System.Collections;
 using System.Globalization;
+using TMPro;
+using Unity.Robotics.ROSTCPConnector;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CharacterSelector : MonoBehaviour
 {
     ROSConnection ros;
 
     [System.Serializable]
+
+
     public class CharacterData
     {
         public int id;
@@ -24,6 +27,9 @@ public class CharacterSelector : MonoBehaviour
         public int avgBPM = 75;
         public int avgPAS = 120;
         public int avgPAD = 80;
+
+        [Header("Comandi Manuali")]
+        public Transform emergencyPoint;
     }
 
     public CharacterData[] characters;
@@ -41,6 +47,9 @@ public class CharacterSelector : MonoBehaviour
     private int _currentCharacterIndex = 0;
     public string buttonTopicName = "bottone";
     public string healthTopicName = "health_raw";
+
+    [Header("Comandi Manuali")]
+    public Transform emergencyPoint;
 
     private Coroutine vitalsCoroutine;
 
@@ -134,14 +143,63 @@ public class CharacterSelector : MonoBehaviour
         }
     }
 
-    public void EseguiAzionePersonaggio(GameObject buttonClicked)
+    // --- NUOVA FUNZIONE PER IL BOTTONE ---
+    public void MandaAttivoAlPuntoSpeciale()
     {
+        // 1. Recupera i dati del personaggio attualmente selezionato
+        CharacterData activeChar = characters[_currentCharacterIndex];
+
+        // 2. Controllo di sicurezza (se è l'ID 0 che è "muto", magari non vogliamo muoverlo)
+        if (activeChar.id == 0)
+        {
+            Debug.Log("L'utente ID 0 non può essere spostato.");
+            return;
+        }
+
+        // 3. Trova lo script NPCController sul personaggio.
+        // Usiamo 'bodyTransform' se l'hai impostato, altrimenti cerchiamo sull'oggetto della camera o sui genitori
+        Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
+
+        // Cerchiamo il componente NPCController (potrebbe essere sul padre o sull'oggetto stesso)
+        NPCController controller = targetObj.GetComponent<NPCController>();
+        if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
+
+        // 4. Esegui il comando
+        if (controller != null)
+        {
+            Debug.Log($"Mando {activeChar.nome} al punto di emergenza!");
+            controller.GoToTargetAndStay(emergencyPoint);
+        }
+        else
+        {
+            Debug.LogError("Non ho trovato lo script NPCController sul personaggio attivo!");
+        }
+    }
+
+    public void EseguiAzionePersonaggio()
+    {
+        // Chiediamo a Unity: "Chi è che è stato appena cliccato?"
+        GameObject buttonClicked = EventSystem.current.currentSelectedGameObject;
+
+        if (buttonClicked == null) return;
+
         CharacterData attivo = characters[_currentCharacterIndex];
-        // Per sicurezza, impediamo l'invio anche dal pulsante se ID=0 (nel caso i bottoni fossero rimasti attivi per errore)
-        //if (attivo.id == 0) return;
+
+        // Per sicurezza controlliamo che l'ID non sia 0
+        if (attivo.id == 0) return;
 
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
+<<<<<<< Updated upstream
         StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
         ros.Publish(buttonTopicName, msg);
+=======
+
+        if (testoComponent != null)
+        {
+            StringMsg msg = new StringMsg($"{{\"id\":{attivo.id},\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            Debug.Log("Invio bottone: " + msg.data);
+            ros.Publish(buttonTopicName, msg);
+        }
+>>>>>>> Stashed changes
     }
 }
