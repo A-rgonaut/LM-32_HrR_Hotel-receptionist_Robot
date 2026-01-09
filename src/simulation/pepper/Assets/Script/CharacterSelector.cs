@@ -251,13 +251,15 @@ public class CharacterSelector : MonoBehaviour
         CharacterData attivo = characters[_currentCharacterIndex];
 
         // Per sicurezza controlliamo che l'ID non sia 0
-        if (attivo.id == 0) return;
+        // if (attivo.id == 0) return;
 
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
 
         if (testoComponent != null)
         {
-            StringMsg msg = new StringMsg($"{{\"id\":{attivo.id},\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            // StringMsg msg = new StringMsg($"{{\"id\":{attivo.id},\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            // StringMsg msg = new StringMsg($"{{\"id\":48,\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{attivo.nome}\",\"cognome\":\"{attivo.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
             Debug.Log("Invio bottone: " + msg.data);
             ros.Publish(buttonTopicName, msg);
         }
