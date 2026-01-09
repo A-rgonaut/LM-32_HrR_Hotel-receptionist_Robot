@@ -26566,7 +26566,7 @@ GameObject:
   m_Component:
   - component: {fileID: 639817329}
   m_Layer: 0
-  m_Name: B_door
+  m_Name: B_meeting_point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26581,7 +26581,7 @@ Transform:
   m_GameObject: {fileID: 639817328}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.82, y: 0, z: 6.75}
+  m_LocalPosition: {x: 8, y: 0, z: 6.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -39914,13 +39914,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCController
   agent: {fileID: 0}
   waitTime: 2
-  corridorPoints:
-  - {fileID: 639817329}
+  waypointsLoop:
   - {fileID: 219645955}
   - {fileID: 1811703525}
   - {fileID: 1727506789}
-  roomPoints: []
-  roomVisitChance: 30
+  waypointsOptional: []
+  waypointsOptionalChance: 30
 --- !u!136 &970086787
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -43293,7 +43292,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1683058388}
         m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
-        m_MethodName: EseguiAzionePersonaggio
+        m_MethodName: StartScenarioB
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -61828,19 +61827,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1683058388}
         m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
-        m_MethodName: EseguiAzionePersonaggio
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: EseguiAzionePersonaggio()
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1683058388}
-        m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
-        m_MethodName: MandaAttivoAlPuntoSpeciale
+        m_MethodName: StartScenarioA
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -68952,7 +68939,8 @@ MonoBehaviour:
   noiseRange: 5
   buttonTopicName: bottone
   healthTopicName: health_raw
-  emergencyPoint: {fileID: 1256520121}
+  WaypointScenarioA: {fileID: 1256520121}
+  WaypointScenarioB: {fileID: 639817329}
 --- !u!4 &1683058389
 Transform:
   m_ObjectHideFlags: 0
@@ -75761,7 +75749,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1683058388}
         m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
-        m_MethodName: EseguiAzionePersonaggio
+        m_MethodName: StartScenarioC
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -88755,16 +88743,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCController
   agent: {fileID: 0}
   waitTime: 0.5
-  corridorPoints:
+  waypointsLoop:
   - {fileID: 980137308}
   - {fileID: 1877952058}
   - {fileID: 954234217}
   - {fileID: 486947923}
   - {fileID: 1517040691}
   - {fileID: 271070504}
-  roomPoints:
+  waypointsOptional:
   - {fileID: 801550675}
-  roomVisitChance: 9
+  waypointsOptionalChance: 10
 --- !u!136 &2086635034
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -91364,12 +91352,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NPCController
   agent: {fileID: 0}
   waitTime: 2
-  corridorPoints:
+  waypointsLoop:
   - {fileID: 331202521}
   - {fileID: 945473771}
   - {fileID: 365691068}
-  roomPoints: []
-  roomVisitChance: 30
+  waypointsOptional: []
+  waypointsOptionalChance: 30
 --- !u!136 &2144666555
 CapsuleCollider:
   m_ObjectHideFlags: 0

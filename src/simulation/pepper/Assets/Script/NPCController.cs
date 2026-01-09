@@ -4,19 +4,19 @@ using System.Collections.Generic;
 
 public class NPCController : MonoBehaviour
 {
-    [Header("Impostazioni Movimento")]
+    [Header("Movement settings")]
     public NavMeshAgent agent;
     public float waitTime = 2.0f;
 
-    [Header("Punti Corridoio (Loop)")]
-    public Transform[] corridorPoints;
+    [Header("Waypoints (Loop)")]
+    public Transform[] waypointsLoop;
 
-    [Header("Punti Stanze (Opzionali)")]
-    public Transform[] roomPoints;
+    [Header("Waypoints (Optional)")]
+    public Transform[] waypointsOptional;
 
-    [Header("Probabilità")]
+    [Header("Probability")]
     [Range(0, 100)]
-    public int roomVisitChance = 30;
+    public int waypointsOptionalChance = 30;
 
     private int currentCorridorIndex = 0;
     private bool isWaiting = false;
@@ -43,7 +43,7 @@ public class NPCController : MonoBehaviour
             animator.SetFloat("Speed", agent.velocity.magnitude);
         }
 
-        // NUOVO: Se non stiamo pattugliando (siamo in modalità manuale), 
+        // Se non stiamo pattugliando (siamo in modalità manuale), 
         // usciamo dall'Update per non far ripartire la logica automatica.
         if (!isPatrolling) return;
 
@@ -55,7 +55,6 @@ public class NPCController : MonoBehaviour
         }
     }
 
-    // --- NUOVO METODO: Chiamato dal CharacterSelector ---
     public void GoToTargetAndStay(Transform targetPoint)
     {
         // 1. Fermiamo qualsiasi ragionamento in corso (coroutine di attesa)
@@ -70,15 +69,42 @@ public class NPCController : MonoBehaviour
         {
             agent.SetDestination(targetPoint.position);
         }
+
+        // 4. TODO: implementare logica di "soddisfacimento" e
+        // ritornare al pattugliamento
     }
 
-    // (Opzionale) Se volessi farlo riprendere a pattugliare in futuro
+    // (Opzionale) Se si volesse farlo riprendere a pattugliare in futuro
     public void ResumePatrol()
     {
         isPatrolling = true;
         MoveToNextCorridorPoint();
     }
-    // ----------------------------------------------------
+
+    public void PerformDying()
+    {
+        // 1. Ferma logiche di pattugliamento o attesa
+        StopAllCoroutines();
+        isPatrolling = false;
+        isWaiting = false;
+
+        // 2. Blocca fisicamente il movimento del NavMesh
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true; // Ferma l'agente
+            agent.ResetPath();      // Cancella il percorso corrente
+            agent.velocity = Vector3.zero; // Azzera la velocità residua
+        }
+
+        // 3. Attiva l'animazione di caduta
+        if (animator != null)
+        {
+            animator.SetTrigger("TriggerDying");
+        }
+
+        // Opzionale: Disabilitare il collider se serve che altri ci passino sopra,
+        // ma per ora lasciamolo così per semplicità.
+    }
 
     System.Collections.IEnumerator WaitAndDecide()
     {
@@ -94,14 +120,14 @@ public class NPCController : MonoBehaviour
         {
             int randomValue = Random.Range(0, 100);
 
-            if (randomValue < roomVisitChance && roomPoints.Length > 0)
+            if (randomValue < waypointsOptionalChance && waypointsOptional.Length > 0)
             {
                 visitingRoom = true;
                 MoveToRandomRoom();
             }
             else
             {
-                currentCorridorIndex = (currentCorridorIndex + 1) % corridorPoints.Length;
+                currentCorridorIndex = (currentCorridorIndex + 1) % waypointsLoop.Length;
                 MoveToNextCorridorPoint();
             }
         }
@@ -110,13 +136,13 @@ public class NPCController : MonoBehaviour
 
     void MoveToNextCorridorPoint()
     {
-        if (corridorPoints.Length == 0) return;
-        agent.SetDestination(corridorPoints[currentCorridorIndex].position);
+        if (waypointsLoop.Length == 0) return;
+        agent.SetDestination(waypointsLoop[currentCorridorIndex].position);
     }
 
     void MoveToRandomRoom()
     {
-        int randomIndex = Random.Range(0, roomPoints.Length);
-        agent.SetDestination(roomPoints[randomIndex].position);
+        int randomIndex = Random.Range(0, waypointsOptional.Length);
+        agent.SetDestination(waypointsOptional[randomIndex].position);
     }
 }

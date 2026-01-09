@@ -12,7 +12,6 @@ public class CharacterSelector : MonoBehaviour
 
     [System.Serializable]
 
-
     public class CharacterData
     {
         public int id;
@@ -49,10 +48,10 @@ public class CharacterSelector : MonoBehaviour
     public string healthTopicName = "health_raw";
 
     [Header("Comandi Manuali")]
-    public Transform emergencyPoint;
+    public Transform WaypointScenarioA;
+    public Transform WaypointScenarioB;
 
     private Coroutine vitalsCoroutine;
-
     void Start()
     {
         ros = ROSConnection.GetOrCreateInstance();
@@ -61,6 +60,7 @@ public class CharacterSelector : MonoBehaviour
         ActivateCharacter(0);
     }
 
+    // Gestione GUI per il personaggio attivo
     public void ActivateCharacter(int indexToActivate)
     {
         _currentCharacterIndex = indexToActivate;
@@ -143,8 +143,7 @@ public class CharacterSelector : MonoBehaviour
         }
     }
 
-    // --- NUOVA FUNZIONE PER IL BOTTONE ---
-    public void MandaAttivoAlPuntoSpeciale()
+    public void StartScenarioA()
     {
         // 1. Recupera i dati del personaggio attualmente selezionato
         CharacterData activeChar = characters[_currentCharacterIndex];
@@ -167,12 +166,78 @@ public class CharacterSelector : MonoBehaviour
         // 4. Esegui il comando
         if (controller != null)
         {
-            Debug.Log($"Mando {activeChar.nome} al punto di emergenza!");
-            controller.GoToTargetAndStay(emergencyPoint);
+            Debug.Log($"{activeChar.nome} ha avviato lo scenario A");
+            controller.GoToTargetAndStay(WaypointScenarioA);
         }
         else
         {
             Debug.LogError("Non ho trovato lo script NPCController sul personaggio attivo!");
+        }
+    }
+
+    public void StartScenarioB()
+    {
+        // 1. Recupera i dati del personaggio attualmente selezionato
+        CharacterData activeChar = characters[_currentCharacterIndex];
+
+        // 2. Controllo di sicurezza (se è l'ID 0 che è "muto", magari non vogliamo muoverlo)
+        if (activeChar.id == 0)
+        {
+            Debug.Log("L'utente ID 0 non può essere spostato.");
+            return;
+        }
+
+        // 3. Trova lo script NPCController sul personaggio.
+        // Usiamo 'bodyTransform' se l'hai impostato, altrimenti cerchiamo sull'oggetto della camera o sui genitori
+        Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
+
+        // Cerchiamo il componente NPCController (potrebbe essere sul padre o sull'oggetto stesso)
+        NPCController controller = targetObj.GetComponent<NPCController>();
+        if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
+
+        // 4. Esegui il comando
+        if (controller != null)
+        {
+            Debug.Log($"{activeChar.nome} ha avviato lo scenario B");
+            controller.GoToTargetAndStay(WaypointScenarioB);
+        }
+        else
+        {
+            Debug.LogError("Non ho trovato lo script NPCController sul personaggio attivo!");
+        }
+
+        // TODO: implementare logica che invia l'allarme ROS a Pepper
+    }
+
+    public void StartScenarioC()
+    {
+        // 1. Recupera il personaggio attivo
+        CharacterData activeChar = characters[_currentCharacterIndex];
+
+        // 2. Controllo sicurezza ID 0
+        if (activeChar.id == 0)
+        {
+            Debug.Log("L'utente ID 0 non può avere un malore.");
+            return;
+        }
+
+        // 3. Trova il controller
+        Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
+        NPCController controller = targetObj.GetComponent<NPCController>();
+        if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
+
+        // 4. Esegui il comando di caduta
+        if (controller != null)
+        {
+            Debug.Log($"{activeChar.nome} sta avendo un malore (Scenario C)");
+            controller.PerformDying();
+
+            // TODO: Qui potresti voler inviare un messaggio ROS specifico di allarme
+            // Esempio: Inviare un messaggio String o Bool su un topic "/health_alarm"
+        }
+        else
+        {
+            Debug.LogError("Controller non trovato per Scenario C!");
         }
     }
 
