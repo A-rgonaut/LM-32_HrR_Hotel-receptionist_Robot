@@ -33,6 +33,10 @@ public class LidarPublisher : MonoBehaviour
         // Calcola l'intervallo di pubblicazione
         publishInterval = 1.0f / publishFrequency;
     }
+    void OnDestroy()
+    {
+        ros.Disconnect();
+    }
 
     void Update()
     {

@@ -59,6 +59,10 @@ public class CharacterSelector : MonoBehaviour
         ros.RegisterPublisher<StringMsg>(healthTopicName);
         ActivateCharacter(0);
     }
+    void OnDestroy()
+    {
+        ros.Disconnect();
+    }
 
     // Gestione GUI per il personaggio attivo
     public void ActivateCharacter(int indexToActivate)

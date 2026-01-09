@@ -45,6 +45,10 @@ public class DiffDriveRobot : MonoBehaviour
         lastCmdReceivedTime = Time.time;
         Debug.Log("DiffDriveRobot avviato.");
     }
+    void OnDestroy()
+    {
+        ros.Disconnect();
+    }
 
     void FixedUpdate()
     {

@@ -16,6 +16,10 @@ public class RosTextPublisher : MonoBehaviour
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<StringMsg>(topicName);
     }
+    void OnDestroy()
+    {
+        ros.Disconnect();
+    }
 
     public void PublishMessage(string messageContent)
     {
