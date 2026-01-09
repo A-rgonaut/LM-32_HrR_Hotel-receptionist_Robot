@@ -44,8 +44,8 @@ public class CharacterSelector : MonoBehaviour
     public int noiseRange = 5;
 
     private int _currentCharacterIndex = 0;
-    public string buttonTopicName = "bottone";
-    public string healthTopicName = "health_raw";
+    public string buttonTopicName = "/unity/bottone";
+    public string healthTopicName = "/unity/health_raw";
 
     [Header("Comandi Manuali")]
     public Transform WaypointScenarioA;

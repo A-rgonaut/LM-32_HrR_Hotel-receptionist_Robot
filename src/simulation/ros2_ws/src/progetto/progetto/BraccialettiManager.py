@@ -87,7 +87,7 @@ class BraccialettiManager(Node):
         }
         self.sub = self.create_subscription(
             String,
-            '/health_raw',
+            '/unity/health_raw',
             self.listener_callback,
             10
         )

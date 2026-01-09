@@ -27,10 +27,10 @@ class Arbitraggio(Node):
         self.sincro = SincronizzaManager(self)
 
         self.cb_group = ReentrantCallbackGroup()
-        self.pub = self.create_publisher(String, 'dialogo_robot', 10)
-        self.sub = self.create_subscription(String, 'dialogo_umano',
+        self.pub = self.create_publisher(String, '/unity/dialogo_robot', 10)
+        self.sub = self.create_subscription(String, '/unity/dialogo_umano',
             self.processa_input, 10, callback_group=self.cb_group)
-        self.bottone = self.create_subscription(String, 'bottone',
+        self.bottone = self.create_subscription(String, '/unity/bottone',
             self.arbitra, 10, callback_group=self.cb_group)
 
         self.comportamenti = {

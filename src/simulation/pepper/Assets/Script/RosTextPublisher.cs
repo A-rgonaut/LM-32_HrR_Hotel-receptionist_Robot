@@ -6,7 +6,7 @@ using TMPro; // 1. NECESSARIO se usi TextMeshPro (altrimenti usa UnityEngine.UI)
 public class RosTextPublisher : MonoBehaviour
 {
     ROSConnection ros;
-    public string topicName = "dialogo_umano";
+    public string topicName = "/unity/dialogo_umano";
 
     // 2. Aggiungi questo riferimento per poter controllare la casella di testo
     public TMP_InputField inputFieldToClear;
