@@ -44,6 +44,8 @@ class Arbitraggio(Node):
 
         self.comportamento_attivo = "Riposo"
 
+        self.nome_robot = None
+
         self.get_logger().info("Arbitraggio avviato.")
 
     def processa_input(self, msg):
@@ -100,9 +102,14 @@ class Arbitraggio(Node):
 
     def parla(self, testo):
         msg = String()
-        msg.data = testo
+        if self.nome_robot is None:
+            nomi = self.sincro.interrogaGraphDatabase("MATCH (r:Robot) RETURN TOUPPER(r.nome) AS nomeMaiuscolo")
+            # Al momento abbiamo un solo robot:
+            self.get_logger().info(f"Recuperato nome_robot: {nomi[0]['nomeMaiuscolo']}")
+            self.nome_robot = nomi[0]['nomeMaiuscolo']
+        msg.data = f"{self.nome_robot}: {testo}"
         self.pub.publish(msg)
-        self.get_logger().info(f"Pippor: {testo}")
+        self.get_logger().info(msg.data)
 
 def main(args=None):
     rclpy.init(args=args)
