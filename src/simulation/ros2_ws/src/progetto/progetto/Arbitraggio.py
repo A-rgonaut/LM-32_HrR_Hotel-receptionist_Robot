@@ -32,6 +32,7 @@ class Arbitraggio(Node):
             self.processa_input, 10, callback_group=self.cb_group)
         self.bottone = self.create_subscription(String, '/unity/bottone',
             self.arbitra, 10, callback_group=self.cb_group)
+        self.stato = self.create_publisher(String, '/unity/stato', 10)
 
         self.comportamenti = {
             "InteragisciScenarioA": InteragisciScenarioA(self),
@@ -57,6 +58,9 @@ class Arbitraggio(Node):
             self.get_logger().info(f"Testo: {testo}")
             try:
                 scenario.esegui(testo, self.sincro)
+                stato_corrente = getattr(scenario, "stato", None)
+                if stato_corrente == "FINE":
+                    self.concludi_scenario()
             except Exception as e:
                 self.get_logger().error(
                     f"Eccezione in {self.comportamento_attivo}.esegui: {e}\n{traceback.format_exc()}"
@@ -99,6 +103,13 @@ class Arbitraggio(Node):
         scenario = self.comportamenti[nome]
         scenario.reset(ospite)
         self.get_logger().info("Scenario resettato. In attesa che l'utente parli (Ciao/Hello)...")
+
+    def concludi_scenario(self):
+        self.get_logger().info(f"Scenario {self.comportamento_attivo} concluso.")
+        msg = String()
+        msg.data = json.dumps({"comando": "FINE_SCENARIO", "scenario": self.comportamento_attivo})
+        self.stato.publish(msg)
+        self.comportamento_attivo = "Riposo"
 
     def parla(self, testo):
         msg = String()

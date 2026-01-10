@@ -206,8 +206,14 @@ class InteragisciScenarioA(InteragisciConOspite):
                 self.esegui(testo, sincro)
         elif self.stato == "SUGGERISCI_EVENTO_LOCALE":
             self.suggerisci_evento_locale(sincro)
+            self.stato = "SALUTO_FINALE"
+        elif self.stato == "SALUTO_FINALE":
+            # Qualsiasi cosa l'utente abbia detto (testo), noi chiudiamo.
+            # (Analizzare 'testo' per vedere se e' un insulto o un grazie,
+            # per ora assumiamo sia un ringraziamento...).
+            self.nodo.parla(self.dialogo_scriptato(tipo="arrivederci"))
             self.stato = "FINE"
         elif self.stato == "FINE":
-            self.nodo.parla(self.dialogo_scriptato(tipo="arrivederci"))
+            pass
         else:
-            self.nodo.get_logger().info("self.stato NON VALIDO.")
+            self.nodo.get_logger().error(f"[ScenarioA] Stato sconosciuto o non gestito: '{self.stato}'")
