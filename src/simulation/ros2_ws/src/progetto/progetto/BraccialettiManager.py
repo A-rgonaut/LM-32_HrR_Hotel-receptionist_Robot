@@ -5,6 +5,12 @@ import numpy as np
 import json
 from std_msgs.msg import String
 
+from progetto.SincronizzaManager import SincronizzaManager
+from progetto.Specialista import Specialista
+
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.callback_groups import ReentrantCallbackGroup
+
 class LinearKalmanFilter:
     def __init__(self, dt=1.0, max_trend=3.0):
         self.dim_state = 2  # Stato: [Valore, Trend]
@@ -85,11 +91,13 @@ class BraccialettiManager(Node):
             'pmin': 20.0,  # mmHg
             'pmax': 25.0   # mmHg
         }
+        self.cb_group = ReentrantCallbackGroup()
         self.sub = self.create_subscription(
             String,
             '/unity/health_raw',
             self.listener_callback,
-            10
+            10,
+            callback_group=self.cb_group
         )
         self.pub = self.create_publisher(
             String,
@@ -97,7 +105,10 @@ class BraccialettiManager(Node):
             10
         )
         self.ospiti = {}
+        self.sincro = SincronizzaManager(self)
+        self.specialista = Specialista()
         self.get_logger().info('BraccialettiManager avviato.')
+        self.timer = self.create_timer(60.0, self.gestione_periodica_salute)
 
     def get_or_create_ospite(self, ospite_id):
         if ospite_id not in self.ospiti:
@@ -196,10 +207,29 @@ class BraccialettiManager(Node):
         out_msg.data = json.dumps(output_data)
         self.pub.publish(out_msg)
 
+    def gestione_periodica_salute(self):
+        self.get_logger().info("gestione_periodica_salute()")
+        # TODO:
+        # - Ogni minuto scrivere su output_data Neo4j!
+        # - Aggiornare l'ontologia.
+        # - SpiegamiTutto.
+        # - Stampare lista di tutti coloro che sono in StatoChiamareSpecialista.
+        # - if len(lista) != 0:
+        #       for persona in lista:
+        if len(self.ospiti) != 0:
+            self.specialista.chiama(self, "medico", "ospite", "assiomi ritornati da spiegami tutto (es. bpm alti)")
+        # - Stampare lista di tutti coloro che sono in StatoAllerta.
+        # - if len(lista) != 0:
+        #       for persona in lista[1:]:
+        #           InteragisciScenarioC(persona, "NOTIFICA_SPECIALISTA") -> non bloccante
+        #       InteragisciScenarioC(lista[0], "INIZIO") -> bloccante
+
 def main(args=None):
     rclpy.init(args=args)
     node = BraccialettiManager()
-    rclpy.spin(node)
+    executor = MultiThreadedExecutor(num_threads=4)
+    executor.add_node(node)
+    executor.spin()
     node.destroy_node()
     rclpy.shutdown()
 

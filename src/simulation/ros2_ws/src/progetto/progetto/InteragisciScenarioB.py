@@ -1,15 +1,20 @@
 from progetto.InteragisciConOspite import InteragisciConOspite
 from progetto.utils import Ospite
 
-class InteragisciScenarioC(InteragisciConOspite):
-    def esegui(self, testo, sincro):
+class InteragisciScenarioB(InteragisciConOspite):
+    def __init__(self, nodo, specialista):
+        super().__init__(nodo)
+        self.specialista = specialista
+
+    def esegui(self, testo):
         self.nodo.get_logger().info(f"[ScenarioB] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
+            self.specialista.chiama(self.nodo, "elettricista", "camera 1", "assiomi ritornati da spiegami tutto (es. phon guasto)")
             self.stato = "FINE"
         elif self.stato == "FINE":
-            self.nodo.get_logger().info("TODO")
+            pass
         else:
-            self.nodo.get_logger().info("self.stato NON VALIDO.")
+            self.nodo.get_logger().error(f"[ScenarioB] Stato sconosciuto o non gestito: '{self.stato}'")
 
 '''
     def recupera_eta_lingua(self, kb):

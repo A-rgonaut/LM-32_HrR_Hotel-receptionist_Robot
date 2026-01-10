@@ -5,17 +5,17 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 
 # --- COMPORTAMENTI ---
-from progetto.InteragisciScenarioA import InteragisciScenarioA
-# from progetto.InteragisciScenarioB import InteragisciScenarioB
-from progetto.InteragisciScenarioC import InteragisciScenarioC
-# from progetto.Localizza import Localizza
-# from progetto.Pianifica import Pianifica
-from progetto.RicaricaBatteria import RicaricaBatteria
-from progetto.Riposo import Riposo
+from progetto.InteragisciScenarioC import InteragisciScenarioC  # 0
+from progetto.RicaricaBatteria import RicaricaBatteria          # 1
+from progetto.InteragisciScenarioB import InteragisciScenarioB  # 2
+from progetto.InteragisciScenarioA import InteragisciScenarioA  # 3
+# from progetto.Naviga import Naviga                              # 4
+from progetto.Riposo import Riposo                              # 5
 # --- ------------- ---
 
 from progetto.SincronizzaManager import SincronizzaManager
 from progetto.utils import Persona
+from progetto.Specialista import Specialista
 
 import json
 import traceback
@@ -29,18 +29,92 @@ class Arbitraggio(Node):
         self.cb_group = ReentrantCallbackGroup()
         self.pub = self.create_publisher(String, '/unity/dialogo_robot', 10)
         self.sub = self.create_subscription(String, '/unity/dialogo_umano',
-            self.processa_input, 10, callback_group=self.cb_group)
+                                            self.processa_input, 10,
+                                            callback_group=self.cb_group)
         self.bottone = self.create_subscription(String, '/unity/bottone',
-            self.arbitra, 10, callback_group=self.cb_group)
+                                                self.arbitra, 10,
+                                                callback_group=self.cb_group)
         self.stato = self.create_publisher(String, '/unity/stato', 10)
+        """
+        self.bottone_premuto           = None
+        self.parametri_vitali_sballati = False
+            /unity/health_filtered
+
+        self.comportamenti_objects = {}
+
+        self.livello_batteria = 100.0
+        self.in_carica        = False
+
+        self.destinazione_target    = None
+        self.raggiunta_destinazione = True
+
+        self.comportamenti = [  # Assumiamo che ogni oggetto scenario abbia una proprietà interna `.is_running` che diventa `True` quando inizia e `False` quando finisce.
+            {
+                "nome": "InteragisciScenarioC",
+                "oggetto": InteragisciScenarioC(self),
+                "trigger": lambda: (
+                    self.bottone_premuto == "C" or
+                    self.parametri_vitali_sballati or
+                    self.comportamenti_objects["InteragisciScenarioC"].is_running  # Scenario in corso (non finito).
+                )
+            },
+            {
+                "nome": "RicaricaBatteria",
+                "oggetto": RicaricaBatteria(self),
+                "trigger": lambda: (
+                    self.livello_batteria < 20.0 or
+                    (self.in_carica and self.livello_batteria < 100.0)  # Isteresi
+                )
+            },
+            {
+                "nome": "InteragisciScenarioB",
+                "oggetto": InteragisciScenarioB(self),
+                "trigger": lambda: (
+                    self.bottone_premuto == "B" or
+                    self.comportamenti_objects["InteragisciScenarioB"].is_running  # Include all'interno la logica di dire al livello navigazione "Vai in camera X".
+                )
+            },
+    # Nota: Questi scenari NON guidano i motori per spostarsi tra le stanze.
+    # Si limitano a impostare `self.destinazione_target` e gestire il dialogo.
+            {
+                "nome": "InteragisciScenarioA",
+                "oggetto": InteragisciScenarioA(self),
+                "trigger": lambda: (
+                    self.bottone_premuto == "A" or
+                    self.comportamenti_objects["InteragisciScenarioA"].is_running
+                )
+            },
+            {
+                "nome": "Navigazione",  # Include Pianifica e Localizza
+                "oggetto": Navigazione(self),      # Questo layer si attiva se qualcuno sopra ha impostato una `self.destinazione_target`
+                "trigger": lambda: (                      # ma il robot non è ancora arrivato.
+                    self.destinazione_target is not None and
+                    not self.raggiunta_destinazione
+                )
+            },
+            # Qui dentro fai A*, SLAM locale e gestione ostacoli.
+            # Se uno Scenario è attivo (es. B), esso setta la destinazione e poi "cede"
+            # il controllo motorio a questo layer, ma siccome B è priorità più alta,
+            # B deve essere progettato per dire "Sto aspettando di arrivare", lasciando passare
+            # il controllo a questo layer,
+            {
+                "nome": "Riposo",
+                "oggetto": Riposo(self),
+                "trigger": lambda: True
+            }
+        ]
+        """
+
+        self.specialista = Specialista()
 
         self.comportamenti = {
             "InteragisciScenarioA": InteragisciScenarioA(self),
-            #"InteragisciScenarioB": InteragisciScenarioB(self),
-            "InteragisciScenarioC": InteragisciScenarioC(self),
-            #"InteragisciConPersonale": InteragisciConPersonale(self),
+            "InteragisciScenarioB": InteragisciScenarioB(self, self.specialista),
+            "RicaricaBatteria": RicaricaBatteria(self),
+            # "Pianifica": Pianifica(self),
+            # "Localizza": Localizza(self),
+            "InteragisciScenarioC": InteragisciScenarioC(self, self.specialista),
             "Riposo": Riposo(self),
-            "RicaricaBatteria": RicaricaBatteria(self)
         }
 
         self.comportamento_attivo = "Riposo"
@@ -57,7 +131,7 @@ class Arbitraggio(Node):
         if scenario:
             self.get_logger().info(f"Testo: {testo}")
             try:
-                scenario.esegui(testo, self.sincro)
+                scenario.esegui(testo)
                 stato_corrente = getattr(scenario, "stato", None)
                 if stato_corrente == "FINE":
                     self.concludi_scenario()
@@ -76,7 +150,7 @@ class Arbitraggio(Node):
             bottone_premuto = dati["bottone"]
             mappa_bottoni = {
                 "Scenario A": "InteragisciScenarioA",
-                # "Scenario B": "InteragisciScenarioB",
+                "Scenario B": "InteragisciScenarioB",
                 "Scenario C": "InteragisciScenarioC",
             }
             scenario = mappa_bottoni.get(bottone_premuto)

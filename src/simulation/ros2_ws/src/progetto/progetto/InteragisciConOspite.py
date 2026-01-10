@@ -4,6 +4,7 @@ class InteragisciConOspite():
     def __init__(self, nodo):
         self.nodo = nodo
         self.stato = None
+        self.sincro = nodo.sincro
         self.contesto = {}
 
     def reset(self, ospite):

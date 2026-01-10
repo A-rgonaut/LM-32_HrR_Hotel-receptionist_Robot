@@ -34,16 +34,16 @@ class InteragisciScenarioA(InteragisciConOspite):
             return 'EN'
         return None
 
-    def aggiorna_lingua(self, sincro):
+    def aggiorna_lingua(self):
         query = "MATCH (o:Ospite) WHERE id(o) = $id SET o.lingua = $lingua RETURN o.lingua"
         parametri = {
             "id":     self.contesto['ospite'].id,
             "lingua": self.contesto['ospite'].lingua
         }
-        aggiornato = sincro.interrogaGraphDatabase(query, parametri)
+        aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
         return aggiornato[0]['o.lingua'] == self.contesto['ospite'].lingua
 
-    def recupera_dati_prenotazione(self, sincro):
+    def recupera_dati_prenotazione(self):
         query = """
             MATCH (o:Ospite)-[:EFFETTUA]->(p:Prenotazione)
             WHERE id(o) = $id
@@ -54,7 +54,7 @@ class InteragisciScenarioA(InteragisciConOspite):
                 toString(p.data_fine) AS checkout,
                 duration.inDays(date(p.data_inizio), date(p.data_fine)).days AS notti_reali
         """
-        risultati = sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
+        risultati = self.sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
         if risultati:
             self.contesto['checkin']   = risultati[0]['checkin']
             self.contesto['checkout']  = risultati[0]['checkout']
@@ -65,9 +65,9 @@ class InteragisciScenarioA(InteragisciConOspite):
             self.nodo.get_logger().warning("[ScenarioA] Nessuna prenotazione.")
             return False
 
-    def rileva_interesse(self, testo, sincro):
-        nome_interesse_raw = sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
-        nome_classe_ufficiale = sincro.trova_classe_da_sinonimo(nome_interesse_raw, nome_radice="Interesse")
+    def rileva_interesse(self, testo):
+        nome_interesse_raw = self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
+        nome_classe_ufficiale = self.sincro.trova_classe_da_sinonimo(nome_interesse_raw, nome_radice="Interesse")
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Interesse rilevato: '{nome_interesse_raw}' -> Mapped to: '{nome_classe_ufficiale}'")
             return nome_classe_ufficiale
@@ -75,20 +75,20 @@ class InteragisciScenarioA(InteragisciConOspite):
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_interesse_raw}'")
             return None
 
-    def salva_interesse(self, sincro):
+    def salva_interesse(self):
         query = """
         MATCH (o:Ospite)
         WHERE id(o) = $id
         MERGE (i:Interesse {nome: $nome_interesse})
         MERGE (o)-[:HA_INTERESSE]->(i)
         """
-        sincro.interrogaGraphDatabase(query, {
+        self.sincro.interrogaGraphDatabase(query, {
             'id': self.contesto['ospite'].id,
             'nome_interesse': self.contesto['interesse']
         })
         self.nodo.get_logger().info(f"[DB] Salvato interesse '{self.contesto['interesse']}' per l'ospite.")
 
-    def recupera_dati_per_suggerimento(self, sincro):
+    def recupera_dati_per_suggerimento(self):
         query = """
             MATCH (o:Ospite)-[:EFFETTUA]->(p:Prenotazione)
             WHERE id(o) = $id
@@ -110,7 +110,7 @@ class InteragisciScenarioA(InteragisciConOspite):
                     meteo: m.condizione
                 }) AS eventi_disponibili
         """
-        risultati = sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
+        risultati = self.sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
         if risultati:
             record = risultati[0]
             self.contesto['dati_neo4j'] = {
@@ -131,9 +131,9 @@ class InteragisciScenarioA(InteragisciConOspite):
             return True
         return False
 
-    def suggerisci_evento_locale(self, sincro):
+    def suggerisci_evento_locale(self):
         self.nodo.parla("Un attimo, analizzo tutti gli eventi disponibili...")
-        if not self.recupera_dati_per_suggerimento(sincro):
+        if not self.recupera_dati_per_suggerimento():
             self.nodo.parla("Errore nel recupero dati.")
             return
         dati_neo = self.contesto['dati_neo4j']
@@ -144,32 +144,32 @@ class InteragisciScenarioA(InteragisciConOspite):
             "interessi": dati_neo['interessi_profilo']
         }
         eventi_list = dati_neo['eventi']
-        report_ragionamento = sincro.ragiona_su_eventi(ospite_info, eventi_list)
+        report_ragionamento = self.sincro.ragiona_su_eventi(ospite_info, eventi_list)
         if report_ragionamento:
             msg_input = f"Analisi per l'ospite {self.contesto['ospite'].nome}:\n"
             for item in report_ragionamento:
                 msg_input += f"\nEVENTO: {item['evento']}\nESITO: {item['esito']}\nMOTIVAZIONE LOGICA: {item['dettagli']}\n----------------"
             self.nodo.get_logger().info(msg_input)
-            risposta = sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
+            risposta = self.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
             self.nodo.parla(risposta)
         else:
             self.nodo.parla("Ho analizzato gli eventi ma non ho trovato indicazioni specifiche (né positive né negative).")
 
-    def salva_suggerimento(self, sincro):  # TODO
+    def salva_suggerimento(self):  # TODO
         # (idoneo = true lo mette il reasoner)
         query = ""
         parametri = None
         return False
 
-    def recupera_eta(self, sincro):
+    def recupera_eta(self):
         query = "MATCH (o:Ospite) WHERE id(o) = $id RETURN o.eta AS eta"
-        rows = sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
+        rows = self.sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
         if rows and rows[0].get('eta') is not None:
             return int(rows[0]['eta'])
         self.nodo.get_logger().error(f"Nessun ospite trovato con ID {self.contesto['ospite'].id}!")
         return -1
 
-    def esegui(self, testo, sincro):
+    def esegui(self, testo):
         self.nodo.get_logger().info(f"[ScenarioA] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
             lingua = self.rileva_lingua(testo)
@@ -178,18 +178,18 @@ class InteragisciScenarioA(InteragisciConOspite):
                 return
             p = self.contesto['ospite']
             self.nodo.get_logger().info(f"{self.contesto['ospite']}")
-            eta = self.recupera_eta(sincro)
+            eta = self.recupera_eta()
             self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, eta, lingua)
             self.nodo.get_logger().info(f"{self.contesto['ospite']}")
-            self.nodo.get_logger().info(f"{self.aggiorna_lingua(sincro)}")
-            if self.recupera_dati_prenotazione(sincro):
+            self.nodo.get_logger().info(f"{self.aggiorna_lingua()}")
+            if self.recupera_dati_prenotazione():
                 self.nodo.parla(self.dialogo_scriptato(tipo="benvenuto"))
                 self.stato = "RILEVA_INTERESSE"
             else:
                 self.nodo.parla("Non trovo nessuna prenotazione attiva.")
                 self.stato = "FINE"
         elif self.stato == "RILEVA_INTERESSE":
-            interesse = self.rileva_interesse(testo, sincro)
+            interesse = self.rileva_interesse(testo)
             if interesse:
                 self.nodo.get_logger().info(interesse)
                 self.contesto['interesse'] = interesse
@@ -198,14 +198,14 @@ class InteragisciScenarioA(InteragisciConOspite):
         elif self.stato == "CONFERMA":
             if self.rileva_conferma(testo):
                 if self.contesto['interesse']:
-                    self.salva_interesse(sincro)
+                    self.salva_interesse()
                     self.stato = "SUGGERISCI_EVENTO_LOCALE"
-                    self.esegui("", sincro)  # Presidente?
+                    self.esegui("")  # Presidente?
             else:
                 self.stato = "RILEVA_INTERESSE"
-                self.esegui(testo, sincro)
+                self.esegui(testo)
         elif self.stato == "SUGGERISCI_EVENTO_LOCALE":
-            self.suggerisci_evento_locale(sincro)
+            self.suggerisci_evento_locale()
             self.stato = "SALUTO_FINALE"
         elif self.stato == "SALUTO_FINALE":
             # Qualsiasi cosa l'utente abbia detto (testo), noi chiudiamo.
