@@ -88,6 +88,11 @@ public class CharacterSelector : MonoBehaviour
         vitalsCoroutine = StartCoroutine(SimulateAndPublishVitals());
     }
 
+    public CharacterData GetActiveCharacter()
+    {
+        return characters[_currentCharacterIndex];
+    }
+
     IEnumerator SimulateAndPublishVitals()
     {
         CultureInfo culture = CultureInfo.InvariantCulture;

@@ -1,12 +1,12 @@
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
-using TMPro; // Necessario per Text Mesh Pro
-using RosMessageTypes.Std; // Assicurati di aver generato i messaggi Std
+using TMPro; 
+using RosMessageTypes.Std; 
 
 public class RosSubscriberText : MonoBehaviour
 {
-    public string topicName = "/unity/dialogo_robot"; // Il nome del topic ROS 2
-    public TextMeshProUGUI textDisplay;   // Trascina qui il tuo oggetto Text (TMP)
+    public string topicName = "/unity/dialogo_robot"; 
+    public TextMeshProUGUI textDisplay;   
 
     void Start()
     {
@@ -15,12 +15,15 @@ public class RosSubscriberText : MonoBehaviour
         ROSConnection.GetOrCreateInstance().Subscribe<StringMsg>(topicName, UpdateText);
     }
 
-    void UpdateText(StringMsg msg)
+    public void UpdateText(StringMsg msg)
     {
-        // Questa funzione viene chiamata ogni volta che arriva un messaggio
-        // AGGIORNAMENTO: Unity richiede che le modifiche alla UI avvengano sul thread principale
-        textDisplay.text += "Messaggio: " + msg.data + "\n";
+        // Questa funzione viene chiamata ogni volta che arriva un messaggio:
+        // Unity richiede che le modifiche alla UI avvengano sul thread principale
+        textDisplay.text += msg.data + "\n";
 
         Debug.Log("Ricevuto da ROS 2: " + msg.data);
+
+        //Canvas.ForceUpdateCanvases();
+        //scrollRect.verticalNormalizedPosition = 0f;
     }
 }
