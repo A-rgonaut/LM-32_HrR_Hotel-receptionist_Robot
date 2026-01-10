@@ -220,9 +220,9 @@ class BraccialettiManager(Node):
             self.specialista.chiama(self, "medico", "ospite", "assiomi ritornati da spiegami tutto (es. bpm alti)")
         # - Stampare lista di tutti coloro che sono in StatoAllerta.
         # - if len(lista) != 0:
+        #       InteragisciScenarioC(lista[0])
         #       for persona in lista[1:]:
-        #           InteragisciScenarioC(persona, "NOTIFICA_SPECIALISTA") -> non bloccante
-        #       InteragisciScenarioC(lista[0], "INIZIO") -> bloccante
+        #           # self.specialista.chiama(...)
 
 def main(args=None):
     rclpy.init(args=args)
