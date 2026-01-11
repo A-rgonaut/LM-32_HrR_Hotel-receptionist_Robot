@@ -1,7 +1,6 @@
 using RosMessageTypes.Std;
 using System.Collections;
 using System.Globalization;
-using System.Threading.Tasks;
 using TMPro;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
@@ -35,6 +34,9 @@ public class CharacterSelector : MonoBehaviour
     [Header("Database")]
     public Neo4jManager dbManager;
 
+    [Header("Pepper")]
+    public GameObject pepperCamera;
+
     [Header("Characters")]
     public CharacterData[] characters;
 
@@ -48,7 +50,7 @@ public class CharacterSelector : MonoBehaviour
     [Range(0, 20)]
     public int noiseRange = 5;
 
-    private int _currentCharacterIndex = 0;
+    private int _currentCharacterIndex = -1;
     public string buttonTopicName = "/unity/bottone";
     public string healthTopicName = "/unity/health_raw";
 
@@ -75,14 +77,14 @@ public class CharacterSelector : MonoBehaviour
             if (dbData.Count > 0)
             {
                 // 3. Sovrascriviamo i dati nell'array esistente
-                for (int i = 1; i < characters.Length; i++)
+                for (int i = 0; i < characters.Length; i++)
                 {
                     // Controllo di sicurezza per non andare fuori indice se il DB ha meno righe
-                    if (i <= dbData.Count)
+                    if (i < dbData.Count)
                     {
-                        characters[i].id = dbData[i-1].id;
-                        characters[i].nome = dbData[i-1].nome;
-                        characters[i].cognome = dbData[i-1].cognome;
+                        characters[i].id = dbData[i].id;
+                        characters[i].nome = dbData[i].nome;
+                        characters[i].cognome = dbData[i].cognome;
 
                         Debug.Log($"Caricato da DB: {characters[i].nome} su slot {i}");
                     }
@@ -99,7 +101,7 @@ public class CharacterSelector : MonoBehaviour
         }
 
         // 4. Attiva il primo personaggio SOLO dopo aver caricato i dati
-        ActivateCharacter(1);
+        ActivateCharacter(0);
     }
 
     void OnDestroy()
@@ -107,28 +109,59 @@ public class CharacterSelector : MonoBehaviour
         ros.Disconnect();
     }
 
+    public void ActivatePepper()
+    {
+        // 1. Impostiamo l'indice a -1 per indicare che nessun NPC è attivo
+        _currentCharacterIndex = -1;
+
+        // 2. Attiva la camera di Pepper
+        if (pepperCamera != null) pepperCamera.SetActive(true);
+
+        // 3. Disattiva le camere di TUTTI gli NPC
+        for (int i = 0; i < characters.Length; i++)
+        {
+            if (characters[i].cam != null) characters[i].cam.SetActive(false);
+        }
+
+        // 4. Nascondi i pulsanti azione
+        foreach (GameObject btn in actionButtons)
+        {
+            if (btn != null) btn.SetActive(false);
+        }
+
+        // 5. Ferma la simulazione dei parametri vitali (se attiva)
+        if (vitalsCoroutine != null) StopCoroutine(vitalsCoroutine);
+
+        // 6. Pulisci la UI dei parametri vitali
+        if (bpmText != null) bpmText.text = "---";
+        if (pasText != null) pasText.text = "---";
+        if (padText != null) padText.text = "---";
+
+        Debug.Log("Attivato Pepper (Modalità Osservatore)");
+    }
+
     // Gestione GUI per il personaggio attivo
     public void ActivateCharacter(int indexToActivate)
     {
         _currentCharacterIndex = indexToActivate;
 
-        // 1. GESTIONE CAMERE
+        // 1. Spegni la camera di Pepper
+        if (pepperCamera != null) pepperCamera.SetActive(false);
+
+        // 2. Gestione Camere NPC (Accendi solo quella scelta)
         for (int i = 0; i < characters.Length; i++)
-        {
-            characters[i].cam.SetActive(i == indexToActivate);
-        }
-
-        // 2. GESTIONE PULSANTI (Nascondi se ID = 42)
-        int currentId = characters[indexToActivate].id;
-        bool showButtons = (currentId != 42);
+            if (characters[i].cam != null)
+                characters[i].cam.SetActive(i == indexToActivate);
+        
+        // 3. Mostra i pulsanti (perché siamo su un NPC)
         foreach (GameObject btn in actionButtons)
-        {
-            if (btn != null) btn.SetActive(showButtons);
-        }
+            if (btn != null) btn.SetActive(true);
 
-        // 3. START LOOP VITALI
+        // 4. Riavvia la coroutine dei parametri vitali
         if (vitalsCoroutine != null) StopCoroutine(vitalsCoroutine);
         vitalsCoroutine = StartCoroutine(SimulateAndPublishVitals());
+
+        Debug.Log($"Attivato NPC: {characters[indexToActivate].nome}");
     }
 
     public CharacterData GetActiveCharacter()
@@ -142,22 +175,12 @@ public class CharacterSelector : MonoBehaviour
 
         while (true)
         {
-            CharacterData data = characters[_currentCharacterIndex];
-
-            // --- MODIFICA RICHIESTA ---
-            // Se l'ID � 42, non calcolare nulla e non inviare nulla.
-            if (data.id == 42)
-            {
-                // Opzionale: Mostriamo dei trattini per indicare che non ci sono dati
-                if (bpmText != null) bpmText.text = "---";
-                if (pasText != null) pasText.text = "---";
-                if (padText != null) padText.text = "---";
-
-                // Aspetta 1 secondo e ricomincia il ciclo (saltando il codice sotto)
-                yield return new WaitForSeconds(1.0f);
+            if (_currentCharacterIndex == -1){
+                yield return null;
                 continue;
             }
-            // --------------------------
+
+            CharacterData data = characters[_currentCharacterIndex];
 
             // 1. Calcolo Vitali
             int currentBPM = data.avgBPM + Random.Range(-noiseRange, noiseRange + 1);
@@ -186,8 +209,6 @@ public class CharacterSelector : MonoBehaviour
 
             json = json.Replace("\n", "").Replace("\r", "").Replace(" ", "");
 
-            //Debug.Log(json);
-
             // 5. Invio ROS
             ros.Publish(healthTopicName, new StringMsg(json));
 
@@ -210,14 +231,7 @@ public class CharacterSelector : MonoBehaviour
         // 1. Recupera i dati del personaggio attualmente selezionato
         CharacterData activeChar = characters[_currentCharacterIndex];
 
-        // 2. Controllo di sicurezza (se è l'ID 42 che è "muto", magari non vogliamo muoverlo)
-        if (activeChar.id == 42)
-        {
-            Debug.Log("L'utente ID 42 non può essere spostato.");
-            return;
-        }
-
-        // 3. Trova lo script NPCController sul personaggio.
+        // 2. Trova lo script NPCController sul personaggio.
         // Usiamo 'bodyTransform' se l'hai impostato, altrimenti cerchiamo sull'oggetto della camera o sui genitori
         Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
 
@@ -225,14 +239,11 @@ public class CharacterSelector : MonoBehaviour
         NPCController controller = targetObj.GetComponent<NPCController>();
         if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
 
-        // 4. Esegui il comando
-        if (controller != null)
-        {
+        // 3. Esegui il comando
+        if (controller != null){
             Debug.Log($"{activeChar.nome} ha avviato lo scenario A");
             controller.GoToTargetAndStay(WaypointScenarioA);
-        }
-        else
-        {
+        }else{
             Debug.LogError("Non ho trovato lo script NPCController sul personaggio attivo!");
         }
 
@@ -251,14 +262,7 @@ public class CharacterSelector : MonoBehaviour
         // 1. Recupera i dati del personaggio attualmente selezionato
         CharacterData activeChar = characters[_currentCharacterIndex];
 
-        // 2. Controllo di sicurezza (se è l'ID 42 che è "muto", magari non vogliamo muoverlo)
-        if (activeChar.id == 42)
-        {
-            Debug.Log("L'utente ID 42 non può essere spostato.");
-            return;
-        }
-
-        // 3. Trova lo script NPCController sul personaggio.
+        // 2. Trova lo script NPCController sul personaggio.
         // Usiamo 'bodyTransform' se l'hai impostato, altrimenti cerchiamo sull'oggetto della camera o sui genitori
         Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
 
@@ -266,14 +270,11 @@ public class CharacterSelector : MonoBehaviour
         NPCController controller = targetObj.GetComponent<NPCController>();
         if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
 
-        // 4. Esegui il comando
-        if (controller != null)
-        {
+        // 3. Esegui il comando
+        if (controller != null){
             Debug.Log($"{activeChar.nome} ha avviato lo scenario B");
             controller.GoToTargetAndStay(WaypointScenarioB);
-        }
-        else
-        {
+        }else{
             Debug.LogError("Non ho trovato lo script NPCController sul personaggio attivo!");
         }
 
@@ -294,29 +295,19 @@ public class CharacterSelector : MonoBehaviour
         // 1. Recupera il personaggio attivo
         CharacterData activeChar = characters[_currentCharacterIndex];
 
-        // 2. Controllo di sicurezza (se è l'ID 42 che è "muto", magari non vogliamo muoverlo)
-        if (activeChar.id == 42)
-        {
-            Debug.Log("L'utente ID 42 non può essere spostato.");
-            return;
-        }
-
-        // 3. Trova il controller
+        // 2. Trova il controller
         Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
         NPCController controller = targetObj.GetComponent<NPCController>();
         if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
 
-        // 4. Esegui il comando di caduta
-        if (controller != null)
-        {
+        // 3. Esegui il comando di caduta
+        if (controller != null){
             Debug.Log($"{activeChar.nome} sta avendo un malore (Scenario C)");
             controller.PerformDying();
 
             // TODO: Qui potresti voler inviare un messaggio ROS specifico di allarme
             // Esempio: Inviare un messaggio String o Bool su un topic "/health_alarm"
-        }
-        else
-        {
+        }else{
             Debug.LogError("Controller non trovato per Scenario C!");
         }
 

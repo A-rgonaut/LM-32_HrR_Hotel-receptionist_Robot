@@ -57850,8 +57850,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1683058388}
         m_TargetAssemblyTypeName: CharacterSelector, Assembly-CSharp
-        m_MethodName: ActivateCharacter
-        m_Mode: 3
+        m_MethodName: ActivatePepper
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -68939,17 +68939,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelector
   dbManager: {fileID: 1434403803}
+  pepperCamera: {fileID: 1526146744}
   characters:
-  - id: 42
-    nome: Pepper
-    cognome: 
-    cam: {fileID: 1526146744}
-    bodyTransform: {fileID: 0}
-    avgBPM: 75
-    avgPAS: 120
-    avgPAD: 80
-    emergencyPoint: {fileID: 0}
-  - id: 1
+  - id: 10
     nome: Peppe
     cognome: Rossi
     cam: {fileID: 236060552}
@@ -68958,7 +68950,7 @@ MonoBehaviour:
     avgPAS: 120
     avgPAD: 80
     emergencyPoint: {fileID: 0}
-  - id: 2
+  - id: 20
     nome: Carletta
     cognome: Bianchi
     cam: {fileID: 750012164}
@@ -68967,7 +68959,7 @@ MonoBehaviour:
     avgPAS: 120
     avgPAD: 80
     emergencyPoint: {fileID: 0}
-  - id: 3
+  - id: 30
     nome: Mr
     cognome: President
     cam: {fileID: 609732784}

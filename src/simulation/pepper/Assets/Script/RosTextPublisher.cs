@@ -31,7 +31,7 @@ public class RosTextPublisher : MonoBehaviour
             var activeChar = characterSelector.GetActiveCharacter();
             if (activeChar != null)
             {
-                nomePersonaggio = activeChar.nome;
+                nomePersonaggio = activeChar.nome.ToUpper() + " " + activeChar.cognome.ToUpper();
             }
         }
 
@@ -43,7 +43,7 @@ public class RosTextPublisher : MonoBehaviour
         // 3. Scrivi nella Chat di Unity
         if (chatDisplay != null)
         {
-            string testoFormattato = $"{nomePersonaggio}: {messageContent}";
+            string testoFormattato = $"<color=red><b>{nomePersonaggio}</b></color>: {messageContent}";
             chatDisplay.UpdateText(new StringMsg(testoFormattato));
         }
 
