@@ -79,7 +79,7 @@ class InteragisciScenarioA(InteragisciConOspite):
         query = """
         MATCH (o:Ospite)
         WHERE id(o) = $id
-        MERGE (i:Interesse {nome: $nome_interesse})
+        MERGE (i:Interesse {nome_interesse: $nome_interesse})
         MERGE (o)-[:HA_INTERESSE]->(i)
         """
         self.sincro.interrogaGraphDatabase(query, {
@@ -96,17 +96,17 @@ class InteragisciScenarioA(InteragisciConOspite):
             OPTIONAL MATCH (o)-[:HA_INTERESSE]->(int)
             MATCH (o)-[:HA_INTERESSE]->(i:Interesse)
             MATCH (e)
-            WHERE e.data_ora >= p.data_inizio AND e.data_ora <= p.data_fine
-            AND any(lbl IN labels(e) WHERE toLower(lbl) CONTAINS toLower(i.nome))
-            OPTIONAL MATCH (m:PrevisioneMeteo) WHERE m.data_ora = e.data_ora
+            WHERE e.data_ora_evento >= p.data_inizio AND e.data_ora_evento <= p.data_fine
+            AND any(lbl IN labels(e) WHERE toLower(lbl) CONTAINS toLower(i.nome_interesse))
+            OPTIONAL MATCH (m:PrevisioneMeteo) WHERE m.data_ora_meteo = e.data_ora_evento
             RETURN
-                o.nome AS nome,
+                o.nome_ospite AS nome,
                 collect(DISTINCT labels(pat)) AS patologie_labels,
                 collect(DISTINCT labels(int)) AS interessi_labels,
                 collect(DISTINCT {
                     tipo: labels(e),
-                    nome: e.nome,
-                    data: toString(e.data_ora),
+                    nome: e.nome_evento,
+                    data: toString(e.data_ora_evento),
                     meteo: m.condizione
                 }) AS eventi_disponibili
         """

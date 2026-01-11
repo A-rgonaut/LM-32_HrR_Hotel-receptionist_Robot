@@ -188,7 +188,7 @@ class Arbitraggio(Node):
     def parla(self, testo):
         msg = String()
         if self.nome_robot is None:
-            nomi = self.sincro.interrogaGraphDatabase("MATCH (r:Robot) RETURN TOUPPER(r.nome) AS nomeMaiuscolo")
+            nomi = self.sincro.interrogaGraphDatabase("MATCH (r:Robot) RETURN TOUPPER(r.nome_robot) AS nomeMaiuscolo")
             # Al momento abbiamo un solo robot:
             self.get_logger().info(f"Recuperato nome_robot: {nomi[0]['nomeMaiuscolo']}")
             self.nome_robot = nomi[0]['nomeMaiuscolo']
