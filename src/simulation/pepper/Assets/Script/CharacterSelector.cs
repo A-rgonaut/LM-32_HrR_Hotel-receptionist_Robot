@@ -1,6 +1,7 @@
 using RosMessageTypes.Std;
 using System.Collections;
 using System.Globalization;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
@@ -31,6 +32,10 @@ public class CharacterSelector : MonoBehaviour
         public Transform emergencyPoint;
     }
 
+    [Header("Database")]
+    public Neo4jManager dbManager;
+
+    [Header("Characters")]
     public CharacterData[] characters;
 
     [Header("UI Control")]
@@ -52,13 +57,51 @@ public class CharacterSelector : MonoBehaviour
     public Transform WaypointScenarioB;
 
     private Coroutine vitalsCoroutine;
-    void Start()
+    async void Start()
     {
+        // 1. Setup ROS
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<StringMsg>(buttonTopicName);
         ros.RegisterPublisher<StringMsg>(healthTopicName);
-        ActivateCharacter(0);
+
+        // 2. RECUPERO DATI DA NEO4J
+        if (dbManager != null)
+        {
+            Debug.Log("Connessione a Neo4j in corso...");
+
+            // Attendiamo i dati
+            var dbData = await dbManager.GetCharactersFromDB();
+
+            if (dbData.Count > 0)
+            {
+                // 3. Sovrascriviamo i dati nell'array esistente
+                for (int i = 1; i < characters.Length; i++)
+                {
+                    // Controllo di sicurezza per non andare fuori indice se il DB ha meno righe
+                    if (i <= dbData.Count)
+                    {
+                        characters[i].id = dbData[i-1].id;
+                        characters[i].nome = dbData[i-1].nome;
+                        characters[i].cognome = dbData[i-1].cognome;
+
+                        Debug.Log($"Caricato da DB: {characters[i].nome} su slot {i}");
+                    }
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Nessun dato trovato nel DB o connessione fallita. Uso dati Inspector.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Neo4jManager non assegnato nell'Inspector!");
+        }
+
+        // 4. Attiva il primo personaggio SOLO dopo aver caricato i dati
+        ActivateCharacter(1);
     }
+
     void OnDestroy()
     {
         ros.Disconnect();
@@ -75,9 +118,9 @@ public class CharacterSelector : MonoBehaviour
             characters[i].cam.SetActive(i == indexToActivate);
         }
 
-        // 2. GESTIONE PULSANTI (Nascondi se ID = 0)
+        // 2. GESTIONE PULSANTI (Nascondi se ID = 42)
         int currentId = characters[indexToActivate].id;
-        bool showButtons = (currentId != 0);
+        bool showButtons = (currentId != 42);
         foreach (GameObject btn in actionButtons)
         {
             if (btn != null) btn.SetActive(showButtons);
@@ -102,8 +145,8 @@ public class CharacterSelector : MonoBehaviour
             CharacterData data = characters[_currentCharacterIndex];
 
             // --- MODIFICA RICHIESTA ---
-            // Se l'ID � 0, non calcolare nulla e non inviare nulla.
-            if (data.id == 0)
+            // Se l'ID � 42, non calcolare nulla e non inviare nulla.
+            if (data.id == 42)
             {
                 // Opzionale: Mostriamo dei trattini per indicare che non ci sono dati
                 if (bpmText != null) bpmText.text = "---";
@@ -156,9 +199,7 @@ public class CharacterSelector : MonoBehaviour
     {
         if (testoComponent != null)
         {
-            //StringMsg msg = new StringMsg($"{{\"id\":{activeChar.id},\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            //StringMsg msg = new StringMsg($"{{\"id\":48,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            StringMsg msg = new StringMsg($"{{\"id\":{activeChar.id},\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
             Debug.Log("Invio bottone: " + msg.data);
             ros.Publish(buttonTopicName, msg);
         }
@@ -169,10 +210,10 @@ public class CharacterSelector : MonoBehaviour
         // 1. Recupera i dati del personaggio attualmente selezionato
         CharacterData activeChar = characters[_currentCharacterIndex];
 
-        // 2. Controllo di sicurezza (se è l'ID 0 che è "muto", magari non vogliamo muoverlo)
-        if (activeChar.id == 0)
+        // 2. Controllo di sicurezza (se è l'ID 42 che è "muto", magari non vogliamo muoverlo)
+        if (activeChar.id == 42)
         {
-            Debug.Log("L'utente ID 0 non può essere spostato.");
+            Debug.Log("L'utente ID 42 non può essere spostato.");
             return;
         }
 
@@ -210,10 +251,10 @@ public class CharacterSelector : MonoBehaviour
         // 1. Recupera i dati del personaggio attualmente selezionato
         CharacterData activeChar = characters[_currentCharacterIndex];
 
-        // 2. Controllo di sicurezza (se è l'ID 0 che è "muto", magari non vogliamo muoverlo)
-        if (activeChar.id == 0)
+        // 2. Controllo di sicurezza (se è l'ID 42 che è "muto", magari non vogliamo muoverlo)
+        if (activeChar.id == 42)
         {
-            Debug.Log("L'utente ID 0 non può essere spostato.");
+            Debug.Log("L'utente ID 42 non può essere spostato.");
             return;
         }
 
@@ -253,10 +294,10 @@ public class CharacterSelector : MonoBehaviour
         // 1. Recupera il personaggio attivo
         CharacterData activeChar = characters[_currentCharacterIndex];
 
-        // 2. Controllo sicurezza ID 0
-        if (activeChar.id == 0)
+        // 2. Controllo di sicurezza (se è l'ID 42 che è "muto", magari non vogliamo muoverlo)
+        if (activeChar.id == 42)
         {
-            Debug.Log("L'utente ID 0 non può avere un malore.");
+            Debug.Log("L'utente ID 42 non può essere spostato.");
             return;
         }
 

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Neo4j.Driver</id>
+    <version>5.28.4</version>
+    <authors>Neo4j</authors>
+    <license type="expression">Apache-2.0</license>
+    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <icon>Neo4j-icon-color.png</icon>
+    <projectUrl>https://github.com/neo4j/neo4j-dotnet-driver</projectUrl>
+    <iconUrl>https://avatars3.githubusercontent.com/u/201120?v=3&amp;s=64</iconUrl>
+    <description>The official .NET driver for the Neo4j Graph Database over the Bolt protocol.</description>
+    <copyright>Copyright 2002-2023</copyright>
+    <tags>Cypher NoSql Graph Bolt Neo4j</tags>
+    <repository type="git" commit="b3e93c58228d572bf4072f5851fb637eb1dc1af9" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="System.IO.Pipelines" version="8.0.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net8.0">
+        <dependency id="System.IO.Pipelines" version="8.0.0" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="Microsoft.Bcl.AsyncInterfaces" version="6.0.0" exclude="Build,Analyzers" />
+        <dependency id="System.IO.Pipelines" version="8.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
