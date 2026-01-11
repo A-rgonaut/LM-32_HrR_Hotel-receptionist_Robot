@@ -152,6 +152,18 @@ public class CharacterSelector : MonoBehaviour
         }
     }
 
+    public void sendToRos2(TextMeshProUGUI testoComponent, CharacterData activeChar)
+    {
+        if (testoComponent != null)
+        {
+            //StringMsg msg = new StringMsg($"{{\"id\":{activeChar.id},\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            //StringMsg msg = new StringMsg($"{{\"id\":48,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
+            Debug.Log("Invio bottone: " + msg.data);
+            ros.Publish(buttonTopicName, msg);
+        }
+    }
+
     public void StartScenarioA()
     {
         // 1. Recupera i dati del personaggio attualmente selezionato
@@ -190,14 +202,7 @@ public class CharacterSelector : MonoBehaviour
 
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
 
-        if (testoComponent != null)
-        {
-            // StringMsg msg = new StringMsg($"{{\"id\":{activeChar.id},\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            // StringMsg msg = new StringMsg($"{{\"id\":48,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            Debug.Log("Invio bottone: " + msg.data);
-            ros.Publish(buttonTopicName, msg);
-        }
+        sendToRos2(testoComponent, activeChar);
     }
 
     public void StartScenarioB()
@@ -238,14 +243,7 @@ public class CharacterSelector : MonoBehaviour
 
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
 
-        if (testoComponent != null)
-        {
-            // StringMsg msg = new StringMsg($"{{\"id\":{activeChar.id},\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            // StringMsg msg = new StringMsg($"{{\"id\":48,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            Debug.Log("Invio bottone: " + msg.data);
-            ros.Publish(buttonTopicName, msg);
-        }
+        sendToRos2(testoComponent, activeChar);
 
         // TODO: implementare logica che invia l'allarme ROS a Pepper
     }
@@ -288,13 +286,6 @@ public class CharacterSelector : MonoBehaviour
 
         TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
 
-        if (testoComponent != null)
-        {
-            // StringMsg msg = new StringMsg($"{{\"id\":{activeChar.id},\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            // StringMsg msg = new StringMsg($"{{\"id\":48,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            StringMsg msg = new StringMsg($"{{\"id\":0,\"nome\":\"{activeChar.nome}\",\"cognome\":\"{activeChar.cognome}\",\"bottone\":\"{testoComponent.text}\"}}");
-            Debug.Log("Invio bottone: " + msg.data);
-            ros.Publish(buttonTopicName, msg);
-        }
+        sendToRos2(testoComponent, activeChar);
     }
 }
