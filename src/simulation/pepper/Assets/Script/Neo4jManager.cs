@@ -114,7 +114,7 @@ public class Neo4jManager : MonoBehaviour
             var query = "MATCH(n: Ospite) RETURN " +
                         "id(n) AS id, " +
                         "n.nome_ospite AS nome, " +
-                        "n.cognome_ospite AS cognome" +
+                        "n.cognome_ospite AS cognome " +
                         "ORDER BY id ASC";
 
             await session.ExecuteReadAsync(async tx =>
