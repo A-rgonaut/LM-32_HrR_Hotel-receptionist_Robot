@@ -115,7 +115,7 @@ public class Neo4jManager : MonoBehaviour
                         "id(n) AS id, " +
                         "n.nome_ospite AS nome, " +
                         "n.cognome_ospite AS cognome" +
-                        "ORDER BY internal_id ASC";
+                        "ORDER BY id ASC";
 
             await session.ExecuteReadAsync(async tx =>
             {
