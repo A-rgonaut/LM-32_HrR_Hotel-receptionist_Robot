@@ -1,5 +1,6 @@
 using RosMessageTypes.Std;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using TMPro;
 using Unity.Robotics.ROSTCPConnector;
@@ -100,6 +101,8 @@ public class CharacterSelector : MonoBehaviour
             Debug.LogError("Neo4jManager non assegnato nell'Inspector!");
         }
 
+        vitalsCoroutine = StartCoroutine(SimulateAndPublishVitals());
+
         // 4. Attiva il primo personaggio SOLO dopo aver caricato i dati
         ActivateCharacter(0);
     }
@@ -119,20 +122,14 @@ public class CharacterSelector : MonoBehaviour
 
         // 3. Disattiva le camere di TUTTI gli NPC
         for (int i = 0; i < characters.Length; i++)
-        {
             if (characters[i].cam != null) characters[i].cam.SetActive(false);
-        }
+        
 
         // 4. Nascondi i pulsanti azione
         foreach (GameObject btn in actionButtons)
-        {
             if (btn != null) btn.SetActive(false);
-        }
 
-        // 5. Ferma la simulazione dei parametri vitali (se attiva)
-        if (vitalsCoroutine != null) StopCoroutine(vitalsCoroutine);
-
-        // 6. Pulisci la UI dei parametri vitali
+        // 5. Pulisci la UI dei parametri vitali
         if (bpmText != null) bpmText.text = "---";
         if (pasText != null) pasText.text = "---";
         if (padText != null) padText.text = "---";
@@ -157,10 +154,6 @@ public class CharacterSelector : MonoBehaviour
         foreach (GameObject btn in actionButtons)
             if (btn != null) btn.SetActive(true);
 
-        // 4. Riavvia la coroutine dei parametri vitali
-        if (vitalsCoroutine != null) StopCoroutine(vitalsCoroutine);
-        vitalsCoroutine = StartCoroutine(SimulateAndPublishVitals());
-
         Debug.Log($"Attivato NPC: {characters[indexToActivate].nome}");
     }
 
@@ -175,42 +168,55 @@ public class CharacterSelector : MonoBehaviour
 
         while (true)
         {
-            if (_currentCharacterIndex == -1){
-                yield return null;
-                continue;
+            // Lista per contenere i JSON dei singoli personaggi
+            List<string> allCharactersJson = new List<string>();
+
+            // Cicliamo su TUTTI i personaggi
+            for (int i = 0; i < characters.Length; i++)
+            {
+                CharacterData data = characters[i];
+
+                // 1. Calcolo Vitali
+                int currentBPM = data.avgBPM + Random.Range(-noiseRange, noiseRange + 1);
+                int currentPAS = data.avgPAS + Random.Range(-noiseRange, noiseRange + 1);
+                int currentPAD = data.avgPAD + Random.Range(-noiseRange, noiseRange + 1);
+
+                // 2. Recupero Posizione
+                Transform target = data.bodyTransform != null ? data.bodyTransform : data.cam.transform;
+                Vector3 pos = target.position;
+
+                // 3. UI Update (Aggiorniamo la UI SOLO se questo è il personaggio che stiamo guardando)
+                if (i == _currentCharacterIndex)
+                {
+                    if (bpmText != null) bpmText.text = "BPM: " + currentBPM.ToString();
+                    if (pasText != null) pasText.text = "PAS: " + currentPAS.ToString();
+                    if (padText != null) padText.text = "PAD: " + currentPAD.ToString();
+                }
+
+                // 4. Creazione JSON Singolo
+                string charJson = $@"{{
+                    ""id"": {data.id},
+                    ""hr"": {currentBPM},
+                    ""pmax"": {currentPAS},
+                    ""pmin"": {currentPAD},
+                    ""x"": {pos.x.ToString("F2", culture)},
+                    ""y"": {pos.y.ToString("F2", culture)},
+                    ""z"": {pos.z.ToString("F2", culture)}
+                }}";
+
+                // Pulizia spazi/a capo
+                charJson = charJson.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+
+                // Aggiungiamo alla lista
+                allCharactersJson.Add(charJson);
             }
 
-            CharacterData data = characters[_currentCharacterIndex];
+            // 5. Costruzione del JSON Array Finale
+            // Uniamo tutte le stringhe con una virgola e le racchiudiamo tra parentesi quadre
+            string finalJsonArray = "[" + string.Join(",", allCharactersJson) + "]";
 
-            // 1. Calcolo Vitali
-            int currentBPM = data.avgBPM + Random.Range(-noiseRange, noiseRange + 1);
-            int currentPAS = data.avgPAS + Random.Range(-noiseRange, noiseRange + 1);
-            int currentPAD = data.avgPAD + Random.Range(-noiseRange, noiseRange + 1);
-
-            // 2. Recupero Posizione
-            Transform target = data.bodyTransform != null ? data.bodyTransform : data.cam.transform;
-            Vector3 pos = target.position;
-
-            // 3. UI Update
-            if (bpmText != null) bpmText.text = "BPM: " + currentBPM.ToString();
-            if (pasText != null) pasText.text = "PAS: " + currentPAS.ToString();
-            if (padText != null) padText.text = "PAD: " + currentPAD.ToString();
-
-            // 4. JSON
-            string json = $@"{{
-                ""id"": {data.id},
-                ""hr"": {currentBPM},
-                ""pmax"": {currentPAS},
-                ""pmin"": {currentPAD},
-                ""x"": {pos.x.ToString("F2", culture)},
-                ""y"": {pos.y.ToString("F2", culture)},
-                ""z"": {pos.z.ToString("F2", culture)}
-            }}";
-
-            json = json.Replace("\n", "").Replace("\r", "").Replace(" ", "");
-
-            // 5. Invio ROS
-            ros.Publish(healthTopicName, new StringMsg(json));
+            // 6. Invio ROS (Un unico messaggio contenente tutti i dati)
+            ros.Publish(healthTopicName, new StringMsg(finalJsonArray));
 
             yield return new WaitForSeconds(1.0f);
         }

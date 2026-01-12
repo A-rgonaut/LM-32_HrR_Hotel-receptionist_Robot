@@ -1,6 +1,7 @@
 using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -110,7 +111,11 @@ public class Neo4jManager : MonoBehaviour
             await _driver.VerifyConnectivityAsync();
 
             await using var session = _driver.AsyncSession();
-            var query = "MATCH (n:Ospite) RETURN n.id AS id, n.nome_ospite AS nome, n.cognome_ospite AS cognome ORDER BY n.id ASC";
+            var query = "MATCH(n: Ospite) RETURN" +
+                        "id(n) AS id, " +
+                        "n.nome_ospite AS nome, " +
+                        "n.cognome_ospite AS cognome" +
+                        "ORDER BY internal_id ASC";
 
             await session.ExecuteReadAsync(async tx =>
             {
