@@ -1,20 +1,18 @@
-using UnityEngine;
-using Neo4j.Driver; // Importante
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using Neo4j.Driver;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using UnityEngine;
 
 public class Neo4jManager : MonoBehaviour
 {
-    // Configurazioni DB
-    [Header("Neo4j Settings")]
-    public string uri = "bolt://localhost:7687";
-    public string username = "neo4j";
-    public string password = "pepper123"; 
+    private string _uri;
+    private string _username;
+    private string _password;
 
     private IDriver _driver;
 
-    // Struttura dati temporanea per passare i dati al Selector
     public struct PersonData
     {
         public int id;
@@ -24,52 +22,115 @@ public class Neo4jManager : MonoBehaviour
 
     void Awake()
     {
-        // Inizializza il driver
-        _driver = GraphDatabase.Driver(uri, AuthTokens.Basic(username, password));
+        // 1. Carichiamo le credenziali PRIMA di connetterci
+        LoadCredentialsFromEnv();
+
+        // 2. Controllo sicurezza
+        if (string.IsNullOrEmpty(_uri) || string.IsNullOrEmpty(_password))
+        {
+            Debug.LogError("ERRORE CRITICO: Credenziali Neo4j mancanti! Controlla il file .env.");
+            return; // Blocchiamo tutto per evitare crash del driver
+        }
+
+        // 3. Configurazione Driver
+        _driver = GraphDatabase.Driver(_uri, AuthTokens.Basic(_username, _password));
+    }
+
+    private void LoadCredentialsFromEnv()
+    {
+        // Percorso universale per la cartella StreamingAssets
+        string envPath = "../ros2_ws/.env";
+
+        if (File.Exists(envPath))
+        {
+            string[] lines = File.ReadAllLines(envPath);
+
+            foreach (string line in lines)
+            {
+                // Ignora commenti (#) o righe vuote
+                if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#")) continue;
+
+                // Divide la riga al primo '=' trovato
+                string[] parts = line.Split(new char[] { '=' }, 2);
+
+                if (parts.Length != 2) continue;
+
+                string key = parts[0].Trim();
+                string value = parts[1].Trim().Replace("\"", "");
+
+                switch (key)
+                {
+                    case "NEO4J_URI":
+                        _uri = value;
+                        break;
+                    case "NEO4J_USER":
+                        _username = value;
+                        break;
+                    case "NEO4J_PASS":
+                        _password = value;
+                        break;
+                }
+            }
+
+            Debug.Log("Credenziali caricate da .env con successo.");
+        }
+        else
+        {
+            Debug.LogError($"File .env non trovato nel percorso: {envPath}");
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        DisposeDriver();
     }
 
     void OnDestroy()
     {
-        // Chiudi la connessione quando chiudi il gioco
-        _driver?.Dispose();
+        DisposeDriver();
     }
 
-    // Funzione Asincrona per recuperare i dati
+    private void DisposeDriver()
+    {
+        if (_driver != null)
+        {
+            _driver.Dispose();
+            _driver = null;
+        }
+    }
+
     public async Task<List<PersonData>> GetCharactersFromDB()
     {
         List<PersonData> results = new List<PersonData>();
 
+        if (_driver == null) return results;
+
         try
         {
-            // Apriamo una sessione asincrona
-            await using var session = _driver.AsyncSession();
+            await _driver.VerifyConnectivityAsync();
 
-            // Eseguiamo la query
-            // ORDER BY n.id assicura che arrivino nell'ordine giusto per l'array di Unity
+            await using var session = _driver.AsyncSession();
             var query = "MATCH (n:Ospite) RETURN n.id AS id, n.nome_ospite AS nome, n.cognome_ospite AS cognome ORDER BY n.id ASC";
 
             await session.ExecuteReadAsync(async tx =>
             {
                 var cursor = await tx.RunAsync(query);
-
-                // Leggiamo i record uno per uno
                 while (await cursor.FetchAsync())
                 {
                     var record = cursor.Current;
-
-                    PersonData p = new PersonData();
-                    // Neo4j restituisce numeri come Long, in C# dobbiamo castare
-                    p.id = Convert.ToInt32(record["id"]);
-                    p.nome = record["nome"].As<string>();
-                    p.cognome = record["cognome"].As<string>();
-
+                    PersonData p = new PersonData
+                    {
+                        id = Convert.ToInt32(record["id"]),
+                        nome = record["nome"].As<string>(),
+                        cognome = record["cognome"].As<string>()
+                    };
                     results.Add(p);
                 }
             });
         }
         catch (Exception ex)
         {
-            Debug.LogError($"Errore Neo4j: {ex.Message}");
+            Debug.LogError($"[Neo4j Error]: {ex.Message}");
         }
 
         return results;
