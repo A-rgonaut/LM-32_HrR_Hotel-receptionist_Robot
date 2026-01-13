@@ -2,3 +2,4 @@ python-dotenv
 neo4j
 google-genai
 owlready2
+rdflib

@@ -23,22 +23,20 @@ public class SpiegamiTutto {
     }
 
     public static void main(String[] args) {
-        if (args.length > 4) {
-            DEBUG = Boolean.parseBoolean(args[4]);
+        if (args.length > 2) {
+            DEBUG = Boolean.parseBoolean(args[2]);
         }
         if (DEBUG) {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
         } else {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "off");
         }
-        if (args.length < 4) {
-            log("Uso: java -jar reasoner.jar <OwlFile> <IndividualIRI> <PropertyIRI> <Value(true/false)> [<DEBUG(true/false)>]");
+        if (args.length < 2) {
+            log("Uso: java -jar reasoner.jar <OwlFile> <ParentClass> [<DEBUG(true/false)>]");
             System.exit(1);
         }
         String owlFilePath     = args[0];
-        String individualInput = args[1];
-        String propertyInput   = args[2];
-        String valueInput      = args[3];
+        String parentClassName = args[1];
 
         OWLOntologyManager man = OWLManager.createOWLOntologyManager();
 
@@ -80,62 +78,85 @@ public class SpiegamiTutto {
                     return;
                 }
 
-                // 5. Definizione dell'Assioma da Spiegare
-                IRI iriIndividuo;
-                if (individualInput.startsWith("http")) {
-                    iriIndividuo = IRI.create(individualInput);
+                // 1. Setup Classi Target e Generatore
+                DefaultExplanationGenerator gen = new DefaultExplanationGenerator(man, reasonerFactory, ontologia, null);
+
+                OWLClass parentCls = df.getOWLClass(IRI.create(baseIRI + parentClassName));
+                Set<OWLClass> subClasses = reasoner.getSubClasses(parentCls, true).getFlattened();
+                subClasses.remove(df.getOWLNothing());  // [?]
+
+                if (subClasses.isEmpty()) {
+                    log("ATTENZIONE: Nessuna sottoclasse trovata per " + parentClassName);
                 } else {
-                    iriIndividuo = IRI.create(baseIRI + individualInput);
+                    subClasses.forEach(c -> log("Target trovato: " + c.getIRI().getShortForm()));
                 }
 
-                IRI iriProprieta;
-                if (propertyInput.startsWith("http")) {
-                    iriProprieta = IRI.create(propertyInput);
-                } else {
-                    iriProprieta = IRI.create(baseIRI + propertyInput);
+                OWLClass[] targetClasses = subClasses.toArray(new OWLClass[0]);
+
+                StringBuilder jsonResult = new StringBuilder("{");
+                boolean firstInd = true;
+
+                // 2. Ciclo SOLO sugli individui che appartengono alla classe padre (o sottoclassi)
+                Set<OWLNamedIndividual> individuiRilevanti = reasoner.getInstances(parentCls, false).getFlattened();
+
+                for (OWLNamedIndividual ind : individuiRilevanti) {
+
+                    if (!firstInd) jsonResult.append(", ");
+                    firstInd = false;
+
+                    String nomeIndividuo = ind.getIRI().getShortForm();
+
+                    // Usiamo { per aprire l'oggetto individuo
+                    jsonResult.append("\"").append(nomeIndividuo).append("\": {");
+
+                    boolean firstClass = true;
+
+                    // 3. Controllo per entrambe le classi
+                    for (OWLClass clsTarget : targetClasses) {
+                        String nomeClasse = clsTarget.getIRI().getShortForm();
+
+                        OWLClassAssertionAxiom ax = df.getOWLClassAssertionAxiom(clsTarget, ind);
+                        String testoSpiegazione = "Il reasoner NON deduce assiomi inerenti";
+
+                        // 4. Il Reasoner controlla se è vero
+                        if (reasoner.isEntailed(ax)) {
+                            try {
+                                Set<OWLAxiom> explanation = gen.getExplanation(ax);
+                                testoSpiegazione = explanation.toString()
+                                    .replace("[", "").replace("]", "")
+                                    .replace(",", "")
+                                    .replaceAll("https?://[^>]*[#/]", "")
+                                    .replaceAll("\\b(rdfs|swrla):", "")
+                                    .replaceAll("[<>]", "")
+                                    .replaceAll("\\^\\^xsd:\\w+", "")
+                                    .replaceAll("\"(.*?)\"", "$1")
+                                    .replaceAll("Annotation\\(isRuleEnabled.*?\\)", "")
+                                    .replaceAll("Annotation\\(comment.*?\\)", "")
+                                    .replaceAll("\\s+", " ")
+                                    .replace("( ", "(")
+                                    .trim();
+                            } catch (Exception e) {
+                                testoSpiegazione = "Errore getExplanation()";
+                            }
+                        }
+
+                        if (!firstClass) {
+                            jsonResult.append(", ");
+                        }
+                        firstClass = false;
+
+                        // Puliamo virgolette e backslash per non rompere il JSON
+                        String safeSpiegazione = testoSpiegazione.replace("\"", "'").replace("\\", "\\\\");
+
+                        // Formato diretto "Chiave": "Valore" (senza graffe extra attorno)
+                        jsonResult.append(String.format("\"%s\": \"%s\"", nomeClasse, safeSpiegazione));
+                    }
+
+                    jsonResult.append("}");
                 }
 
-                OWLNamedIndividual individuo = df.getOWLNamedIndividual(iriIndividuo);
-                OWLDataProperty proprieta = df.getOWLDataProperty(iriProprieta);
-                boolean valoreAtteso = Boolean.parseBoolean(valueInput);
-                OWLLiteral literalValore = df.getOWLLiteral(valoreAtteso);
+                System.out.println(jsonResult.toString());
 
-                OWLDataPropertyAssertionAxiom assiomaDaSpiegare = df.getOWLDataPropertyAssertionAxiom(proprieta, individuo, literalValore);
-
-                log("\n--- Verifica Inferenza ---");
-                // Controlliamo prima se il reasoner lo deduce davvero
-                if (reasoner.isEntailed(assiomaDaSpiegare)) {
-
-                    log("Generazione della spiegazione in corso (potrebbe richiedere tempo)...\n");
-
-                    // 6. Generazione della Spiegazione
-                    // DefaultExplanationGenerator usa una tecnica "black box" creando istanze del reasoner
-                    DefaultExplanationGenerator gen = new DefaultExplanationGenerator(
-                        man, reasonerFactory, ontologia, null);
-
-                    // Otteniamo il set di assiomi che causano l'inferenza
-                    Set<OWLAxiom> spiegazione = gen.getExplanation(assiomaDaSpiegare);
-                    String nomeIndividuo = iriIndividuo.getShortForm();
-                    String nomeProprieta = iriProprieta.getShortForm();
-                    System.out.println("### SPIEGAZIONE (PERCHE " + nomeIndividuo + " HA " + nomeProprieta + " == " + valueInput + "?) ###");
-                    System.out.println("--- START AXIOMS ---");
-                    System.out.println(spiegazione.toString()
-                        .replace("[", "").replace("]", "")
-                        .replace(",", "")
-                        .replaceAll("https?://[^>]*[#/]", "")
-                        .replaceAll("\\b(rdfs|swrla):", "")
-                        .replaceAll("[<>]", "")
-                        .replaceAll("\\^\\^xsd:\\w+", "")
-                        .replaceAll("\"(.*?)\"", "$1")
-                        .replaceAll("Annotation\\(isRuleEnabled.*?\\)", "")
-                        .replaceAll("Annotation\\(comment.*?\\)", "")
-                        .replaceAll("\\s+", " ")
-                        .replace("( ", "(")
-                        .trim());
-                    System.out.println("--- END AXIOMS ---");
-                } else {
-                    System.out.println("Il reasoner NON deduce assiomi inerenti");
-                }
             } catch (OWLOntologyCreationException e) {  // Caricamento fallisce
                 log("ERRORE: Non è stato possibile caricare l'ontologia.");
                 e.printStackTrace();
