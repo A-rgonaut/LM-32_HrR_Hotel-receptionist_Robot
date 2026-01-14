@@ -29,6 +29,11 @@ public class NPCController : MonoBehaviour
     private bool visitingRoom = false;
     private bool isPatrolling = true;
 
+    public bool isCriticalCondition = false;
+
+    private enum StopState { None, Kneeling, Dying }
+    private StopState currentStopState = StopState.None;
+
     private Animator animator;
 
     // Classe per leggere il JSON di ROS
@@ -109,24 +114,35 @@ public class NPCController : MonoBehaviour
         Debug.Log("[NPC] Vado al target e attendo il comando ROS 'FINE_SCENARIO'...");
     }
 
-    public void ResumePatrol()
+    // SCENARIO C1: Inginocchiarsi
+    public void PerformKneeling()
     {
-        // Riattiviamo il NavMesh se era stato fermato (es. da PerformDying)
-        if (agent != null)
-        {
-            agent.isStopped = false;
-        }
+        PrepareForStop();
+        currentStopState = StopState.Kneeling;
+        isCriticalCondition = false; // I parametri vitali rimangono normali
 
-        isPatrolling = true;
-        Debug.Log("[NPC] Riprendo il pattugliamento.");
-        MoveToNextCorridorPoint();
+        if (animator != null) animator.SetTrigger("TriggerKneel");
     }
 
+    // SCENARIO C2: Morte (con parametri a zero)
     public void PerformDying()
+    {
+        PrepareForStop();
+        currentStopState = StopState.Dying;
+        isCriticalCondition = true; // I parametri vitali andranno a ZERO
+
+        if (animator != null) animator.SetTrigger("TriggerDie");
+
+        // Gestione Collider (Opzionale: abbassa il collider)
+        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        if (col != null) { col.height = 0.2f; col.center = new Vector3(0, 0.1f, 0); }
+    }
+
+    // Metodo helper per fermare l'agente (comune a entrambi)
+    private void PrepareForStop()
     {
         StopAllCoroutines();
         isPatrolling = false;
-        isWaiting = false;
 
         if (agent != null && agent.isOnNavMesh)
         {
@@ -134,11 +150,36 @@ public class NPCController : MonoBehaviour
             agent.ResetPath();
             agent.velocity = Vector3.zero;
         }
+    }
 
+    public void ResumePatrol()
+    {
+        // 1. Ripristina stato
+        isCriticalCondition = false; // Parametri vitali tornano normali
+        isPatrolling = true;
+
+        // 2. Animazione di recupero corretta
         if (animator != null)
         {
-            animator.SetTrigger("TriggerDying");
+            if (currentStopState == StopState.Kneeling)
+            {
+                animator.SetTrigger("RecoverKneel");
+            }
+            else if (currentStopState == StopState.Dying)
+            {
+                animator.SetTrigger("RecoverDie");
+                // Ripristina Collider se l'avevi abbassato
+                CapsuleCollider col = GetComponent<CapsuleCollider>();
+                if (col != null) { col.height = 1.8f; col.center = new Vector3(0, 0.9f, 0); }
+            }
         }
+
+        currentStopState = StopState.None;
+
+        // 3. Riattiva movimento
+        if (agent != null) agent.isStopped = false;
+
+        MoveToNextCorridorPoint(); // Ricomincia a camminare
     }
 
     System.Collections.IEnumerator WaitAndDecide()

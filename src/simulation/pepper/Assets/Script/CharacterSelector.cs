@@ -168,24 +168,40 @@ public class CharacterSelector : MonoBehaviour
 
         while (true)
         {
-            // Lista per contenere i JSON dei singoli personaggi
             List<string> allCharactersJson = new List<string>();
 
-            // Cicliamo su TUTTI i personaggi
             for (int i = 0; i < characters.Length; i++)
             {
                 CharacterData data = characters[i];
-
-                // 1. Calcolo Vitali
-                int currentBPM = data.avgBPM + Random.Range(-noiseRange, noiseRange + 1);
-                int currentPAS = data.avgPAS + Random.Range(-noiseRange, noiseRange + 1);
-                int currentPAD = data.avgPAD + Random.Range(-noiseRange, noiseRange + 1);
-
-                // 2. Recupero Posizione
                 Transform target = data.bodyTransform != null ? data.bodyTransform : data.cam.transform;
+
+                //Recupera lo stato dall'NPCController 
+                bool isCritical = false;
+                NPCController npcCtrl = target.GetComponent<NPCController>();
+                if (npcCtrl == null) npcCtrl = target.GetComponentInParent<NPCController>();
+
+                if (npcCtrl != null) isCritical = npcCtrl.isCriticalCondition;
+
+                int currentBPM = 0, currentPAS = 0, currentPAD = 0;
+
+                if (isCritical)
+                {
+                    // Scenario C2: Morto -> Tutto a zero
+                    currentBPM = 0;
+                    currentPAS = 0;
+                    currentPAD = 0;
+                }
+                else
+                {
+                    // Normale
+                    currentBPM = data.avgBPM + Random.Range(-noiseRange, noiseRange + 1);
+                    currentPAS = data.avgPAS + Random.Range(-noiseRange, noiseRange + 1);
+                    currentPAD = data.avgPAD + Random.Range(-noiseRange, noiseRange + 1);
+                }
+
+                // ... (Recupero posizione e update UI rimangono uguali) ...
                 Vector3 pos = target.position;
 
-                // 3. UI Update (Aggiorniamo la UI SOLO se questo è il personaggio che stiamo guardando)
                 if (i == _currentCharacterIndex)
                 {
                     if (bpmText != null) bpmText.text = "BPM: " + currentBPM.ToString();
@@ -193,7 +209,7 @@ public class CharacterSelector : MonoBehaviour
                     if (padText != null) padText.text = "PAD: " + currentPAD.ToString();
                 }
 
-                // 4. Creazione JSON Singolo
+                // ... (Creazione JSON e loop continuano uguali) ...
                 string charJson = $@"{{
                     ""id"": {data.id},
                     ""hr"": {currentBPM},
@@ -204,18 +220,11 @@ public class CharacterSelector : MonoBehaviour
                     ""z"": {pos.z.ToString("F2", culture)}
                 }}";
 
-                // Pulizia spazi/a capo
                 charJson = charJson.Replace("\n", "").Replace("\r", "").Replace(" ", "");
-
-                // Aggiungiamo alla lista
                 allCharactersJson.Add(charJson);
             }
 
-            // 5. Costruzione del JSON Array Finale
-            // Uniamo tutte le stringhe con una virgola e le racchiudiamo tra parentesi quadre
             string finalJsonArray = "[" + string.Join(",", allCharactersJson) + "]";
-
-            // 6. Invio ROS (Un unico messaggio contenente tutti i dati)
             ros.Publish(healthTopicName, new StringMsg(finalJsonArray));
 
             yield return new WaitForSeconds(1.0f);
@@ -298,32 +307,58 @@ public class CharacterSelector : MonoBehaviour
 
     public void StartScenarioC()
     {
-        // 1. Recupera il personaggio attivo
         CharacterData activeChar = characters[_currentCharacterIndex];
 
-        // 2. Trova il controller
+        // Trova Controller (come facevi prima)
         Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
         NPCController controller = targetObj.GetComponent<NPCController>();
         if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
 
-        // 3. Esegui il comando di caduta
-        if (controller != null){
-            Debug.Log($"{activeChar.nome} sta avendo un malore (Scenario C)");
-            controller.PerformDying();
-
-            // TODO: Qui potresti voler inviare un messaggio ROS specifico di allarme
-            // Esempio: Inviare un messaggio String o Bool su un topic "/health_alarm"
-        }else{
-            Debug.LogError("Controller non trovato per Scenario C!");
+        if (controller != null)
+        {
+            Debug.Log($"{activeChar.nome} Scenario C: Inginocchiamento");
+            // Chiama la nuova funzione specifica
+            controller.PerformKneeling();
+        }
+        else
+        {
+            Debug.LogError("Controller non trovato!");
         }
 
-        // Chiediamo a Unity: "Chi è che è stato appena cliccato?"
+        // Gestione bottone e invio ROS
         GameObject buttonClicked = EventSystem.current.currentSelectedGameObject;
+        if (buttonClicked != null)
+        {
+            TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
+            sendToRos2(testoComponent, activeChar);
+        }
+    }
 
-        if (buttonClicked == null) return;
+    public void StartScenarioC2()
+    {
+        CharacterData activeChar = characters[_currentCharacterIndex];
 
-        TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
+        Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
+        NPCController controller = targetObj.GetComponent<NPCController>();
+        if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
 
-        sendToRos2(testoComponent, activeChar);
+        if (controller != null)
+        {
+            Debug.Log($"{activeChar.nome} Scenario C2: Malore Critico (Parametri 0)");
+            // Chiama la funzione di morte che setterà anche isCriticalCondition = true
+            controller.PerformDying();
+        }
+        else
+        {
+            Debug.LogError("Controller non trovato!");
+        }
+
+        // Gestione bottone e invio ROS
+        GameObject buttonClicked = EventSystem.current.currentSelectedGameObject;
+        if (buttonClicked != null)
+        {
+            TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
+            sendToRos2(testoComponent, activeChar);
+        }
     }
 }
