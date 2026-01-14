@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
+// 1. Aggiungiamo i namespace ROS
+using Unity.Robotics.ROSTCPConnector;
+using RosMessageTypes.Std;
 
 public class NPCController : MonoBehaviour
 {
@@ -18,19 +21,31 @@ public class NPCController : MonoBehaviour
     [Range(0, 100)]
     public int waypointsOptionalChance = 30;
 
+    [Header("ROS Settings")]
+    public string rosStateTopic = "/unity/stato"; // Topic da ascoltare
+
     private int currentCorridorIndex = 0;
     private bool isWaiting = false;
     private bool visitingRoom = false;
-
-    // NUOVO: Variabile per sapere se siamo in modalità manuale
     private bool isPatrolling = true;
 
     private Animator animator;
+
+    // Classe per leggere il JSON di ROS
+    [System.Serializable]
+    public class RosCommandData
+    {
+        public string comando;
+        public string scenario;
+    }
 
     void Start()
     {
         if (agent == null) agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+
+        // Iscrizione al topic ROS
+        ROSConnection.GetOrCreateInstance().Subscribe<StringMsg>(rosStateTopic, OnRosStateReceived);
 
         // Inizia il pattugliamento normale
         MoveToNextCorridorPoint();
@@ -43,10 +58,7 @@ public class NPCController : MonoBehaviour
             animator.SetFloat("Speed", agent.velocity.magnitude);
         }
 
-        // Se non stiamo pattugliando (siamo in modalità manuale), 
-        // usciamo dall'Update per non far ripartire la logica automatica.
         if (!isPatrolling) return;
-
         if (isWaiting) return;
 
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
@@ -55,55 +67,78 @@ public class NPCController : MonoBehaviour
         }
     }
 
+    //Funzione chiamata ogni volta che ROS invia un messaggio su /unity/stato
+    void OnRosStateReceived(StringMsg msg)
+    {
+        // Se stiamo già pattugliando, ignoriamo i comandi di fine scenario
+        if (isPatrolling) return;
+
+        try
+        {
+            // Decodifica il JSON
+            RosCommandData data = JsonUtility.FromJson<RosCommandData>(msg.data);
+
+            // Controlla il comando
+            if (data.comando == "FINE_SCENARIO")
+            {
+                Debug.Log($"[NPC] Ricevuto FINE_SCENARIO (Scenario: {data.scenario}). Torno a pattugliare.");
+
+                // Opzionale: Puoi aggiungere un controllo su 'data.scenario' 
+                // se vuoi che risponda solo a scenari specifici (es: if scenario == "A")
+
+                ResumePatrol();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Errore parsing JSON NPC: {e.Message}");
+        }
+    }
+
     public void GoToTargetAndStay(Transform targetPoint)
     {
-        // 1. Fermiamo qualsiasi ragionamento in corso (coroutine di attesa)
         StopAllCoroutines();
-
-        // 2. Disattiviamo la logica di pattugliamento automatica
-        isPatrolling = false;
+        isPatrolling = false; // Entra in modalità Manuale/Scenario
         isWaiting = false;
 
-        // 3. Impostiamo la destinazione specifica
         if (targetPoint != null)
         {
             agent.SetDestination(targetPoint.position);
         }
 
-        // 4. TODO: implementare logica di "soddisfacimento" e
-        // ritornare al pattugliamento
+        Debug.Log("[NPC] Vado al target e attendo il comando ROS 'FINE_SCENARIO'...");
     }
 
-    // (Opzionale) Se si volesse farlo riprendere a pattugliare in futuro
     public void ResumePatrol()
     {
+        // Riattiviamo il NavMesh se era stato fermato (es. da PerformDying)
+        if (agent != null)
+        {
+            agent.isStopped = false;
+        }
+
         isPatrolling = true;
+        Debug.Log("[NPC] Riprendo il pattugliamento.");
         MoveToNextCorridorPoint();
     }
 
     public void PerformDying()
     {
-        // 1. Ferma logiche di pattugliamento o attesa
         StopAllCoroutines();
         isPatrolling = false;
         isWaiting = false;
 
-        // 2. Blocca fisicamente il movimento del NavMesh
         if (agent != null && agent.isOnNavMesh)
         {
-            agent.isStopped = true; // Ferma l'agente
-            agent.ResetPath();      // Cancella il percorso corrente
-            agent.velocity = Vector3.zero; // Azzera la velocità residua
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
         }
 
-        // 3. Attiva l'animazione di caduta
         if (animator != null)
         {
             animator.SetTrigger("TriggerDying");
         }
-
-        // Opzionale: Disabilitare il collider se serve che altri ci passino sopra,
-        // ma per ora lasciamolo così per semplicità.
     }
 
     System.Collections.IEnumerator WaitAndDecide()
