@@ -35507,8 +35507,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LidarPublisher
   topicName: scan
   publishFrequency: 10
-  maxDistance: 10
-  fieldOfView: 360
+  maxDistance: 5
+  fieldOfView: 30
   numRays: 360
   scanHeight: 0
 --- !u!23 &877009737
@@ -59959,9 +59959,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b1483eec846d4d4492effe1134ee4bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Neo4jManager
-  uri: bolt://172.24.112.1:7687
-  username: neo4j
-  password: pepper123
 --- !u!4 &1434403804
 Transform:
   m_ObjectHideFlags: 0
