@@ -57,8 +57,9 @@ public class LidarPublisher : MonoBehaviour
         float startAngle = -fieldOfView / 2.0f; // Inizia da sinistra
 
         // Messaggio di debug per la console (costruiamo una stringa)
-        string consoleOutput = $"[Lidar] Scansione inviata a '{topicName}'. Rilevamenti vicini (< 2m): ";
-        bool objectDetected = false;
+        // string consoleOutput = $"[Lidar] Scansione inviata a '{topicName}'. Rilevamenti vicini (< 2m): ";
+        // bool objectDetected = false;
+        HashSet<string> oggettiVisti = new HashSet<string>();
 
         // 2. Ciclo di Raycasting
         for (int i = 0; i < numRays; i++)
@@ -77,17 +78,18 @@ public class LidarPublisher : MonoBehaviour
             if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, maxDistance))
             {
                 ranges[i] = hit.distance; // Abbiamo colpito qualcosa
+                oggettiVisti.Add(hit.collider.gameObject.name);
 
                 // Disegna il raggio nella scena (solo per debug visivo in Unity)
                 Debug.DrawRay(rayOrigin, rayDirection * hit.distance, Color.red);
 
                 // LOGICA CONSOLE: Se l'oggetto è vicino, lo scriviamo
-                if (hit.distance < 2.0f)
+                /* if (hit.distance < 2.0f)
                 {
                     objectDetected = true;
                     // Aggiungiamo info solo ogni tanto per non intasare, o solo il primo trovato
                     // Qui semplifico scrivendo solo se troviamo qualcosa
-                }
+                } */
             }
             else
             {
@@ -97,9 +99,10 @@ public class LidarPublisher : MonoBehaviour
         }
 
         // 3. Output su Console Unity
-        if (objectDetected)
+        if (oggettiVisti.Count > 0)  // if (objectDetected)
         {
             // Debug.Log(consoleOutput + "RILEVATO OSTACOLO!");
+            Debug.Log($"[LIDAR VEDE]: {string.Join(", ", oggettiVisti)}");
         }
         else
         {
