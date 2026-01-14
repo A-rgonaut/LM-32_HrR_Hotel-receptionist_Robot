@@ -113,8 +113,8 @@ public class Neo4jManager : MonoBehaviour
             await using var session = _driver.AsyncSession();
             var query = "MATCH(n: Ospite) RETURN " +
                         "id(n) AS id, " +
-                        "n.nome_ospite AS nome, " +
-                        "n.cognome_ospite AS cognome " +
+                        "n.nome AS nome, " +
+                        "n.cognome AS cognome " +
                         "ORDER BY id ASC";
 
             await session.ExecuteReadAsync(async tx =>

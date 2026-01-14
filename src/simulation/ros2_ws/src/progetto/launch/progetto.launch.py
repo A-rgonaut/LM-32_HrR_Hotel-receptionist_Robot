@@ -54,6 +54,10 @@ def generate_launch_description():
                            # executable="pianifica",
                            # name="Pianifica",
                            # output="screen")  # , parameters="")
+    spiega_node = Node(package="progetto",
+                       executable="spiega",
+                       name="SpiegamiTutto",
+                       output="screen")  # , parameters="")
 
     return LaunchDescription([unity_endpoint,
                               # map_server_node,
@@ -63,5 +67,6 @@ def generate_launch_description():
                               controller_node,
                               llm_node,
                               neo4j_node,
-                              onto_node])
-                              # pianifica_node])
+                              onto_node,
+                              # pianifica_node,
+                              spiega_node])

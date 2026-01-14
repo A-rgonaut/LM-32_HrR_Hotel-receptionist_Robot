@@ -31,7 +31,8 @@ setup(
             # 'pianifica = progetto.Pianifica:main',
             'server_llm = progetto.ServerLLM:main',
             'server_neo4j = progetto.ServerNeo4j:main',
-            'server_onto = progetto.ServerOntologia:main'
+            'server_onto = progetto.ServerOntologia:main',
+            'spiega = progetto.SpiegamiTutto:main'
         ],
     },
 )

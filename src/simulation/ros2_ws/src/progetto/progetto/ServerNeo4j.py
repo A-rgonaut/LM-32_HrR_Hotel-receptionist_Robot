@@ -1,12 +1,21 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+
 import json
 import os
-from dotenv import load_dotenv
-from neo4j import GraphDatabase
 
+from neo4j import GraphDatabase
+from neo4j.time import DateTime, Date, Duration, Time
+
+from dotenv import load_dotenv
 load_dotenv()
+
+class Neo4jEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, (DateTime, Date, Duration, Time)):
+            return str(obj)
+        return super().default(obj)
 
 class ServerNeo4j(Node):
     def __init__(self):
@@ -56,7 +65,7 @@ class ServerNeo4j(Node):
                 "error": error_msg
             }
             out_msg = String()
-            out_msg.data = json.dumps(res_packet)
+            out_msg.data = json.dumps(res_packet, cls=Neo4jEncoder)
             self.pub.publish(out_msg)
         except Exception as e:
             self.get_logger().info(f"Errore callback Neo4j: {e}")

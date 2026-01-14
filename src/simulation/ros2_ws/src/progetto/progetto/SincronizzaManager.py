@@ -10,8 +10,8 @@ class SincronizzaManager():
             "/onto/request", "/onto/response", timeout=30.0)
         self.llm_client = SincronizzamiTutto(self.nodo,
             "/llm/request", "/llm/response", timeout=30.0)
-        # self.explain_client = SincronizzamiTutto(self.nodo,
-            # "/explain/request", "explain/response", timeout=30.0)
+        self.explain_client = SincronizzamiTutto(self.nodo,
+            "/explain/request", "explain/response", timeout=30.0)
 
         self.nodo.get_logger().info('SincronizzaManager avviato.')
 
@@ -72,4 +72,27 @@ class SincronizzaManager():
             return self.llm_client.call(payload)
         except Exception as e:
             self.nodo.get_logger().error(f"Errore chiamata LLM: {e}")
+            return None
+
+    def crea_ontologia_istanze(self, ids):
+        payload = {
+            "action": "crea_ontologia_istanze",
+            "ids": ids
+        }
+        try:
+            return self.explain_client.call(payload)
+        except Exception as e:
+            self.nodo.get_logger().error(f"Errore richiesta ontologia istanze: {e}")
+            return None
+
+    def spiegami_tutto(self, parentClassName, debug="False"):
+        payload = {
+            "action": "spiegami_tutto",
+            "parentClassName": parentClassName,
+            "debug": debug
+        }
+        try:
+            return self.explain_client.call(payload)
+        except Exception as e:
+            self.nodo.get_logger().error(f"Errore richiesta spiegazione: {e}")
             return None

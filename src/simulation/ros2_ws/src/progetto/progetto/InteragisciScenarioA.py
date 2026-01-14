@@ -1,32 +1,25 @@
 from progetto.InteragisciConOspite import InteragisciConOspite
 from progetto.utils import Ospite
 
+import json
+import os
 import string
 
 class InteragisciScenarioA(InteragisciConOspite):
+    def __init__(self, nodo):
+        super().__init__(nodo)
+        self.vocab_lingua_it = self.carica_vocabolario("lingua", "ita.txt")
+        self.vocab_lingua_en = self.carica_vocabolario("lingua", "eng.txt")
+
     def rileva_lingua(self, testo):
         testo_clean = testo.lower().translate(str.maketrans('', '', string.punctuation))
         parole = testo_clean.split()
         score_it = 0
         score_en = 0
-        vocab = {
-            'IT': {
-                'ciao', 'buongiorno', 'buonasera', 'salve', 'arrivederci',
-                'sono', 'mi', 'chiamo', 'io', 'vorrei', 'per', 'favore',
-                'grazie', 'prego', 'il', 'lo', 'la', 'che', 'cosa',
-                'tutto', 'bene', 'scusa', 'hotel', 'prenotazione', 'camera'
-            },
-            'EN': {
-                'hello', 'hi', 'hey', 'good', 'morning', 'evening', 'bye',
-                'am', 'my', 'name', 'is', 'i', 'would', 'like', 'please',
-                'thanks', 'thank', 'you', 'the', 'what', 'how',
-                'everything', 'ok', 'sorry', 'reservation', 'room'
-            }
-        }
         for parola in parole:
-            if parola in vocab['IT']:
+            if parola in self.vocab_lingua_it:
                 score_it += 1
-            if parola in vocab['EN']:
+            if parola in self.vocab_lingua_en:
                 score_en += 1
         if score_it > score_en:
             return 'IT'
@@ -66,7 +59,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             return False
 
     def rileva_interesse(self, testo):
-        nome_interesse_raw = self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
+        nome_interesse_raw = "montagna" # self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
         nome_classe_ufficiale = self.sincro.trova_classe_da_sinonimo(nome_interesse_raw, nome_radice="Interesse")
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Interesse rilevato: '{nome_interesse_raw}' -> Mapped to: '{nome_classe_ufficiale}'")
@@ -89,71 +82,43 @@ class InteragisciScenarioA(InteragisciConOspite):
         self.nodo.get_logger().info(f"[DB] Salvato interesse '{self.contesto['interesse']}' per l'ospite.")
 
     def recupera_dati_per_suggerimento(self):
-        query = """
-            MATCH (o:Ospite)-[:EFFETTUA]->(p:Prenotazione)
+        query = """MATCH (o:Ospite)-[:EFFETTUA]->(p:Prenotazione)
             WHERE id(o) = $id
             OPTIONAL MATCH (o)-[:SOFFRE_DI]->(pat)
-            OPTIONAL MATCH (o)-[:HA_INTERESSE]->(int)
-            MATCH (o)-[:HA_INTERESSE]->(i:Interesse)
-            MATCH (e)
+            OPTIONAL MATCH (o)-[:HA_INTERESSE]->(i:Interesse)
+            WITH o, p, collect(pat) as patologie, collect(i) as interessi
+            OPTIONAL MATCH (e)
             WHERE e.data_ora_evento >= p.data_inizio AND e.data_ora_evento <= p.data_fine
-            AND any(lbl IN labels(e) WHERE toLower(lbl) CONTAINS toLower(i.nome_interesse))
+            AND ANY(interest IN interessi WHERE ANY(lbl IN labels(e) WHERE toLower(lbl) CONTAINS toLower(interest.nome_interesse)))
             OPTIONAL MATCH (m:PrevisioneMeteo) WHERE m.data_ora_meteo = e.data_ora_evento
-            RETURN
-                o.nome_ospite AS nome,
-                collect(DISTINCT labels(pat)) AS patologie_labels,
-                collect(DISTINCT labels(int)) AS interessi_labels,
-                collect(DISTINCT {
-                    tipo: labels(e),
-                    nome: e.nome_evento,
-                    data: toString(e.data_ora_evento),
-                    meteo: m.condizione
-                }) AS eventi_disponibili
+            WITH o, p, patologie, interessi, collect(e) as eventi, collect(m) as meteo
+            WITH [o, p] + patologie + interessi + eventi + meteo as nodi
+            UNWIND nodi as n
+            RETURN DISTINCT id(n) as node_id
         """
         risultati = self.sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
         if risultati:
-            record = risultati[0]
-            self.contesto['dati_neo4j'] = {
-                'nome_ospite': record['nome'],
-                'patologie': [lbl[0] for lbl in record['patologie_labels'] if lbl],
-                'interessi_profilo': [lbl[0] for lbl in record['interessi_labels'] if lbl],
-                'eventi': []
-            }
-            for ev in record['eventi_disponibili']:
-                tipo_evento = next((l for l in ev['tipo'] if "Evento" in l), "EventoGenerico")
-                self.contesto['dati_neo4j']['eventi'].append({
-                    'label': tipo_evento,
-                    'nome': ev['nome'],
-                    'data': ev['data'],
-                    'meteo': ev.get('meteo')
-                })
-            self.nodo.get_logger().info(f"[ScenarioA] Eventi caricati da DB: {len(self.contesto['dati_neo4j']['eventi'])}")
+            self.contesto["ids"] = [record['node_id'] for record in risultati if record['node_id'] is not None]
+            self.nodo.get_logger().info(f"[ScenarioA] Eventi caricati da DB: {len(self.contesto['ids'])}")
             return True
         return False
 
     def suggerisci_evento_locale(self):
-        self.nodo.parla("Un attimo, analizzo tutti gli eventi disponibili...")
+        self.nodo.parla("Un attimo, analizzo gli eventi e chiedo al sistema esperto...")
         if not self.recupera_dati_per_suggerimento():
-            self.nodo.parla("Errore nel recupero dati.")
+            self.nodo.parla("Non ho trovato dati sufficienti nel database.")
             return
-        dati_neo = self.contesto['dati_neo4j']
-        ospite_info = {
-            "nome": dati_neo['nome_ospite'],
-            "eta": self.contesto['ospite'].eta,
-            "patologie": dati_neo['patologie'],
-            "interessi": dati_neo['interessi_profilo']
-        }
-        eventi_list = dati_neo['eventi']
-        report_ragionamento = self.sincro.ragiona_su_eventi(ospite_info, eventi_list)
-        if report_ragionamento:
-            msg_input = f"Analisi per l'ospite {self.contesto['ospite'].nome}:\n"
-            for item in report_ragionamento:
-                msg_input += f"\nEVENTO: {item['evento']}\nESITO: {item['esito']}\nMOTIVAZIONE LOGICA: {item['dettagli']}\n----------------"
-            self.nodo.get_logger().info(msg_input)
-            risposta = self.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
-            self.nodo.parla(risposta)
-        else:
-            self.nodo.parla("Ho analizzato gli eventi ma non ho trovato indicazioni specifiche (né positive né negative).")
+        self.sincro.crea_ontologia_istanze(self.contesto["ids"])
+        assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
+        self.nodo.get_logger().info(f"{assiomi}")
+        self.nodo.get_logger().info(f"{json.loads(assiomi)}")
+        data = json.loads(assiomi)
+        for individuo, stati in data.items():
+            print(individuo, stati)
+        # risposta = self.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
+        # self.nodo.parla(risposta)
+        # salvare il suggerimento come 'idoneo' in neo4j
+        # self.salva_suggerimento(evento_scelto['id'])
 
     def salva_suggerimento(self):  # TODO
         # (idoneo = true lo mette il reasoner)
@@ -175,7 +140,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             lingua = self.rileva_lingua(testo)
             if lingua is None:
                 self.nodo.parla(self.dialogo_scriptato(tipo="errore_lingua"))
-                return
+                self.stato = "INIZIO"
             p = self.contesto['ospite']
             self.nodo.get_logger().info(f"{self.contesto['ospite']}")
             eta = self.recupera_eta()
@@ -195,15 +160,18 @@ class InteragisciScenarioA(InteragisciConOspite):
                 self.contesto['interesse'] = interesse
                 self.nodo.parla(self.dialogo_scriptato(tipo="conferma_interesse"))
                 self.stato = "CONFERMA"
-        elif self.stato == "CONFERMA":
-            if self.rileva_conferma(testo):
-                if self.contesto['interesse']:
-                    self.salva_interesse()
-                    self.stato = "SUGGERISCI_EVENTO_LOCALE"
-                    self.esegui("")  # Presidente?
             else:
                 self.stato = "RILEVA_INTERESSE"
-                self.esegui(testo)
+        elif self.stato == "CONFERMA":
+            risposta = self.rileva_conferma(testo)
+            if risposta is None:
+                self.stato = "CONFERMA"
+            elif risposta is False:
+                self.stato = "RILEVA_INTERESSE"
+            else:
+                self.salva_interesse()
+                self.stato = "SUGGERISCI_EVENTO_LOCALE"
+                self.esegui("")
         elif self.stato == "SUGGERISCI_EVENTO_LOCALE":
             self.suggerisci_evento_locale()
             self.stato = "SALUTO_FINALE"

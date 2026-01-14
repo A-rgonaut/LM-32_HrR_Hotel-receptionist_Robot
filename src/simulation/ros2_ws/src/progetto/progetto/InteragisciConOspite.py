@@ -1,4 +1,9 @@
+import json
+import os
 import string
+
+from dotenv import load_dotenv
+load_dotenv()
 
 class InteragisciConOspite():
     def __init__(self, nodo):
@@ -6,69 +11,63 @@ class InteragisciConOspite():
         self.stato = None
         self.sincro = nodo.sincro
         self.contesto = {}
+        self.vocab_conferme = {
+            'IT': {
+                'POS': self.carica_vocabolario("conferme", "ita_pos.txt"),
+                'NEG': self.carica_vocabolario("conferme", "ita_neg.txt")
+            },
+            'EN': {
+                'POS': self.carica_vocabolario("conferme", "eng_pos.txt"),
+                'NEG': self.carica_vocabolario("conferme", "eng_neg.txt")
+            }
+        }
+        with open("src/progetto/progetto/vocabolari/dialoghi.json", "r", encoding="utf-8") as f:
+            self.dialoghi = json.load(f)
 
     def reset(self, ospite):
         self.stato = "INIZIO"
         self.contesto = {}
         self.contesto["ospite"] = ospite
 
+    def carica_vocabolario(self, cartella, file_nome):
+        base_path = os.getenv("VOCABOLARI")
+        full_path = os.path.join(base_path, cartella, file_nome)
+        parole = set()
+        try:
+            if os.path.exists(full_path):
+                with open(full_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        p = line.strip().lower()
+                        if p and not p.startswith("#"):
+                            parole.add(p)
+            else:
+                self.nodo.get_logger().warning(f"Vocabolario mancante: {full_path}")
+        except Exception as e:
+            self.nodo.get_logger().error(f"Errore caricamento {file_nome}: {e}")
+        return parole
+
     def dialogo_scriptato(self, tipo):
-        if tipo != "errore_lingua":
-            lingua = self.contesto['ospite'].lingua
-        if tipo == "benvenuto":
-            nome      = self.contesto['ospite'].nome
-            cognome   = self.contesto['ospite'].cognome
-            num_notti = self.contesto['num_notti']
-            if lingua == 'IT':
-                return f"Benvenuto {nome} {cognome}! Piacere sono Pippor e sono qui per assisterti. Vedo che hai prenotato per {num_notti} notti. Posso chiederti il motivo del tuo viaggio? Hai interessi particolari?"
-            elif lingua == 'EN':
-                return f"Welcome {nome} {cognome}. I see {num_notti} nights. Any interests?"
-        elif tipo == "conferma_interesse":
-            interesse = self.contesto['interesse']
-            if lingua == 'IT':
-                return f"Ah confermi che il tuo interesse è {interesse}?"
-            elif lingua == 'EN':
-                return f"Do you confirm you like: {interesse}?"
-        elif tipo == "arrivederci":
-            if lingua == 'IT':
-                nome = self.contesto['ospite'].nome
-                return f"Grazie a te {nome}, rimango a disposizione!"
-            elif lingua == 'EN':
-                return f"Thanks {nome}, I am here for you."
-        elif tipo == "errore_lingua":
-            return "Non ho capito la lingua, puoi ripetere? (Prova 'Ciao'). I don't understand the language, could you repeat? (Try 'Hello')."
-        # Ho capito che ti interessa '{nome_interesse_clean}', ma non è presente tra i servizi dell'albergo.
+        if tipo == "errore_lingua":
+            return self.dialoghi["errore_lingua"]["DEFAULT"]
+        lingua = self.contesto['ospite'].lingua
+        dati = {
+            "nome": getattr(self.contesto['ospite'], 'nome', ''),
+            "cognome": getattr(self.contesto['ospite'], 'cognome', ''),
+            "num_notti": self.contesto.get('num_notti', ''),
+            "interesse": self.contesto.get('interesse', '')
+        }
+        try:
+            template = self.dialoghi[tipo].get(lingua, self.dialoghi[tipo].get("EN", ""))
+            return template.format(**dati)
+        except KeyError:
+            return f"[Errore: Dialogo '{tipo}' o lingua '{lingua}' mancante]"
 
     def rileva_conferma(self, testo):
         lingua = self.contesto['ospite'].lingua
         testo_clean = testo.lower().translate(str.maketrans('', '', string.punctuation))
         parole = set(testo_clean.split())
-        keywords = {
-            'IT': {
-                'POS': {
-                    'si', 'sì', 'certo', 'ok', 'va bene', 'ovvio', 'sicuro',
-                    'confermo', 'esatto', 'perfetto', 'ottimo', 'volentieri',
-                    'assolutamente', 'procedi', 'dai', 'certamente'
-                },
-                'NEG': {
-                    'no', 'negativo', 'sbagliato', 'ferma', 'annulla', 'non',
-                    'basta', 'errore', 'aspetta', 'mai', 'neanche', 'per nulla'
-                }
-            },
-            'EN': {
-                'POS': {
-                    'yes', 'yeah', 'yup', 'sure', 'ok', 'okay', 'fine', 'correct',
-                    'confirm', 'perfect', 'great', 'absolutely', 'go ahead',
-                    'right', 'yep', 'of course'
-                },
-                'NEG': {
-                    'no', 'nope', 'nah', 'negative', 'wrong', 'stop', 'cancel',
-                    'wait', 'never', 'not'
-                }
-            }
-        }
-        vocab_pos = keywords[lingua]['POS']
-        vocab_neg = keywords[lingua]['NEG']
+        vocab_pos = self.vocab_conferme[lingua]['POS']
+        vocab_neg = self.vocab_conferme[lingua]['NEG']
         has_pos = not parole.isdisjoint(vocab_pos)
         has_neg = not parole.isdisjoint(vocab_neg)
         if has_pos and not has_neg:

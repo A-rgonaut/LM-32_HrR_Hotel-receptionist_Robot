@@ -167,15 +167,18 @@ class BraccialettiManager(Node):
     def listener_callback(self, msg):
         current_time = self.get_clock().now()
         try:
-            data = json.loads(msg.data)
+            raw_data = json.loads(msg.data)
         except json.JSONDecodeError as e:
             self.get_logger().error(f"Errore parsing JSON: {e}")
             return
-        ospite_id = str(data.get("id", "")).strip()
-        if not ospite_id:
-            self.get_logger().warn("JSON senza campo 'id': impossibile associare a un ospite, scarto.")
-            return
-        ospite = self.get_or_create_ospite(ospite_id)
+        data_list = raw_data if isinstance(raw_data, list) else [raw_data]
+        for data in data_list:
+            ospite_id = str(data.get("id", "")).strip()
+            if not ospite_id:
+                self.get_logger().warn("JSON senza campo 'id', salto.")
+                continue
+
+            ospite = self.get_or_create_ospite(ospite_id)
         if ospite.last_packet_time is None:
             dt = 0.1
         else:
@@ -196,6 +199,7 @@ class BraccialettiManager(Node):
         if clean_hr is None or clean_pmin is None or clean_pmax is None:
             self.get_logger().debug("Dati insufficienti o braccialetto rimosso")
             return
+        # Pubblicazione singola per ogni ospite (più semplice per ora, ma forse manco serve se gestiamo qua dentro...)
         output_data = {
             "id": ospite_id,
             "hr":   round(clean_hr,   2),

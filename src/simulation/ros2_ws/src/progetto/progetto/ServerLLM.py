@@ -93,9 +93,9 @@ class ServerLLM(Node):
                     if content:
                         system_instruction = content
             except FileNotFoundError:
-                print(f"Attenzione: Il file '{full_path}' non esiste. Uso il default.")
+                self.get_logger().info(f"Attenzione: Il file '{full_path}' non esiste. Uso il default.")
             except Exception as e:
-                print(f"Errore generico nella lettura del file: {e}")
+                self.get_logger().info(f"Errore generico nella lettura del file: {e}")
         response = self.client.models.generate_content(
             model="gemini-2.5-flash",
             config=types.GenerateContentConfig(

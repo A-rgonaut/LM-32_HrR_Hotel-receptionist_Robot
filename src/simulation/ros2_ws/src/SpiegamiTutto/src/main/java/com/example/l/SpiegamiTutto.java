@@ -155,6 +155,8 @@ public class SpiegamiTutto {
                     jsonResult.append("}");
                 }
 
+                jsonResult.append("}");
+
                 System.out.println(jsonResult.toString());
 
             } catch (OWLOntologyCreationException e) {  // Caricamento fallisce

@@ -2,7 +2,9 @@ MATCH (n) DETACH DELETE n;
 
 CREATE
 
-(o:Ospite {nome_ospite: "Peppe", cognome_ospite: "Rossi", eta: 30, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
+(o:Ospite {nome: "Peppe", cognome: "Rossi", eta: 30, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
+(o1:Ospite {nome: "Carletta", cognome: "Bianchi", eta: 40, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
+(o2:Ospite {nome: "Mr", cognome: "President", eta: 50, lingua: "EN", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
 
 (l1:Hall {x: 0.0, y: 10.0}),
 (l2:CoffeeRoom {x: 0.0, y: -5.0}),
@@ -46,9 +48,9 @@ CREATE
 (e2:EventoMontagna {nome_evento: "Escursione Monte Genuardo", data_ora_evento: datetime("2026-01-14T08:00:00")}),
 (e3:EventoMare {nome_evento: "Giro in barca Porto Palo", data_ora_evento: datetime("2026-01-14T12:00:00")}),
 
-(sug1:Suggerimento {data_ora_sug: datetime(), idoneo: true}),
-(sug2:Suggerimento {data_ora_sug: datetime(), idoneo: true}),
-(sug3:Suggerimento {data_ora_sug: datetime(), idoneo: true}),
+(sug1:Suggerimento {nome_suggerimento: "Degustazione Cantina Cellaro", data_ora_sug: datetime()}),
+(sug2:Suggerimento {nome_suggerimento: "Escursione Monte Genuardo", data_ora_sug: datetime()}),
+(sug3:Suggerimento {nome_suggerimento: "Giro in barca Porto Palo", data_ora_sug: datetime()}),
 
 (r1)-[:GENERA]->(sug1),
 (r1)-[:GENERA]->(sug2),
@@ -62,9 +64,9 @@ CREATE
 (sug2)-[:INVIATO_A]->(o),
 (sug3)-[:INVIATO_A]->(o),
 
-(s1:Specialista {nome_specialista: "Giuseppe", cognome_specialista: "Verdi", specialita: "elettrico", numero_telefono: "333 3333 333"}),
-(s2:Specialista {nome_specialista: "Francesco", cognome_specialista: "Bianchi", specialita: "idraulico", numero_telefono: "333 4433 333"}),
-(s3:Specialista {nome_specialista: "Giulio", cognome_specialista: "Neri", specialita: "medico", numero_telefono: "333 5533 333"}),
+(s1:Specialista {nome: "Giuseppe", cognome: "Verdi", specialita: "elettrico", numero_telefono: "333 3333 333"}),
+(s2:Specialista {nome: "Francesco", cognome: "Bianchi", specialita: "idraulico", numero_telefono: "333 4433 333"}),
+(s3:Specialista {nome: "Giulio", cognome: "Neri", specialita: "medico", numero_telefono: "333 5533 333"}),
 
 (m0:PrevisioneMeteo {data_ora_meteo: datetime("2026-01-14T00:00:00"), condizione: "sereno", gradi: 10.0}),
 (m1:PrevisioneMeteo {data_ora_meteo: datetime("2026-01-14T01:00:00"), condizione: "sereno", gradi: 9.9}),
@@ -164,19 +166,4 @@ CREATE
 
 (r1)-[:NOTIFICA]->(s1),
 (r1)-[:NOTIFICA]->(s2),
-(r1)-[:NOTIFICA]->(s1),
-
-(es1:BattitiElevati {
-    data_ora_emergenza: datetime(),
-    bpm: 158,
-    urgente: true
-}),
-(es2:PressioneElevata {
-    data_ora_emergenza: datetime(),
-    pressione_min: 131,
-    pressione_max: 153,
-    urgente: true
-}),
-
-(r1)-[:RILEVA]->(es1),
-(r1)-[:NOTIFICA]->(s3);
+(r1)-[:NOTIFICA]->(s1)

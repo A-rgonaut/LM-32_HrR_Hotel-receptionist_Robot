@@ -15,7 +15,8 @@ class SincronizzamiTutto:
         self.cb_group = ReentrantCallbackGroup()
         self.pub = nodo.create_publisher(String, topic_richiesta, 10)
         self.sub = nodo.create_subscription(String, topic_risposta,
-            self.on_response, 10, callback_group=self.cb_group)
+                                            self.on_response, 10,
+                                            callback_group=self.cb_group)
 
     def on_response(self, msg):
         try:

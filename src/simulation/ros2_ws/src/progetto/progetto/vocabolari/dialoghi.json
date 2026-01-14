@@ -1,0 +1,17 @@
+{
+  "benvenuto": {
+    "IT": "Benvenuto {nome} {cognome}! Piacere sono Pippor e sono qui per assisterti. Vedo che hai prenotato per {num_notti} notti. Posso chiederti il motivo del tuo viaggio? Hai interessi particolari?",
+    "EN": "Welcome {nome} {cognome}. I see {num_notti} nights. Any interests?"
+  },
+  "conferma_interesse": {
+    "IT": "Ah confermi che il tuo interesse è {interesse}?",
+    "EN": "Do you confirm you like: {interesse}?"
+  },
+  "arrivederci": {
+    "IT": "Grazie a te {nome}, rimango a disposizione!",
+    "EN": "Thanks {nome}, I am here for you."
+  },
+  "errore_lingua": {
+    "DEFAULT": "Non ho capito la lingua, puoi ripetere? (Prova 'Ciao'). I don't understand the language, could you repeat? (Try 'Hello')."
+  }
+}
