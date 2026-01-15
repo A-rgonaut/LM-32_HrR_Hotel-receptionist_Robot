@@ -44,25 +44,13 @@ CREATE
 (o)-[:HA_INTERESSE]->(i1),
 (o)-[:HA_INTERESSE]->(i2),
 
-(e1:EventoCitta {nome_evento: "Degustazione Cantina Cellaro", data_ora_evento: datetime("2026-01-14T21:00:00")}),
-(e2:EventoMontagna {nome_evento: "Escursione Monte Genuardo", data_ora_evento: datetime("2026-01-14T08:00:00")}),
-(e3:EventoMare {nome_evento: "Giro in barca Porto Palo", data_ora_evento: datetime("2026-01-14T12:00:00")}),
+(e1:EventoLocale {nome_evento: "Degustazione Cantina Cellaro", data_ora_evento: datetime("2026-01-14T21:00:00"), tipo_evento: "citta"}),
+(e2:EventoLocale {nome_evento: "Escursione Monte Genuardo", data_ora_evento: datetime("2026-01-14T08:00:00"), tipo_evento: "montagna"}),
+(e3:EventoLocale {nome_evento: "Giro in barca Porto Palo", data_ora_evento: datetime("2026-01-14T12:00:00"), tipo_evento: "mare"}),
 
-(sug1:Suggerimento {nome_suggerimento: "Degustazione Cantina Cellaro", data_ora_sug: datetime()}),
-(sug2:Suggerimento {nome_suggerimento: "Escursione Monte Genuardo", data_ora_sug: datetime()}),
-(sug3:Suggerimento {nome_suggerimento: "Giro in barca Porto Palo", data_ora_sug: datetime()}),
-
-(r1)-[:GENERA]->(sug1),
-(r1)-[:GENERA]->(sug2),
-(r1)-[:GENERA]->(sug3),
-
-(sug1)-[:RIFERITO_A]->(e1),
-(sug2)-[:RIFERITO_A]->(e2),
-(sug3)-[:RIFERITO_A]->(e3),
-
-(sug1)-[:INVIATO_A]->(o),
-(sug2)-[:INVIATO_A]->(o),
-(sug3)-[:INVIATO_A]->(o),
+(e1)-[:INVIATO_A]->(o),
+(e2)-[:INVIATO_A]->(o),
+(e3)-[:INVIATO_A]->(o),
 
 (s1:Specialista {nome: "Giuseppe", cognome: "Verdi", specialita: "elettrico", numero_telefono: "333 3333 333"}),
 (s2:Specialista {nome: "Francesco", cognome: "Bianchi", specialita: "idraulico", numero_telefono: "333 4433 333"}),
@@ -120,7 +108,7 @@ CREATE
 (o)-[:AVVERTE]->(a4),
 
 (og1:Condizionatore {
-    tipo: "elettrico",
+    tipo_oggetto: "elettrico",
     tempo_acceso: 35,
     temperatura_stanza: 18,
     temperatura_impostata: 22,
@@ -128,11 +116,11 @@ CREATE
     soglia_assistenza: 2.0
 }),
 (og2:Lavandino {
-    tipo: "idraulico",
+    tipo_oggetto: "idraulico",
     soglia_assistenza: 1.0
 }),
 (og3:Phon {
-    tipo: "elettrico",
+    tipo_oggetto: "elettrico",
     soglia_assistenza: 2.0
 }),
 
