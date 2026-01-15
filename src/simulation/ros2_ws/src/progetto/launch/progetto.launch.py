@@ -1,5 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
+from ament_index_python.packages import get_package_share_directory
+import os
 
 def generate_launch_description():
 
@@ -25,6 +27,17 @@ def generate_launch_description():
                                   # name='lifecycle_manager_map',
                                   # output='screen',
                                   # parameters=[{'use_sim_time': False}, {'autostart': True}, {'node_names': ['map_server']}])
+
+    pkg_share = get_package_share_directory('progetto')
+    perspective_config = os.path.join(pkg_share, 'config', 'grafo_rqt.perspective')
+    rqt_graph_node = Node(
+        package='rqt_gui',
+        executable='rqt_gui',
+        name='rqt_graph',
+        arguments=[
+            '--force-discover',
+            '--perspective-file', perspective_config],
+        output='screen')
 
     arbitraggio_node = Node(package="progetto",
                             executable="arbitraggio",
@@ -62,6 +75,7 @@ def generate_launch_description():
     return LaunchDescription([unity_endpoint,
                               # map_server_node,
                               # lifecycle_manager_node,
+                              rqt_graph_node,
                               arbitraggio_node,
                               braccialetti_node,
                               controller_node,
