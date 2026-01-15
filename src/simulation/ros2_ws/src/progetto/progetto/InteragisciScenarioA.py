@@ -112,9 +112,35 @@ class InteragisciScenarioA(InteragisciConOspite):
         assiomi = self.sincro.spiegami_tutto(parentClassName="EventoLocale")
         self.nodo.get_logger().info(f"{assiomi}")
         self.nodo.get_logger().info(f"{json.loads(assiomi)}")
+        """
+        assiomi = json.dumps({
+            "Evento_1_NonSo":     {"Consigliabile": "Il reasoner NON deduce assiomi inerenti", "NonConsigliabile": "Il reasoner NON deduce assiomi inerenti"},
+            "Evento_2_SoloPro":   {"Consigliabile": "Sconto 50%", "NonConsigliabile": "Il reasoner NON deduce assiomi inerenti"},
+            "Evento_3_SoloContro":{"Consigliabile": "Il reasoner NON deduce assiomi inerenti", "NonConsigliabile": "Zona Pericolosa"},
+            "Evento_4_Conflitto": {"Consigliabile": "Bel Panorama", "NonConsigliabile": "Strada Rotta"}
+        })
+        """
         data = json.loads(assiomi)
-        for individuo, stati in data.items():
-            print(individuo, stati)
+        for evento, proprieta in data.items():
+            proprieta_con_assiomi = [k for k, v in proprieta.items() if v != "Il reasoner NON deduce assiomi inerenti"]
+            num_con_assiomi = len(proprieta_con_assiomi)
+            print(f"--- {evento} ---")
+            if num_con_assiomi == 0:  # CASO 1: Nessuna informazione
+                print("Non so, vogliamo provare a registrare un nuovo Interesse?")
+            elif num_con_assiomi > 1:  # CASO 4: Conflitto
+                valore_pro    = proprieta.get("Consigliabile")
+                valore_contro = proprieta.get("NonConsigliabile")
+                print(f"Nonostante le cose a favore ({valore_pro}), abbiamo queste contro: {valore_contro}, quindi te lo sconsiglio.")
+            else:
+                chiave_attiva = proprieta_con_assiomi[0]
+                valore_attivo = proprieta[chiave_attiva]
+                if chiave_attiva == "Consigliabile":  # CASO 2: Solo Incentivo
+                    print(f"Consigliabile per: {valore_attivo}")
+                elif chiave_attiva == "NonConsigliabile":  # CASO 3: Solo Divieto
+                    print(f"Sconsigliabile per: {valore_attivo}")
+                else:
+                    print(f"{chiave_attiva}: {valore_attivo}")
+            print("")
         # risposta = self.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
         # self.nodo.parla(risposta)
         # salvare il suggerimento come 'idoneo' in neo4j
