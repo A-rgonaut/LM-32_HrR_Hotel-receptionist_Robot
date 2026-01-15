@@ -93,6 +93,8 @@ class SpiegamiTutto(Node):
             if 'T' in iso_val:
                 return Literal(iso_val, datatype=XSD.dateTime)
         """
+        if isinstance(value, str):
+            return Literal(value, datatype=XSD.string)
         return Literal(value)
 
     def logic_crea_ontologia_istanze(self, ids):

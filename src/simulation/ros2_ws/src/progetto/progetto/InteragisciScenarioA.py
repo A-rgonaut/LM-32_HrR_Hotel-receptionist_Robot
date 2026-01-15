@@ -87,9 +87,9 @@ class InteragisciScenarioA(InteragisciConOspite):
             OPTIONAL MATCH (o)-[:SOFFRE_DI]->(pat)
             OPTIONAL MATCH (o)-[:HA_INTERESSE]->(i:Interesse)
             WITH o, p, collect(pat) as patologie, collect(i) as interessi
-            OPTIONAL MATCH (e)
+            OPTIONAL MATCH (e:EventoLocale)
             WHERE e.data_ora_evento >= p.data_inizio AND e.data_ora_evento <= p.data_fine
-            AND ANY(interest IN interessi WHERE ANY(lbl IN labels(e) WHERE toLower(lbl) CONTAINS toLower(interest.nome_interesse)))
+            AND ANY(interest IN interessi WHERE toLower(e.tipo_evento) CONTAINS toLower(interest.nome_interesse))
             OPTIONAL MATCH (m:PrevisioneMeteo) WHERE m.data_ora_meteo = e.data_ora_evento
             WITH o, p, patologie, interessi, collect(e) as eventi, collect(m) as meteo
             WITH [o, p] + patologie + interessi + eventi + meteo as nodi
@@ -109,7 +109,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             self.nodo.parla("Non ho trovato dati sufficienti nel database.")
             return
         self.sincro.crea_ontologia_istanze(self.contesto["ids"])
-        assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
+        assiomi = self.sincro.spiegami_tutto(parentClassName="EventoLocale")
         self.nodo.get_logger().info(f"{assiomi}")
         self.nodo.get_logger().info(f"{json.loads(assiomi)}")
         data = json.loads(assiomi)
