@@ -30,6 +30,7 @@ public class NPCController : MonoBehaviour
     private bool isPatrolling = true;
 
     public bool isCriticalCondition = false;
+    private bool isDancing = false;
 
     private enum StopState { None, Kneeling, Dying }
     private StopState currentStopState = StopState.None;
@@ -220,5 +221,26 @@ public class NPCController : MonoBehaviour
     {
         int randomIndex = Random.Range(0, waypointsOptional.Length);
         agent.SetDestination(waypointsOptional[randomIndex].position);
+    }
+
+    public void ToggleDance()
+    {
+        isDancing = !isDancing;
+
+        if (isDancing)
+        {
+            PrepareForStop(); 
+
+            currentStopState = StopState.None;
+            isCriticalCondition = false;
+
+            if (animator != null) animator.SetBool("IsDancing", true);
+        }
+        else
+        {
+            if (animator != null) animator.SetBool("IsDancing", false);
+
+            ResumePatrol();
+        }
     }
 }

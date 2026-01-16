@@ -107,6 +107,15 @@ public class CharacterSelector : MonoBehaviour
         ActivateCharacter(0);
     }
 
+    void Update()
+    {
+        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) &&
+            Input.GetKey(KeyCode.T) &&
+            Input.GetKeyDown(KeyCode.V))
+        {
+            TriggerEasterEgg();
+        }
+    }
     void OnDestroy()
     {
         ros.Disconnect();
@@ -360,5 +369,18 @@ public class CharacterSelector : MonoBehaviour
             TextMeshProUGUI testoComponent = buttonClicked.GetComponentInChildren<TextMeshProUGUI>();
             sendToRos2(testoComponent, activeChar);
         }
+    }
+    void TriggerEasterEgg()
+    {
+        if (_currentCharacterIndex == -1) return;
+
+        CharacterData activeChar = characters[_currentCharacterIndex];
+
+        // Recupera il riferimento corretto (come fai negli altri metodi)
+        Transform targetObj = activeChar.bodyTransform != null ? activeChar.bodyTransform : activeChar.cam.transform;
+        NPCController controller = targetObj.GetComponent<NPCController>();
+        if (controller == null) controller = targetObj.GetComponentInParent<NPCController>();
+
+        if (controller != null) controller.ToggleDance();
     }
 }
