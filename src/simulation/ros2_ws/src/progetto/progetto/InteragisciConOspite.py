@@ -21,7 +21,7 @@ class InteragisciConOspite():
                 'NEG': self.carica_vocabolario("conferme", "eng_neg.txt")
             }
         }
-        with open("src/progetto/progetto/vocabolari/dialoghi.json", "r", encoding="utf-8") as f:
+        with open(os.getenv("DIALOGHI"), "r", encoding="utf-8") as f:
             self.dialoghi = json.load(f)
 
     def reset(self, ospite):
