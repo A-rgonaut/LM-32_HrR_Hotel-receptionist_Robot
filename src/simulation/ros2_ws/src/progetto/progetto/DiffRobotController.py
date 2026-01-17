@@ -5,7 +5,7 @@ from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist, Quaternion
 from std_msgs.msg import Float64
 
-from math import sin, cos, atan2
+from math import sin, cos, atan2, pi
 
 class DiffRobotController(Node):
     def __init__(self):
@@ -13,9 +13,9 @@ class DiffRobotController(Node):
 
         self.L          = 0.28    # m
         self.R          = 0.0715  # m
-        self.init_x     = 0.0
-        self.init_y     = 0.0
-        self.init_theta = 0.0
+        self.init_x     = 10.0
+        self.init_y     = 11.0
+        self.init_theta = pi
 
         self.odometry_publisher = self.create_publisher(Odometry,
             '/odom', 10)
