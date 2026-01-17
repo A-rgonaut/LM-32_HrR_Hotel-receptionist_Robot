@@ -37,6 +37,7 @@ public class CharacterSelector : MonoBehaviour
 
     [Header("Pepper")]
     public GameObject pepperCamera;
+    public RobotBattery pepperBatteryScript;
 
     [Header("Characters")]
     public CharacterData[] characters;
@@ -123,18 +124,24 @@ public class CharacterSelector : MonoBehaviour
 
     public void ActivatePepper()
     {
-        // 1. Impostiamo l'indice a -1 per indicare che nessun NPC è attivo
         _currentCharacterIndex = -1;
 
-        // 2. Attiva la camera di Pepper
+        // 1. Attiva Camera
         if (pepperCamera != null) pepperCamera.SetActive(true);
 
-        // 3. Disattiva le camere di TUTTI gli NPC
+        // 2. Attiva BATTERIA e UI Robot
+        if (pepperBatteryScript != null)
+        {
+            pepperBatteryScript.enabled = true; // Riattiva la logica
+            if (pepperBatteryScript.batteryUIPanel != null)
+                pepperBatteryScript.batteryUIPanel.SetActive(true); // Mostra la UI
+        }
+
+        // 3. Disattiva Camera NPC
         for (int i = 0; i < characters.Length; i++)
             if (characters[i].cam != null) characters[i].cam.SetActive(false);
-        
 
-        // 4. Nascondi i pulsanti azione
+        // 4. Nascondi UI Umani (Bottoni scenari)
         foreach (GameObject btn in actionButtons)
             if (btn != null) btn.SetActive(false);
 
@@ -151,15 +158,23 @@ public class CharacterSelector : MonoBehaviour
     {
         _currentCharacterIndex = indexToActivate;
 
-        // 1. Spegni la camera di Pepper
+        // 1. Spegni Camera Pepper
         if (pepperCamera != null) pepperCamera.SetActive(false);
 
-        // 2. Gestione Camere NPC (Accendi solo quella scelta)
+        // 2. DISATTIVA BATTERIA e UI Robot
+        if (pepperBatteryScript != null)
+        {
+            pepperBatteryScript.enabled = true; // Ferma il calcolo (opzionale, o lascia true se vuoi che si scarichi anche mentre non lo guardi)
+            if (pepperBatteryScript.batteryUIPanel != null)
+                pepperBatteryScript.batteryUIPanel.SetActive(false); // Nasconde la UI
+        }
+
+        // 3. Gestione Camere NPC (Accendi solo quella scelta)
         for (int i = 0; i < characters.Length; i++)
             if (characters[i].cam != null)
                 characters[i].cam.SetActive(i == indexToActivate);
         
-        // 3. Mostra i pulsanti (perché siamo su un NPC)
+        // 4. Mostra i pulsanti (perché siamo su un NPC)
         foreach (GameObject btn in actionButtons)
             if (btn != null) btn.SetActive(true);
 

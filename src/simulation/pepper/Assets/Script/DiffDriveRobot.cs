@@ -140,7 +140,7 @@ public class DiffDriveRobot : MonoBehaviour
             leftWheel.jointVelocity[0] 
         };
 
-        Debug.Log($"Right: {rightWheel.jointVelocity[0]}, Left: {leftWheel.jointVelocity[0]}");
+        //Debug.Log($"Right: {rightWheel.jointVelocity[0]}, Left: {leftWheel.jointVelocity[0]}");
 
         ros.Publish(wheelsStateTopic, stateMsg);
     }
