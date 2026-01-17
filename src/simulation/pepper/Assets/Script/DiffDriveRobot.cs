@@ -4,6 +4,7 @@ using RosMessageTypes.Std;
 using RosMessageTypes.Sensor;
 using System.Collections.Generic;
 using System.Globalization;
+using System;
 
 public class DiffDriveRobot : MonoBehaviour
 {
@@ -102,7 +103,7 @@ public class DiffDriveRobot : MonoBehaviour
     void LeftWheelCmdCallback(Float64Msg msg)
     {
         lastCmdReceivedTime = Time.time;
-        isStopped = false; // Se arrivano comandi, riattiviamo il controllo
+        isStopped = false;
         SetSpeed(leftWheel, (float)msg.data);
     }
 
@@ -115,9 +116,18 @@ public class DiffDriveRobot : MonoBehaviour
 
     void SetSpeed(ArticulationBody wheel, float speedRadS)
     {
+        if (wheel == null) return;
+
         var drive = wheel.xDrive;
-        drive.targetVelocity = speedRadS * Mathf.Rad2Deg; 
-        wheel.xDrive = drive;
+        // Convertiamo senza troncare per mantenere la massima fedeltà fisica
+        float targetDeg = speedRadS * Mathf.Rad2Deg;
+
+        // Evita di aggiornare se la differenza è infinitesimale (ottimizzazione)
+        if (Mathf.Abs(drive.targetVelocity - targetDeg) > 0.0001f)
+        {
+            drive.targetVelocity = targetDeg;
+            wheel.xDrive = drive;
+        }
     }
 
     void PublishWheelStates()
@@ -129,6 +139,8 @@ public class DiffDriveRobot : MonoBehaviour
             rightWheel.jointVelocity[0], 
             leftWheel.jointVelocity[0] 
         };
+
+        Debug.Log($"Right: {rightWheel.jointVelocity[0]}, Left: {leftWheel.jointVelocity[0]}");
 
         ros.Publish(wheelsStateTopic, stateMsg);
     }
