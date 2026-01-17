@@ -24,10 +24,11 @@ class InteragisciConOspite():
         with open(os.getenv("DIALOGHI"), "r", encoding="utf-8") as f:
             self.dialoghi = json.load(f)
 
-    def reset(self, ospite):
+    def reset(self, ospite=None):
         self.stato = "INIZIO"
         self.contesto = {}
-        self.contesto["ospite"] = ospite
+        if ospite:
+            self.contesto["ospite"] = ospite
 
     def carica_vocabolario(self, cartella, file_nome):
         base_path = os.getenv("VOCABOLARI")

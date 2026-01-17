@@ -11,6 +11,9 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/config', ['config/grafo_rqt.perspective']),
+        ('share/' + package_name + '/config', ['config/your.rviz']),
+        ('share/' + package_name + '/maps', ['maps/map_ros.png']),
+        ('share/' + package_name + '/maps', ['maps/map_ros.yaml']),
         ('share/' + package_name + '/launch', ['launch/progetto.launch.py'])
     ],
     install_requires=['setuptools'],
@@ -29,7 +32,6 @@ setup(
             'arbitraggio = progetto.Arbitraggio:main',
             'braccialetti = progetto.BraccialettiManager:main',
             'controller = progetto.DiffRobotController:main',
-            # 'pianifica = progetto.Pianifica:main',
             'server_llm = progetto.ServerLLM:main',
             'server_neo4j = progetto.ServerNeo4j:main',
             'server_onto = progetto.ServerOntologia:main',

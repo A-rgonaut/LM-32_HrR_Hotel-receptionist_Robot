@@ -6,11 +6,23 @@ class InteragisciScenarioB(InteragisciConOspite):
         super().__init__(nodo)
         self.specialista = specialista
 
+    def reset(self, ospite=None):
+        super().reset(ospite)
+        # self.nodo.destinazione_target = (7, 4.2)  # Stanza 1
+        self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
+        self.nodo.raggiunta_destinazione = False
+        self.nodo.comportamento_precedente = "InteragisciScenarioB"
+        self.stato = "ASPETTA_ROBOT"
+        self.nodo.comportamenti["Naviga"].reset()
+
     def esegui(self, testo):
         self.nodo.get_logger().info(f"[ScenarioB] Stato: {self.stato}, Input: {testo}")
-        if self.stato == "INIZIO":
-            self.specialista.chiama(self.nodo, "elettricista", "camera 1", "assiomi ritornati da spiegami tutto (es. phon guasto)")
-            self.stato = "FINE"
+        if self.stato == "ASPETTA_ROBOT":
+            if self.nodo.raggiunta_destinazione:
+                self.specialista.chiama(self.nodo, "elettricista", "camera 1", "assiomi ritornati da spiegami tutto (es. phon guasto)")
+                self.stato = "FINE"
+            else:
+                self.nodo.parla("Arrivo subito, sto arrivando da te!")
         elif self.stato == "FINE":
             pass
         else:
