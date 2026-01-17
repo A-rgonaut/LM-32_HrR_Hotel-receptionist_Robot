@@ -59,7 +59,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             return False
 
     def rileva_interesse(self, testo):
-        nome_interesse_raw = "montagna" # self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
+        nome_interesse_raw = "trekking"  # self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
         nome_classe_ufficiale = self.sincro.trova_classe_da_sinonimo(nome_interesse_raw, nome_radice="Interesse")
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Interesse rilevato: '{nome_interesse_raw}' -> Mapped to: '{nome_classe_ufficiale}'")
@@ -87,10 +87,10 @@ class InteragisciScenarioA(InteragisciConOspite):
             OPTIONAL MATCH (o)-[:SOFFRE_DI]->(pat)
             OPTIONAL MATCH (o)-[:HA_INTERESSE]->(i:Interesse)
             WITH o, p, collect(pat) as patologie, collect(i) as interessi
-            OPTIONAL MATCH (e:EventoLocale)
-            WHERE e.data_ora_evento >= p.data_inizio AND e.data_ora_evento <= p.data_fine
-            AND ANY(interest IN interessi WHERE toLower(e.tipo_evento) CONTAINS toLower(interest.nome_interesse))
-            OPTIONAL MATCH (m:PrevisioneMeteo) WHERE m.data_ora_meteo = e.data_ora_evento
+            OPTIONAL MATCH (e)
+            WHERE e.data_ora_evento_locale >= p.data_inizio AND e.data_ora_evento_locale <= p.data_fine
+            AND ANY(interest IN interessi WHERE ANY(lbl IN labels(e) WHERE toLower(lbl) CONTAINS toLower(interest.nome_interesse)))
+            OPTIONAL MATCH (m:PrevisioneMeteo) WHERE m.data_ora_meteo = e.data_ora_evento_locale
             WITH o, p, patologie, interessi, collect(e) as eventi, collect(m) as meteo
             WITH [o, p] + patologie + interessi + eventi + meteo as nodi
             UNWIND nodi as n
@@ -109,7 +109,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             self.nodo.parla("Non ho trovato dati sufficienti nel database.")
             return
         self.sincro.crea_ontologia_istanze(self.contesto["ids"])
-        assiomi = self.sincro.spiegami_tutto(parentClassName="EventoLocale")
+        assiomi = self.sincro.spiegami_tutto(parentClassName="Evento")
         self.nodo.get_logger().info(f"{assiomi}")
         self.nodo.get_logger().info(f"{json.loads(assiomi)}")
         """

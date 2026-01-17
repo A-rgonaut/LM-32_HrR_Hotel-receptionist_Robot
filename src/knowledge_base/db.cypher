@@ -44,13 +44,9 @@ CREATE
 (o)-[:HA_INTERESSE]->(i1),
 (o)-[:HA_INTERESSE]->(i2),
 
-(e1:EventoLocale {nome_evento: "Degustazione Cantina Cellaro", data_ora_evento: datetime("2026-01-14T21:00:00"), tipo_evento: "citta"}),
-(e2:EventoLocale {nome_evento: "Escursione Monte Genuardo", data_ora_evento: datetime("2026-01-14T08:00:00"), tipo_evento: "montagna"}),
-(e3:EventoLocale {nome_evento: "Giro in barca Porto Palo", data_ora_evento: datetime("2026-01-14T12:00:00"), tipo_evento: "mare"}),
-
-(e1)-[:INVIATO_A]->(o),
-(e2)-[:INVIATO_A]->(o),
-(e3)-[:INVIATO_A]->(o),
+(e1:EventoCitta {nome_evento_locale: "Degustazione Cantina Cellaro", data_ora_evento_locale: datetime("2026-01-14T21:00:00")}),
+(e2:EventoMontagna {nome_evento_locale: "Escursione Monte Genuardo", data_ora_evento_locale: datetime("2026-01-14T08:00:00")}),
+(e3:EventoMare {nome_evento_locale: "Giro in barca Porto Palo", data_ora_evento_locale: datetime("2026-01-14T12:00:00")}),
 
 (s1:Specialista {nome: "Giuseppe", cognome: "Verdi", specialita: "elettrico", numero_telefono: "333 3333 333"}),
 (s2:Specialista {nome: "Francesco", cognome: "Bianchi", specialita: "idraulico", numero_telefono: "333 4433 333"}),
