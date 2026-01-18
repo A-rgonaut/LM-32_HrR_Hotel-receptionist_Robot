@@ -1,11 +1,11 @@
-using RosMessageTypes.Std;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using TMPro;
-using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Unity.Robotics.ROSTCPConnector;
+using RosMessageTypes.Std;
+using System.Collections;
+using System.Globalization;
+using System.Collections.Generic;
 
 public class CharacterSelector : MonoBehaviour
 {
@@ -210,10 +210,10 @@ public class CharacterSelector : MonoBehaviour
 
                 if (isCritical)
                 {
-                    // Scenario C2: Morto -> Tutto a zero
-                    currentBPM = 0;
-                    currentPAS = 0;
-                    currentPAD = 0;
+                    // Scenario C2: Grave
+                    currentBPM = 160 + Random.Range(-noiseRange, noiseRange + 1);
+                    currentPAS = 190 + Random.Range(-noiseRange, noiseRange + 1);
+                    currentPAD = 110 + Random.Range(-noiseRange, noiseRange + 1);
                 }
                 else
                 {
@@ -223,11 +223,23 @@ public class CharacterSelector : MonoBehaviour
                     currentPAD = data.avgPAD + Random.Range(-noiseRange, noiseRange + 1);
                 }
 
-                // ... (Recupero posizione e update UI rimangono uguali) ...
                 Vector3 pos = target.position;
 
                 if (i == _currentCharacterIndex)
                 {
+                    if (isCritical)
+                    {
+                        if (bpmText != null) bpmText.color = Color.red;
+                        if (pasText != null) pasText.color = Color.red;
+                        if (padText != null) padText.color = Color.red;
+                    }
+                    else
+                    {
+                        if (bpmText != null) bpmText.color = Color.white; 
+                        if (pasText != null) pasText.color = Color.white;
+                        if (padText != null) padText.color = Color.white;
+                    }
+
                     if (bpmText != null) bpmText.text = "BPM: " + currentBPM.ToString();
                     if (pasText != null) pasText.text = "PAS: " + currentPAS.ToString();
                     if (padText != null) padText.text = "PAD: " + currentPAD.ToString();
