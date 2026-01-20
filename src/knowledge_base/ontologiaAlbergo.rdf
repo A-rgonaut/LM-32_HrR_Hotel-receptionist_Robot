@@ -591,6 +591,14 @@
     
 
 
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Cefalea -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Cefalea">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Citta -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Citta">
@@ -770,6 +778,14 @@
     
 
 
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Palpitazioni -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Palpitazioni">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
@@ -793,6 +809,14 @@
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione"/>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PressioneToracica -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PressioneToracica">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
+    </owl:Class>
     
 
 
@@ -830,17 +854,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#cefalea -->
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Tosse -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#cefalea">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tosse -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tosse">
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Tosse">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
     </owl:Class>
     
