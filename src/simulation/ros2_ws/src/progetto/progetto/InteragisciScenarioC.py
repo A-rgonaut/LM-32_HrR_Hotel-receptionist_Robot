@@ -1,6 +1,6 @@
 from progetto.InteragisciConOspite import InteragisciConOspite
 from progetto.utils import Ospite
-
+import ast
 import json
 import time
 
@@ -9,17 +9,23 @@ class InteragisciScenarioC(InteragisciConOspite):
     def __init__(self, nodo, specialista):  # , spiegazione): # da vedere dove viene chiamato e controllare il costruttore
         super().__init__(nodo)
         self.specialista = specialista
-        # self.spiegazione = spiegazione # se viene dal rilevamento automatico allora spiegazione != null, altrimenti se vuoto veniamo dal bottone
+        #self.spiegazione=""
+        self.spiegazione="Sei qua perchè ho rilevato un'emergenza"# self.spiegazione = spiegazione # se viene dal rilevamento automatico allora spiegazione != null, altrimenti se vuoto veniamo dal bottone
         # in fase di testing, per adesso quando clicchiamo i lbottone dobbiamo provare con spiegazione e senza
 
 
     #TODO
     def rileva_sintomi(self, testo):
 
-        # lista_sintomi = self.sincro.ask_llm(testo, scenario="C", tipo="estrazione_semantica")
-
+    
+        lista_sintomi = self.sincro.ask_llm(testo, scenario="C", tipo="estrazione_semantica")
+        lista_sintomi = ast.literal_eval(lista_sintomi)
+        #lista_sintomi=['cefalea', 'tosse']
+        if not lista_sintomi:
+            return []
+        self.nodo.parla(f"Sintomi estratti: {lista_sintomi}, {type(lista_sintomi)}")
         #da sopra in realtà ritorna una lista, ma per adesso facciamolo ad uno
-        lista_sintomi = """vomito"""
+        #lista_sintomi = ['tosse', 'tachicardia']
 
 
         #gabriele unn'ava scassari a mi
@@ -29,12 +35,13 @@ class InteragisciScenarioC(InteragisciConOspite):
         # o li controlliamo tutti o per adesso camminiamo con uno
 
         nome_classe_ufficiale =self.sincro.trova_classe_da_sinonimo(lista_sintomi, nome_radice="Sintomo")# questo sarà per uno, penso che per qua va esteso
+        self.nodo.get_logger().info(f"Interesse rilevato: '{lista_sintomi}' -> Mapped to: '{nome_classe_ufficiale}'")
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Interesse rilevato: '{lista_sintomi}' -> Mapped to: '{nome_classe_ufficiale}'")
             return nome_classe_ufficiale
         else:
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_classe_ufficiale}'")
-            return None
+            return []
 
 
     def aggiorna_sintomi(self,lista_nomi):
@@ -46,7 +53,7 @@ class InteragisciScenarioC(InteragisciConOspite):
         aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
         return aggiornato
 
-
+    
 
 
     def cambia_stato(self):
@@ -60,6 +67,7 @@ class InteragisciScenarioC(InteragisciConOspite):
 
 
     def esegui(self, testo):
+        # questo esegui() va fatto partire dopo che il robot è davanti la persona.
         self.nodo.get_logger().info(f"[ScenarioC] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
 
@@ -70,7 +78,7 @@ class InteragisciScenarioC(InteragisciConOspite):
                 # stampare spiegazione a schermo
 
                 self.nodo.parla(self.spiegazione)
-
+                self.nodo.parla("Puoi dirmi se sei cosciente?")
                 #vediamo se risponde prima di un certo tempo
                 self.inizio_stato_di_coscienza = time.time() # vedere se metterlo static oppure da qualche altra parte in maniera che si vede nel codice
 
@@ -84,23 +92,30 @@ class InteragisciScenarioC(InteragisciConOspite):
 
                 # vice dice di farlo quando  clicca il bottone, si va fatto quando clicca il bottone dello scenario C
                 #gab boccia, dangerous perchè non c'è spiegazione e ci sono rischi arbitraggio
-
+                
                 self.stato = "DESCRIZIONE_SINTOMI"
 
 
         elif self.stato == "COSCIENZA":   # domandiamo se è cosciente
             #da capire se il tempo va  qua o meno
-
+            self.nodo.parla("Fase coscienza")
             # ritorna il testo con si o no
 
             tempo_trascorso = time.time() - self.inizio_stato_di_coscienza # da vedere se funge
-
+            self.nodo.get_logger().info(f"{tempo_trascorso}")
+            
+            p = self.contesto['ospite']
+            #va recuperato o un contesto completo oppure faccio una funzione che mi da eta e lingua e aggiungo dopo, questo serve in scenarioB
+            self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT")
+            self.nodo.get_logger().info(f"{p}")
+            #importante che su neo4j ci sia la lingua della persona registrata
             risposta = self.rileva_conferma(testo)
 
             if not risposta or tempo_trascorso > 30:
-
+                self.nodo.parla(tempo_trascorso)
                 self.stato = "CHIAMATA_SPECIALISTA"
             else:
+                self.nodo.parla("Dimmi che sintomi hai per favore.")
                 self.stato = "DESCRIZIONE_SINTOMI"
 
 
@@ -125,7 +140,9 @@ class InteragisciScenarioC(InteragisciConOspite):
 
 
             lista_sintomi = self.rileva_sintomi(testo)  # vedere come fatto nello scen A
-
+            # Soluzione robusta
+            self.nodo.parla(lista_sintomi)
+            #lista_sintomi = [s.strip() for s in self.rileva_sintomi(testo).split(",")]
 
             # ritornano i sintomi e si salvano i sintomi su neo4j
             self.nodo.get_logger().info(f"{self.aggiorna_sintomi(lista_sintomi)}")

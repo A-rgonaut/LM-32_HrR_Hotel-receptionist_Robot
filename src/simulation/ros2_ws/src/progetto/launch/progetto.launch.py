@@ -65,6 +65,7 @@ def generate_launch_description():
 
     return LaunchDescription([unity_endpoint,
                               map_server_node, lifecycle_manager_node, tf_map_odom_node,
-                              rqt_graph_node, rviz_node,
+                              #rqt_graph_node, 
+                              rviz_node,
                               arbitraggio_node, braccialetti_node, controller_node,
                               llm_node, neo4j_node, onto_node, spiega_node])

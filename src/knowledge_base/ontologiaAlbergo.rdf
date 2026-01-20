@@ -12,10 +12,10 @@
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
      xmlns:terms="http://purl.org/dc/terms/">
     <owl:Ontology rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13"/>
+    
 
 
-
-    <!--
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Annotation properties
@@ -23,22 +23,22 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-
+    
 
 
     <!-- http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled -->
 
     <owl:AnnotationProperty rdf:about="http://swrl.stanford.edu/ontologies/3.3/swrla.owl#isRuleEnabled"/>
-
+    
 
 
     <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
 
     <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
 
 
-
-    <!--
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -46,7 +46,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#ASSOCIATA_A -->
@@ -55,7 +55,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Stanza"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#AVVERTE -->
@@ -64,7 +64,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Anomalia"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#CRITICO_PER -->
@@ -73,7 +73,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#DANNOSO_PER -->
@@ -82,7 +82,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Anomalia"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EFFETTUA -->
@@ -91,7 +91,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#HA_INTERESSE -->
@@ -100,7 +100,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#HA_SINTOMO -->
@@ -109,7 +109,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#INERENTE_A -->
@@ -118,7 +118,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Guasto"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#INVIATO_A -->
@@ -127,7 +127,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Evento"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#NOTIFICA -->
@@ -136,7 +136,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Robot"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Specialista"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#SEGNALA -->
@@ -145,7 +145,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Guasto"/>
     </owl:ObjectProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#SOFFRE_DI -->
@@ -154,10 +154,10 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
     </owl:ObjectProperty>
+    
 
 
-
-    <!--
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Data properties
@@ -165,7 +165,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#assistenza -->
@@ -174,7 +174,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Guasto"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#bpm_allerta -->
@@ -183,7 +183,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Cardiopatia"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#bpm_anomala -->
@@ -192,7 +192,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Cardiopatia"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#bpm_attuale -->
@@ -201,7 +201,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#cognome -->
@@ -210,7 +210,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Persona"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#condizione -->
@@ -219,7 +219,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PrevisioneMeteo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_fine -->
@@ -228,7 +228,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_inizio -->
@@ -237,7 +237,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_ora_evento -->
@@ -247,7 +247,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Evento"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_ora_evento_locale -->
@@ -256,7 +256,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_ora_guasto -->
@@ -265,7 +265,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Guasto"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#data_ora_meteo -->
@@ -274,7 +274,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PrevisioneMeteo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#eta -->
@@ -283,7 +283,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#gradi -->
@@ -292,7 +292,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PrevisioneMeteo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#lingua -->
@@ -301,7 +301,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#modalita -->
@@ -310,7 +310,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome -->
@@ -319,7 +319,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Persona"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome_anomalia -->
@@ -328,7 +328,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Anomalia"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome_camera -->
@@ -337,7 +337,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Stanza"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome_evento -->
@@ -347,7 +347,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Evento"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome_evento_locale -->
@@ -356,7 +356,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome_interesse -->
@@ -365,7 +365,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome_robot -->
@@ -374,7 +374,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Robot"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#nome_sintomo -->
@@ -383,7 +383,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#numero_telefono -->
@@ -392,7 +392,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Specialista"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_allerta -->
@@ -401,7 +401,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_anomala -->
@@ -410,7 +410,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_max_attuale -->
@@ -419,7 +419,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_allerta -->
@@ -428,7 +428,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_anomala -->
@@ -437,7 +437,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#pressione_min_attuale -->
@@ -446,7 +446,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#punteggio_aggravante_anomalia -->
@@ -455,7 +455,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Anomalia"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#punteggio_aggravante_sintomo -->
@@ -464,7 +464,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#punteggio_base_anomalia -->
@@ -473,7 +473,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Anomalia"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#punteggio_base_sintomo -->
@@ -482,7 +482,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#soglia_assistenza -->
@@ -491,7 +491,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#soglia_urgente -->
@@ -500,7 +500,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#specialita -->
@@ -509,7 +509,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Specialista"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#temperatura_impostata -->
@@ -518,7 +518,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#temperatura_stanza -->
@@ -527,7 +527,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tempo_acceso -->
@@ -536,7 +536,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tipo_oggetto -->
@@ -545,7 +545,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#x -->
@@ -554,7 +554,7 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#y -->
@@ -563,10 +563,10 @@
         <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
     </owl:DatatypeProperty>
+    
 
 
-
-    <!--
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -574,13 +574,13 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Anomalia -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Anomalia"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Cardiopatia -->
@@ -588,7 +588,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Cardiopatia">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Citta -->
@@ -601,7 +601,7 @@
         <skos:altLabel xml:lang="it">teatro</skos:altLabel>
         <skos:altLabel xml:lang="it">vino</skos:altLabel>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#CoffeeRoom -->
@@ -609,7 +609,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#CoffeeRoom">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Condizionatore -->
@@ -619,13 +619,13 @@
         <skos:altLabel>caldo</skos:altLabel>
         <skos:altLabel>freddo</skos:altLabel>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Evento -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Evento"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoCitta -->
@@ -633,7 +633,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoCitta">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoConsigliabile -->
@@ -641,13 +641,13 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoConsigliabile">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Evento"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMare -->
@@ -655,7 +655,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMare">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMontagna -->
@@ -663,7 +663,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoMontagna">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoLocale"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoNonConsigliabile -->
@@ -671,13 +671,13 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#EventoNonConsigliabile">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Evento"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Guasto -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Guasto"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Hall -->
@@ -685,13 +685,13 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Hall">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Interesse"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione -->
@@ -699,7 +699,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ipertensione">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Lavandino -->
@@ -707,13 +707,13 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Lavandino">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Mare -->
@@ -724,7 +724,7 @@
         <skos:altLabel xml:lang="it">pesce</skos:altLabel>
         <skos:altLabel xml:lang="it">snorkeling</skos:altLabel>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Montagna -->
@@ -737,13 +737,13 @@
         <skos:altLabel xml:lang="it">stella</skos:altLabel>
         <skos:altLabel xml:lang="it">trekking</skos:altLabel>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite -->
@@ -751,7 +751,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Persona"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OspiteInStatodiAllerta -->
@@ -759,7 +759,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OspiteInStatodiAllerta">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OspiteStatoChiamataSpecialista -->
@@ -767,19 +767,19 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OspiteStatoChiamataSpecialista">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Ospite"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Patologia"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Persona -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Persona"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Phon -->
@@ -787,31 +787,31 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Phon">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#OggettoGuastabile"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Prenotazione"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PrevisioneMeteo -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#PrevisioneMeteo"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Robot -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Robot"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Specialista -->
@@ -819,7 +819,7 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Specialista">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Persona"/>
     </owl:Class>
-
+    
 
 
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Stanza -->
@@ -827,10 +827,26 @@
     <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Stanza">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
     </owl:Class>
+    
 
 
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#cefalea -->
 
-    <!--
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#cefalea">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tosse -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tosse">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Sintomo"/>
+    </owl:Class>
+    
+
+
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Rules
@@ -1719,3 +1735,4 @@
 
 
 <!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+

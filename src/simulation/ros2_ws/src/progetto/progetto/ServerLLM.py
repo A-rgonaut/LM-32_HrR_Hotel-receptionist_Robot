@@ -78,6 +78,9 @@ class ServerLLM(Node):
                 # freddo -> allora il problema sta nel condizionatore
                 # LLM per prendere la parola
                 nome_file = "estrazione_semantica_b.md"
+            elif scenario == "C":
+                # dal testo dobbiamo rilevare la lista dei sintomi 
+                nome_file = "estrazione_semantica_c.md"
         elif tipo == "explainability":
             if scenario == "A":
                 nome_file = "explainability_a.md"

@@ -59,8 +59,11 @@ class InteragisciScenarioA(InteragisciConOspite):
             return False
 
     def rileva_interesse(self, testo):
-        nome_interesse_raw = "trekking"  # self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
-        nome_classe_ufficiale = self.sincro.trova_classe_da_sinonimo(nome_interesse_raw, nome_radice="Interesse")
+        #nome_interesse_raw = "trekking"  # 
+        nome_interesse_raw = self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
+        risultati = self.sincro.trova_classe_da_sinonimo([nome_interesse_raw], nome_radice="Interesse")
+        #Se la lista è vuota, assegna None (o un valore di default), altrimenti il primo elemento
+        nome_classe_ufficiale = risultati[0] if risultati else None
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Interesse rilevato: '{nome_interesse_raw}' -> Mapped to: '{nome_classe_ufficiale}'")
             return nome_classe_ufficiale

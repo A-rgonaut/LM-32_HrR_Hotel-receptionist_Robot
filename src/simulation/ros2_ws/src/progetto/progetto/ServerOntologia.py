@@ -79,7 +79,45 @@ class ServerOntologia(Node):
             return issubclass(cls_figlio, cls_genitore)
         return False
 
-    def logic_trova_classe(self, testo, nome_radice):
+
+    def logic_trova_classe(self, lista_sintomi, nome_radice):
+        self.get_logger().info(f"nome radice {nome_radice}  {lista_sintomi}")
+        if not self.ontology or not isinstance(lista_sintomi, list):
+            return []
+
+        root_class = self.ontology[nome_radice]
+        
+        if not root_class:
+            self.get_logger().info(f"  if not root_class:")
+            return []
+
+        risultati = set()
+        
+
+        for sintomo in lista_sintomi:
+            
+            clean_term = str(sintomo).lower().strip()
+            match_found = None
+
+            candidate = self.ontology[clean_term]
+            if candidate and self.logic_verifica_sottoclasse(candidate.name, nome_radice):
+                match_found = candidate.name 
+            
+            if not match_found:
+                for cls in root_class.descendants():
+                    if cls.name.lower() == clean_term:
+                        match_found = cls.name
+                    else:
+                        sinonimi = [str(s).lower() for s in getattr(cls, 'altLabel', [])]
+                        labels = [str(l).lower() for l in cls.label]
+                        if clean_term in sinonimi or clean_term in labels:
+                            match_found = cls.name
+            if match_found:
+                risultati.add(match_found)
+
+        return list(risultati)
+
+    """ def logic_trova_classe(self, testo, nome_radice):
         if not self.ontology:
             return None
         clean_text = str(testo).lower().strip()
@@ -99,7 +137,7 @@ class ServerOntologia(Node):
             if clean_text in sinonimi or clean_text in labels:
                 return cls.name
         return None
-
+"""
 def main(args=None):
     rclpy.init(args=args)
     onto = ServerOntologia()
