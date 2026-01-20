@@ -8,8 +8,11 @@ class InteragisciScenarioB(InteragisciConOspite):
 
     def reset(self, ospite=None):
         super().reset(ospite)
-        self.nodo.destinazione_target = (7, -7.8)  # Stanza 1
+        #self.nodo.destinazione_target = (-10, 11)
+        #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
+        #self.nodo.destinazione_target = (7, 4.2)  # stanza 1
+        self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioB"
         self.stato = "ASPETTA_ROBOT"
