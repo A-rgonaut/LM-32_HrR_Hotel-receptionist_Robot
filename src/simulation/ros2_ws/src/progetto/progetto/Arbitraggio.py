@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
+from std_msgs.msg import String, Int32
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 
@@ -37,7 +37,10 @@ class Arbitraggio(Node):
                                                 self.gestisci_bottone, 10,
                                                 callback_group=self.cb_group)
         self.stato = self.create_publisher(String, '/unity/stato', 10)
-
+        self.batteria = self.create_subscription(Int32, '/unity/battery_state',
+                                                 self.gestisci_batteria, 10,
+                                                 callback_group=self.cb_group)
+        
         self.nome_robot = None
         self.destinazione_target = None
         self.raggiunta_destinazione = True
@@ -196,6 +199,9 @@ class Arbitraggio(Node):
         msg.data = f"{self.nome_robot}: {testo}"
         self.pub.publish(msg)
         self.get_logger().info(msg.data)
+        
+    def gestisci_batteria(self, msg):
+        self.get_logger().info(f"Batteria = {msg.data}%")
 
 def main(args=None):
     rclpy.init(args=args)

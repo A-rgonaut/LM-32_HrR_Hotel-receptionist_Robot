@@ -14,7 +14,7 @@ class InteragisciScenarioC(InteragisciConOspite):
         # in fase di testing, per adesso quando clicchiamo i lbottone dobbiamo provare con spiegazione e senza
 
 
-    #TODO
+   
     def rileva_sintomi(self, testo):
 
     
@@ -54,7 +54,46 @@ class InteragisciScenarioC(InteragisciConOspite):
         return aggiornato
 
     
+    def recupera_dati_per_suggerimento(self):
+        query = """
+                MATCH (o:Ospite)
+                WHERE id(o) = $id
+                OPTIONAL MATCH (o)-[:SOFFRE_DI]->(pat)
+                OPTIONAL MATCH (s:Sintomo)-[:CRITICA_PER]->(pat)
+                OPTIONAL MATCH (s)-[:CRITICA_PER]->(pat_connessa)
+                WHERE pat_connessa <> pat
+                WITH o, 
+                    collect(DISTINCT pat) AS patologie, 
+                    collect(DISTINCT s) AS sintomi, 
+                    collect(DISTINCT pat_connessa) AS pat_connesse
+                WITH [o] + patologie + sintomi + pat_connesse AS nodi_totali
+                UNWIND nodi_totali AS n
+                RETURN DISTINCT id(n) AS node_id
+             """
+        risultati = self.sincro.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})
+        if risultati:
+            self.contesto["ids"] = [record['node_id'] for record in risultati if record['node_id'] is not None]
+            self.nodo.get_logger().info(f"[ScenarioC] Eventi caricati da DB: {len(self.contesto['ids'])}")
+            return True
+        return False
+    
+    def suggerisci_medico(self):
+        self.nodo.parla("Un attimo, analizzo e chiedo al sistema esperto...")
+        if not self.recupera_dati_per_suggerimento():
+            self.nodo.parla("Non ho trovato dati sufficienti nel database.")
+            return
+        self.sincro.crea_ontologia_istanze(self.contesto["ids"])
+        
+        assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
+        self.nodo.get_logger().info(f"{assiomi}")
+        self.nodo.get_logger().info(f"{json.loads(assiomi)}")
+        #TODO
+        
 
+
+        return None
+    
+        
 
     def cambia_stato(self):
         #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
@@ -149,7 +188,7 @@ class InteragisciScenarioC(InteragisciConOspite):
 
 
             #TODO
-            # da fare, da vedere self.sincro.crea_ontologia_istanze(self.contesto["ids"]) # da vedere da gab
+            self.suggerisci_medico()
             # creiamo l'ontologia con quello che ci serve
 
 
@@ -161,9 +200,9 @@ class InteragisciScenarioC(InteragisciConOspite):
 
             #qua ci va la regola dei punteggi
             #TODO
-            assiomi =self.sincro.spiegami_tutto(parentClassName="Ospite")
-            self.nodo.get_logger().info(f"{assiomi}")
-            self.nodo.get_logger().info(f"{json.loads(assiomi)}")
+            #assiomi =self.sincro.spiegami_tutto(parentClassName="Ospite")
+            #self.nodo.get_logger().info(f"{assiomi}")
+            #self.nodo.get_logger().info(f"{json.loads(assiomi)}")
 
             #TODO
             spiegazione=""# qua vedo cosa c'è dentro   OspiteStatoChiamataSpecialista
