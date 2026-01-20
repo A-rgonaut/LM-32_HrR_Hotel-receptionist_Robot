@@ -3887,6 +3887,7 @@ GameObject:
   m_Component:
   - component: {fileID: 80914602}
   - component: {fileID: 80914601}
+  - component: {fileID: 80914604}
   - component: {fileID: 80914603}
   m_Layer: 0
   m_Name: Pepper
@@ -3947,6 +3948,28 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 0
   m_Center: {x: 0, y: 0.65, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &80914604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80914600}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3d08f1bdb922f04a93b2b754f215cd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RobotBattery
+  currentBattery: 100
+  dischargeRate: 2
+  chargeRate: 10
+  batteryUIPanel: {fileID: 1386928589}
+  batterySlider: {fileID: 555837397}
+  batteryText: {fileID: 0}
+  batteryTopic: /unity/battery_state
+  publishRate: 1
+  canRecharge: 1
+  isCharging: 0
 --- !u!1 &81156404
 GameObject:
   m_ObjectHideFlags: 0
@@ -5928,6 +5951,7 @@ GameObject:
   - component: {fileID: 133177752}
   - component: {fileID: 133177751}
   - component: {fileID: 133177754}
+  - component: {fileID: 133177755}
   m_Layer: 0
   m_Name: wheelCaster
   m_TagString: Untagged
@@ -5965,7 +5989,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -6093,6 +6117,28 @@ ArticulationBody:
   m_Immovable: 0
   m_UseGravity: 1
   m_CollisionDetectionMode: 3
+--- !u!114 &133177755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133177749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3d08f1bdb922f04a93b2b754f215cd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RobotBattery
+  currentBattery: 100
+  dischargeRate: 2
+  chargeRate: 10
+  batteryUIPanel: {fileID: 1386928589}
+  batterySlider: {fileID: 555837397}
+  batteryText: {fileID: 0}
+  batteryTopic: /unity/battery_state
+  publishRate: 1
+  canRecharge: 1
+  isCharging: 0
 --- !u!1 &134861323
 GameObject:
   m_ObjectHideFlags: 0
@@ -7442,7 +7488,7 @@ ArticulationBody:
   m_LinearDamping: 1
   m_AngularDamping: 10
   m_JointFriction: 0.05
-  m_CenterOfMass: {x: -0.000575, y: 0, z: 0}
+  m_CenterOfMass: {x: -0.00324, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -18452,7 +18498,7 @@ Transform:
   m_GameObject: {fileID: 385800409}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: 10, y: 0, z: 11}
+  m_LocalPosition: {x: 10, y: 0.0001, z: 11}
   m_LocalScale: {x: 1, y: 0.0001, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73396,7 +73442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelector
   dbManager: {fileID: 1434403803}
   pepperCamera: {fileID: 1526146744}
-  pepperBatteryScript: {fileID: 0}
+  pepperBatteryScript: {fileID: 133177755}
   characters:
   - id: 10
     nome: Peppe
