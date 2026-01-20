@@ -79,7 +79,7 @@ class ServerLLM(Node):
                 # LLM per prendere la parola
                 nome_file = "estrazione_semantica_b.md"
             elif scenario == "C":
-                # dal testo dobbiamo rilevare la lista dei sintomi 
+                # dal testo dobbiamo rilevare la lista dei sintomi
                 nome_file = "estrazione_semantica_c.md"
         elif tipo == "explainability":
             if scenario == "A":
@@ -107,6 +107,7 @@ class ServerLLM(Node):
             ),
             contents=msg,
         )
+        # "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}":
         return response.text.strip()
 
 def main(args=None):

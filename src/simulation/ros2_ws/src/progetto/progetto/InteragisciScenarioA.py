@@ -59,30 +59,31 @@ class InteragisciScenarioA(InteragisciConOspite):
             return False
 
     def rileva_interesse(self, testo):
-        #nome_interesse_raw = "trekking"  # 
+        #nome_interesse_raw = "trekking"  #
         nome_interesse_raw = self.sincro.ask_llm(testo, scenario="A", tipo="estrazione_semantica")
         risultati = self.sincro.trova_classe_da_sinonimo([nome_interesse_raw], nome_radice="Interesse")
         #Se la lista è vuota, assegna None (o un valore di default), altrimenti il primo elemento
         nome_classe_ufficiale = risultati[0] if risultati else None
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Interesse rilevato: '{nome_interesse_raw}' -> Mapped to: '{nome_classe_ufficiale}'")
+            self.contesto['nome_interesse_raw'] = nome_interesse_raw
             return nome_classe_ufficiale
         else:
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_interesse_raw}'")
             return None
 
     def salva_interesse(self):
-        query = """
+        query = f"""
         MATCH (o:Ospite)
         WHERE id(o) = $id
-        MERGE (i:Interesse {nome_interesse: $nome_interesse})
+        MERGE (i:Interesse:{self.contesto['interesse']} {{nome_interesse: $nome_interesse}})
         MERGE (o)-[:HA_INTERESSE]->(i)
         """
         self.sincro.interrogaGraphDatabase(query, {
             'id': self.contesto['ospite'].id,
-            'nome_interesse': self.contesto['interesse']
+            'nome_interesse': self.contesto['nome_interesse_raw']
         })
-        self.nodo.get_logger().info(f"[DB] Salvato interesse '{self.contesto['interesse']}' per l'ospite.")
+        self.nodo.get_logger().info(f"[DB] Salvato interesse :{self.contesto['interesse']} ('{self.contesto['nome_interesse_raw']}') per l'ospite.")
 
     def recupera_dati_per_suggerimento(self):
         query = """MATCH (o:Ospite)-[:EFFETTUA]->(p:Prenotazione)
@@ -92,7 +93,8 @@ class InteragisciScenarioA(InteragisciConOspite):
             WITH o, p, collect(pat) as patologie, collect(i) as interessi
             OPTIONAL MATCH (e)
             WHERE e.data_ora_evento_locale >= p.data_inizio AND e.data_ora_evento_locale <= p.data_fine
-            AND ANY(interest IN interessi WHERE ANY(lbl IN labels(e) WHERE toLower(lbl) CONTAINS toLower(interest.nome_interesse)))
+            AND ANY(interest IN interessi WHERE ANY(lbl IN labels(interest)
+            WHERE lbl <> 'Interesse' AND ANY(elbl IN labels(e) WHERE elbl CONTAINS lbl)))
             OPTIONAL MATCH (m:PrevisioneMeteo) WHERE m.data_ora_meteo = e.data_ora_evento_locale
             WITH o, p, patologie, interessi, collect(e) as eventi, collect(m) as meteo
             WITH [o, p] + patologie + interessi + eventi + meteo as nodi
@@ -124,12 +126,15 @@ class InteragisciScenarioA(InteragisciConOspite):
         })
         """
         data = json.loads(assiomi)
-        for evento, proprieta in data.items():
+        for evento_str, proprieta in data.items():
+            dettagli_evento = json.loads(evento_str)
+            nome_evento_locale = dettagli_evento['nome_evento_locale']
+            data_ora_evento_locale = dettagli_evento.get('data_ora_evento_locale', 'N/A')
             proprieta_con_assiomi = [k for k, v in proprieta.items() if v != "Il reasoner NON deduce assiomi inerenti"]
             num_con_assiomi = len(proprieta_con_assiomi)
-            self.nodo.parla(f"--- {evento} ---")
+            self.nodo.parla(f"--- {nome_evento_locale} {data_ora_evento_locale} ---")
             if num_con_assiomi == 0:  # CASO 1: Nessuna informazione
-                self.nodo.parla("Non so, vogliamo provare a registrare un nuovo Interesse?")
+                self.nodo.parla("Te lo consiglio perche' potrebbe piacerti in base ai tuoi interessi.")
             elif num_con_assiomi > 1:  # CASO 4: Conflitto
                 valore_pro    = proprieta.get("EventoConsigliabile")
                 valore_contro = proprieta.get("EventoNonConsigliabile")

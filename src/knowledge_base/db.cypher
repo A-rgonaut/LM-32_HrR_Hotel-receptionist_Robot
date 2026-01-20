@@ -38,11 +38,9 @@ CREATE
 (si3)-[:CRITICA_PER]->(pat1),
 (si3)-[:CRITICA_PER]->(pat2),
 
-(i1:Citta {nome_interesse: "vino"}),
-(i2:Montagna {nome_interesse: "trekking"}),
+(i1:Interesse:Citta {nome_interesse: "vino"}),
 
 (o)-[:HA_INTERESSE]->(i1),
-(o)-[:HA_INTERESSE]->(i2),
 
 (e1:EventoCitta {nome_evento_locale: "Degustazione Cantina Cellaro", data_ora_evento_locale: datetime("2026-01-14T21:00:00")}),
 (e2:EventoMontagna {nome_evento_locale: "Escursione Monte Genuardo", data_ora_evento_locale: datetime("2026-01-14T08:00:00")}),

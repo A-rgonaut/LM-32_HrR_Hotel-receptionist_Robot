@@ -101,13 +101,34 @@ public class SpiegamiTutto {
 
                 for (OWLNamedIndividual ind : individuiRilevanti) {
 
+                    // 1. Gestione virgola tra gli oggetti principali
                     if (!firstInd) jsonResult.append(", ");
                     firstInd = false;
 
-                    String nomeIndividuo = ind.getIRI().getShortForm();
+                    // --- Costruzione chiave complessa con attributi ---
+                    StringBuilder props = new StringBuilder();
+                    props.append("{");  // Apre l'oggetto chiave
 
-                    // Usiamo { per aprire l'oggetto individuo
-                    jsonResult.append("\"").append(nomeIndividuo).append("\": {");
+                    boolean firstProp = true;  // Serve per non mettere la virgola al primo attributo
+
+                    // Recupera tutte le proprietà dati
+                    for (OWLDataPropertyAssertionAxiom dp : ontologia.getDataPropertyAssertionAxioms(ind)) {
+                        if (!firstProp) {
+                            props.append(", ");
+                        }
+                        firstProp = false;
+
+                        String pKey = dp.getProperty().asOWLDataProperty().getIRI().getShortForm();
+                        String pVal = dp.getObject().getLiteral().replace("\"", "'");
+
+                        props.append("\"").append(pKey).append("\": \"").append(pVal).append("\"");
+                    }
+                    props.append("}");  // Chiude l'oggetto chiave
+
+                    // Escapiamo le virgolette per la chiave
+                    String chiaveComplessa = props.toString().replace("\"", "\\\"");
+
+                    jsonResult.append("\"").append(chiaveComplessa).append("\": {");
 
                     boolean firstClass = true;
 

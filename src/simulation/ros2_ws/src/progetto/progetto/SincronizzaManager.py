@@ -11,7 +11,7 @@ class SincronizzaManager():
         self.llm_client = SincronizzamiTutto(self.nodo,
             "/llm/request", "/llm/response", timeout=30.0)
         self.explain_client = SincronizzamiTutto(self.nodo,
-            "/explain/request", "explain/response", timeout=30.0)
+            "/explain/request", "explain/response", timeout=60.0)
 
         self.nodo.get_logger().info('SincronizzaManager avviato.')
 
