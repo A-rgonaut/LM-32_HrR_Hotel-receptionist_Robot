@@ -12,8 +12,10 @@ class DiffRobotController(Node):
     def __init__(self):
         super().__init__("DiffRobotController")
 
-        self.L          = 0.28    # m
-        self.R          = 0.0715  # m
+        self.L          = 0.28  # m
+        self.R          = 0.07  # m
+        # self.init_x     = 10.0 + (-0.28921)
+        # self.init_y     = 11.0 + 2.5634
         self.init_x     = 10.0
         self.init_y     = 11.0
         self.init_theta = pi  # Il robot ha rotation = 270 ma l'albergo ha rotation = -90 ->
