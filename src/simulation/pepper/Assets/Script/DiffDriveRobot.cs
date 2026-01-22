@@ -98,11 +98,7 @@ public class DiffDriveRobot : MonoBehaviour
                 SetSpeed(leftWheel, newLeftVel);
                 SetSpeed(rightWheel, newRightVel);
 
-                if (Mathf.Approximately(newLeftVel, 0f) && Mathf.Approximately(newRightVel, 0f))
-                {
-                    Debug.LogWarning("[Safety] Robot fermato dolcemente.");
-                    isStopped = true;
-                }
+                isStopped = (Mathf.Approximately(newLeftVel, 0f) && Mathf.Approximately(newRightVel, 0f));
             }
         }
     }
