@@ -44,11 +44,11 @@ Visualization Manager:
       Name: Grid
       Normal Cell Count: 0
       Offset:
-        X: 0
-        Y: 0
+        X: 0.5
+        Y: 0.1
         Z: 0
       Plane: XY
-      Plane Cell Count: 10
+      Plane Cell Count: 36
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 0.699999988079071
