@@ -9,7 +9,7 @@ class InteragisciScenarioC(InteragisciConOspite):
     def __init__(self, nodo, specialista):  # , spiegazione): # da vedere dove viene chiamato e controllare il costruttore
         super().__init__(nodo)
         self.specialista = specialista
-        #self.spiegazione=""
+        self.motivo_chiamata = ""
         self.spiegazione="Sei qua perchè ho rilevato un'emergenza"# self.spiegazione = spiegazione # se viene dal rilevamento automatico allora spiegazione != null, altrimenti se vuoto veniamo dal bottone
         # in fase di testing, per adesso quando clicchiamo i lbottone dobbiamo provare con spiegazione e senza
 
@@ -45,7 +45,7 @@ class InteragisciScenarioC(InteragisciConOspite):
 
 
     def aggiorna_sintomi(self,lista_nomi):
-        query= "MATCH (o:Ospite) WHERE id(o) = $id UNWIND  $lista_nomi AS nome MERGE (s:Sintomo {nome_sintomo: nome}) MERGE (o)-[r:HA_SINTOMO]->(s) RETURN o, r, s"
+        query= "MATCH (o) WHERE id(o) = $id UNWIND  $lista_nomi AS nome MERGE (s:Sintomo {nome_sintomo: nome}) MERGE (o)-[r:HA_SINTOMO]->(s) RETURN o, r, s"
         parametri = {
             "id"         : self.contesto['ospite'].id,
             "lista_nomi" : lista_nomi
@@ -56,7 +56,7 @@ class InteragisciScenarioC(InteragisciConOspite):
     
     def recupera_dati_per_suggerimento(self):
         query = """
-                MATCH (o:Ospite)
+                MATCH (o)
                 WHERE id(o) = $id
                 OPTIONAL MATCH (o)-[:SOFFRE_DI]->(pat)
                 OPTIONAL MATCH (s:Sintomo)-[:CRITICA_PER]->(pat)
@@ -83,21 +83,29 @@ class InteragisciScenarioC(InteragisciConOspite):
             self.nodo.parla("Non ho trovato dati sufficienti nel database.")
             return
         self.sincro.crea_ontologia_istanze(self.contesto["ids"])
-        
+        #nello spiegami tutto mi serve vedere la classe OspiteStatoChiamataSpecialista, se  l'ospite è lì dentro e se ho info sul perchè , allora riporto spiegazione
         assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
-        self.nodo.get_logger().info(f"{assiomi}")
-        self.nodo.get_logger().info(f"{json.loads(assiomi)}")
-        #TODO
-        
-
-
-        return None
+        spiegazione=""
+        data = json.loads(assiomi)
+        for evento_str, proprieta in data.items():
+            
+            #persona = dettagli_evento['nome']
+            #self.nodo.get_logger().info( f"{persona} ")
+            if proprieta["OspiteStatoChiamataSpecialista"] == "Il reasoner NON deduce assiomi inerenti":                    
+                    self.nodo.parla(f"Il reasoner NON deduce assiomi inerenti. i sintomi che hai detto non fanno suscitare in me alcun bisogno di chiamare il dottore. Se vuoi lo posso chiamare lo stesso.")
+            else:
+                    spiegazione=proprieta['OspiteStatoChiamataSpecialista']
+                    # spiegazione = self.sincro.ask_llm(spiegazione, scenario="c", tipo="explainability") # da allineare il prompt
+                    self.nodo.parla(f" spiegazione: { proprieta['OspiteStatoChiamataSpecialista'] } ")
+                    # self.nodo.parla(spiegazione)
+                    # aggiornato = self.cambia_stato()  # cambiare stato da quello che è a Specialista o Ospite   a ChiamatoSpecialista
+                    # salvare il time stamp che è avvenuto questo  cambiamento?? Il date time?
+        return spiegazione
     
         
-
     def cambia_stato(self):
         #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
-        query = "MATCH (n) WHERE id(n) = $id REMOVE n:Ospite:OspiteInStatodiAllerta SET n:OspiteStatoChiamataSpecialista RETURN n"
+        query = "MATCH (n) WHERE id(n) = $id REMOVE n:Ospite, n:OspiteInStatodiAllerta, n:OspiteStatoChiamataSpecialista SET n:OspiteStatoChiamataSpecialista RETURN n, datetime() AS momentoTransizione"
         parametri = {
             "id":     self.contesto['ospite'].id,
         }
@@ -152,6 +160,7 @@ class InteragisciScenarioC(InteragisciConOspite):
 
             if not risposta or tempo_trascorso > 30:
                 self.nodo.parla(tempo_trascorso)
+                self.motivo_chiamata = " tempo di risposta superiore ai 30 secondi "
                 self.stato = "CHIAMATA_SPECIALISTA"
             else:
                 self.nodo.parla("Dimmi che sintomi hai per favore.")
@@ -162,13 +171,13 @@ class InteragisciScenarioC(InteragisciConOspite):
 
 
             # si mette su neo4j che la persona che ha id passa dallo stato Ospite o OspiteInStatodiAllerta a OspiteStatoChiamataSpecialista
-            self.nodo.get_logger().info(f"{self.cambia_stato()}")
+            #self.nodo.get_logger().info(f"{self.cambia_stato()}")
 
             self.nodo.parla("Sto chiamando il dottore, stai tranq, faccio subito, pf")
 
             #TODO
 
-            #self.specialista.chiama(self.nodo, "medico", "Peppe Rossi", "assiomi ritornati da spiegami tutto (es. sintomi da cardiopatia)") # penso che questo preceda questo stato, da capire , da fare , da vedere
+            self.specialista.chiama(self.nodo, "medico", self.contesto['ospite'], self.motivo_chiamata ) # penso che questo preceda questo stato, da capire , da fare , da vedere
             self.stato = "FINE"
 
 
@@ -188,41 +197,21 @@ class InteragisciScenarioC(InteragisciConOspite):
 
 
             #TODO
-            self.suggerisci_medico()
-            # creiamo l'ontologia con quello che ci serve
-
-
-
-            # attiviamo il reasoner nell'ontologia che ci dice se dire che non sappiamo dire nulla di certo oppure se chiamare il dottore nel caso
-            # in cui individuiamo i sintomi legati alla sua malattia pregressa
-            # e quindi chiamiamo java spiegami tutto per dire in che classe è ,
-            # mi ritornano le informazioni in maniera indiretta
-
-            #qua ci va la regola dei punteggi
-            #TODO
-            #assiomi =self.sincro.spiegami_tutto(parentClassName="Ospite")
-            #self.nodo.get_logger().info(f"{assiomi}")
-            #self.nodo.get_logger().info(f"{json.loads(assiomi)}")
-
-            #TODO
-            spiegazione=""# qua vedo cosa c'è dentro   OspiteStatoChiamataSpecialista
-            # mi salvo la spiegazione che è notifica specialista, se esiste
-
-
+            spiegazione=self.suggerisci_medico()
 
             if spiegazione :
 
-                self.nodo.parla(spiegazione)
-
-                self.stato == "CHIAMATA_SPECIALISTA"
+#               self.nodo.parla(spiegazione)
+                self.motivo_chiamata = spiegazione
+                self.stato = "CHIAMATA_SPECIALISTA"
 
             else:
 
-                self.nodo.parla("Non ho abbastanza assiomi per chiamare il dottore")
+                #self.nodo.parla("Non ho abbastanza assiomi per chiamare il dottore")
 
                 # domanda comunque se vuole chiamare il medico e se dice si, lo classifichiamo OspiteStatoChiamataSpecialista .
 
-                self.stato == "MEDICO_SI-NO"
+                self.stato = "MEDICO_SI-NO"
 
 
 
@@ -233,9 +222,10 @@ class InteragisciScenarioC(InteragisciConOspite):
 
             risposta = self.rileva_conferma(testo)
 
-            if risposta is None or False:
-                self.stato == "FINE"
+            if risposta in [None, False]:
+                self.stato = "FINE"
             else:
+                self.motivo_chiamata = " i sintomi detti dal paziente non sono risultati compatibili con le sue malattie pregresse, però lui vuole chiamarti lo stesso  "
                 self.stato = "CHIAMATA_SPECIALISTA"
 
 
