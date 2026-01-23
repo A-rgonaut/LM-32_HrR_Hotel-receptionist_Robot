@@ -11,8 +11,8 @@ class InteragisciScenarioB(InteragisciConOspite):
         #self.nodo.destinazione_target = (-10, 11)
         #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
-        # self.nodo.destinazione_target = (7 + (-0.28921), 4.2 + 2.5634)  # stanza 1
-        self.nodo.destinazione_target = (7, 4.2)  # stanza 1
+        #self.nodo.destinazione_target = (7 + (-0.28921), 4.2 + 2.5634)  # stanza 1
+        self.nodo.destinazione_target = (6, 4)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioB"
