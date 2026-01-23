@@ -70,7 +70,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             return nome_classe_ufficiale
         else:
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_interesse_raw}'")
-            return None
+            return []
 
     def salva_interesse(self):
         query = f"""

@@ -13,27 +13,13 @@ class InteragisciScenarioC(InteragisciConOspite):
         self.spiegazione="Sei qua perchè ho rilevato un'emergenza"# self.spiegazione = spiegazione # se viene dal rilevamento automatico allora spiegazione != null, altrimenti se vuoto veniamo dal bottone
         # in fase di testing, per adesso quando clicchiamo i lbottone dobbiamo provare con spiegazione e senza
 
-
-   
     def rileva_sintomi(self, testo):
-
-    
         lista_sintomi = self.sincro.ask_llm(testo, scenario="C", tipo="estrazione_semantica")
         lista_sintomi = ast.literal_eval(lista_sintomi)
         #lista_sintomi=['cefalea', 'tosse']
         if not lista_sintomi:
             return []
         self.nodo.parla(f"Sintomi estratti: {lista_sintomi}, {type(lista_sintomi)}")
-        #da sopra in realtà ritorna una lista, ma per adesso facciamolo ad uno
-        #lista_sintomi = ['tosse', 'tachicardia']
-
-
-        #gabriele unn'ava scassari a mi
-
-
-
-        # o li controlliamo tutti o per adesso camminiamo con uno
-
         nome_classe_ufficiale =self.sincro.trova_classe_da_sinonimo(lista_sintomi, nome_radice="Sintomo")# questo sarà per uno, penso che per qua va esteso
         self.nodo.get_logger().info(f"Interesse rilevato: '{lista_sintomi}' -> Mapped to: '{nome_classe_ufficiale}'")
         if nome_classe_ufficiale:
@@ -42,7 +28,6 @@ class InteragisciScenarioC(InteragisciConOspite):
         else:
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_classe_ufficiale}'")
             return []
-
 
     def aggiorna_sintomi(self,lista_nomi):
         query= "MATCH (o) WHERE id(o) = $id UNWIND  $lista_nomi AS nome MERGE (s:Sintomo {nome_sintomo: nome}) MERGE (o)-[r:HA_SINTOMO]->(s) RETURN o, r, s"
@@ -53,7 +38,6 @@ class InteragisciScenarioC(InteragisciConOspite):
         aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
         return aggiornato
 
-    
     def recupera_dati_per_suggerimento(self):
         query = """
                 MATCH (o)
@@ -81,28 +65,23 @@ class InteragisciScenarioC(InteragisciConOspite):
         self.nodo.parla("Un attimo, analizzo e chiedo al sistema esperto...")
         if not self.recupera_dati_per_suggerimento():
             self.nodo.parla("Non ho trovato dati sufficienti nel database.")
-            return
+            return 
         self.sincro.crea_ontologia_istanze(self.contesto["ids"])
-        #nello spiegami tutto mi serve vedere la classe OspiteStatoChiamataSpecialista, se  l'ospite è lì dentro e se ho info sul perchè , allora riporto spiegazione
+        # nello spiegami tutto mi serve vedere la classe OspiteStatoChiamataSpecialista, se  l'ospite è lì dentro e se ho info sul perchè , allora riporto spiegazione
         assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
         spiegazione=""
         data = json.loads(assiomi)
         for evento_str, proprieta in data.items():
-            
-            #persona = dettagli_evento['nome']
-            #self.nodo.get_logger().info( f"{persona} ")
             if proprieta["OspiteStatoChiamataSpecialista"] == "Il reasoner NON deduce assiomi inerenti":                    
                     self.nodo.parla(f"Il reasoner NON deduce assiomi inerenti. i sintomi che hai detto non fanno suscitare in me alcun bisogno di chiamare il dottore. Se vuoi lo posso chiamare lo stesso.")
             else:
                     spiegazione=proprieta['OspiteStatoChiamataSpecialista']
                     # spiegazione = self.sincro.ask_llm(spiegazione, scenario="c", tipo="explainability") # da allineare il prompt
-                    self.nodo.parla(f" spiegazione: { proprieta['OspiteStatoChiamataSpecialista'] } ")
-                    # self.nodo.parla(spiegazione)
-                    # aggiornato = self.cambia_stato()  # cambiare stato da quello che è a Specialista o Ospite   a ChiamatoSpecialista
+                    self.nodo.parla(spiegazione)
+                    # aggiornato = self.cambia_stato()  # cambiare stato da quello che è a Specialista o Ospite a ChiamatoSpecialista
                     # salvare il time stamp che è avvenuto questo  cambiamento?? Il date time?
         return spiegazione
-    
-        
+            
     def cambia_stato(self):
         #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
         query = "MATCH (n) WHERE id(n) = $id REMOVE n:Ospite, n:OspiteInStatodiAllerta, n:OspiteStatoChiamataSpecialista SET n:OspiteStatoChiamataSpecialista RETURN n, datetime() AS momentoTransizione"
@@ -112,130 +91,70 @@ class InteragisciScenarioC(InteragisciConOspite):
         aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
         return aggiornato
 
-
     def esegui(self, testo):
         # questo esegui() va fatto partire dopo che il robot è davanti la persona.
         self.nodo.get_logger().info(f"[ScenarioC] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
-
             #se c'è la spiegazione veniamo dal braccialetto manager (rilevamento automatico), altrimenti dal bottone
-
             if self.spiegazione :
-
                 # stampare spiegazione a schermo
-
-                self.nodo.parla(self.spiegazione)
-                self.nodo.parla("Puoi dirmi se sei cosciente?")
+                self.nodo.parla(f"{self.spiegazione} Puoi dirmi se sei cosciente?")
                 #vediamo se risponde prima di un certo tempo
-                self.inizio_stato_di_coscienza = time.time() # vedere se metterlo static oppure da qualche altra parte in maniera che si vede nel codice
-
+                self.inizio_stato_di_coscienza = time.time() # vedere 
                 self.stato = "COSCIENZA"
-
             else : #spiegazione vuota, quindi vengo dal braccialetto
-
                 self.nodo.parla("Dal mio ultimo rilevamento non sei in stato di cattiva salute, mi hai chiamato dal braccialetto. Dimmi quali sintomi ti affliggono.")
-
                 # metto la persona da Ospite a OspiteInStatodiAllerta  su neo 4j # da capire, forse si, così non lo rimonitoro , al momento no
-
                 # vice dice di farlo quando  clicca il bottone, si va fatto quando clicca il bottone dello scenario C
                 #gab boccia, dangerous perchè non c'è spiegazione e ci sono rischi arbitraggio
-                
                 self.stato = "DESCRIZIONE_SINTOMI"
-
-
-        elif self.stato == "COSCIENZA":   # domandiamo se è cosciente
-            #da capire se il tempo va  qua o meno
-            self.nodo.parla("Fase coscienza")
-            # ritorna il testo con si o no
-
-            tempo_trascorso = time.time() - self.inizio_stato_di_coscienza # da vedere se funge
-            self.nodo.get_logger().info(f"{tempo_trascorso}")
-            
+        elif self.stato == "COSCIENZA":
             p = self.contesto['ospite']
             #va recuperato o un contesto completo oppure faccio una funzione che mi da eta e lingua e aggiungo dopo, questo serve in scenarioB
             self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT")
-            self.nodo.get_logger().info(f"{p}")
-            #importante che su neo4j ci sia la lingua della persona registrata
+            self.nodo.get_logger().info(f"{p}")  #importante che su neo4j ci sia la lingua della persona registrata
+            tempo_trascorso = time.time() - self.inizio_stato_di_coscienza # da vedere se funge
+            self.nodo.get_logger().info(f"{tempo_trascorso}")
             risposta = self.rileva_conferma(testo)
-
             if not risposta or tempo_trascorso > 30:
                 self.nodo.parla(tempo_trascorso)
-                self.motivo_chiamata = " tempo di risposta superiore ai 30 secondi "
+                self.motivo_chiamata = " tempo di risposta superiore ai 30 secondi"
+                self.cambia_stato()
                 self.stato = "CHIAMATA_SPECIALISTA"
+                self.esegui("")
             else:
                 self.nodo.parla("Dimmi che sintomi hai per favore.")
                 self.stato = "DESCRIZIONE_SINTOMI"
-
-
         elif self.stato == "CHIAMATA_SPECIALISTA":
-
-
-            # si mette su neo4j che la persona che ha id passa dallo stato Ospite o OspiteInStatodiAllerta a OspiteStatoChiamataSpecialista
-            #self.nodo.get_logger().info(f"{self.cambia_stato()}")
-
             self.nodo.parla("Sto chiamando il dottore, stai tranq, faccio subito, pf")
-
             #TODO
-
             self.specialista.chiama(self.nodo, "medico", self.contesto['ospite'], self.motivo_chiamata ) # penso che questo preceda questo stato, da capire , da fare , da vedere
             self.stato = "FINE"
-
-
-
         elif self.stato == "DESCRIZIONE_SINTOMI":
-
-
-
-
-            lista_sintomi = self.rileva_sintomi(testo)  # vedere come fatto nello scen A
-            # Soluzione robusta
+            lista_sintomi = self.rileva_sintomi(testo)
             self.nodo.parla(lista_sintomi)
-            #lista_sintomi = [s.strip() for s in self.rileva_sintomi(testo).split(",")]
-
             # ritornano i sintomi e si salvano i sintomi su neo4j
             self.nodo.get_logger().info(f"{self.aggiorna_sintomi(lista_sintomi)}")
-
-
-            #TODO
             spiegazione=self.suggerisci_medico()
-
             if spiegazione :
-
-#               self.nodo.parla(spiegazione)
+                #self.nodo.parla(spiegazione)
                 self.motivo_chiamata = spiegazione
+                self.cambia_stato()
                 self.stato = "CHIAMATA_SPECIALISTA"
-
+                self.esegui("")
             else:
-
-                #self.nodo.parla("Non ho abbastanza assiomi per chiamare il dottore")
-
-                # domanda comunque se vuole chiamare il medico e se dice si, lo classifichiamo OspiteStatoChiamataSpecialista .
-
+                self.nodo.parla("Non ho abbastanza assiomi per chiamare il dottore, vuoi comunque chiamarlo?")
                 self.stato = "MEDICO_SI-NO"
-
-
-
-
-
-
         elif self.stato == "MEDICO_SI-NO":
-
             risposta = self.rileva_conferma(testo)
-
             if risposta in [None, False]:
                 self.stato = "FINE"
             else:
-                self.motivo_chiamata = " i sintomi detti dal paziente non sono risultati compatibili con le sue malattie pregresse, però lui vuole chiamarti lo stesso  "
+                self.motivo_chiamata = " i sintomi detti dal paziente non sono risultati compatibili con le sue malattie pregresse, però lui vuole chiamarti lo stesso ."
+                self.cambia_stato()
                 self.stato = "CHIAMATA_SPECIALISTA"
-
-
+                self.esegui("")
         elif self.stato == "FINE":
             pass
         else:
             self.nodo.get_logger().error(f"[ScenarioC] Stato sconosciuto o non gestito: '{self.stato}'")
-
-'''
-#query
-#da fare
-#da capire
-'''
