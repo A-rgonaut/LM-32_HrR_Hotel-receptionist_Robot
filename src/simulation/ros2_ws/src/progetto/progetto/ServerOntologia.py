@@ -114,6 +114,8 @@ class ServerOntologia(Node):
                             match_found = cls.name
             if match_found:
                 risultati.add(match_found)
+            else:
+                risultati.add("")
 
         return list(risultati)
 

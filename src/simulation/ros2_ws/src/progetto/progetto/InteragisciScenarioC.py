@@ -16,11 +16,17 @@ class InteragisciScenarioC(InteragisciConOspite):
     def rileva_sintomi(self, testo):
         lista_sintomi = self.sincro.ask_llm(testo, scenario="C", tipo="estrazione_semantica")
         lista_sintomi = ast.literal_eval(lista_sintomi)
+        self.contesto['sintomi']=lista_sintomi
         #lista_sintomi=['cefalea', 'tosse']
         if not lista_sintomi:
             return []
         self.nodo.parla(f"Sintomi estratti: {lista_sintomi}, {type(lista_sintomi)}")
         nome_classe_ufficiale =self.sincro.trova_classe_da_sinonimo(lista_sintomi, nome_radice="Sintomo")# questo sarà per uno, penso che per qua va esteso
+
+        self.nodo.parla(f"Sintomi nome_classe_ufficiale: {nome_classe_ufficiale}, {type(lista_sintomi)}")
+
+
+
         self.nodo.get_logger().info(f"Interesse rilevato: '{lista_sintomi}' -> Mapped to: '{nome_classe_ufficiale}'")
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Interesse rilevato: '{lista_sintomi}' -> Mapped to: '{nome_classe_ufficiale}'")
@@ -29,28 +35,38 @@ class InteragisciScenarioC(InteragisciConOspite):
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_classe_ufficiale}'")
             return []
 
-    def aggiorna_sintomi(self,lista_nomi):
-        query= "MATCH (o) WHERE id(o) = $id UNWIND  $lista_nomi AS nome MERGE (s:Sintomo {nome_sintomo: nome}) MERGE (o)-[r:HA_SINTOMO]->(s) RETURN o, r, s"
-        parametri = {
-            "id"         : self.contesto['ospite'].id,
-            "lista_nomi" : lista_nomi
-        }
-        aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
-        return aggiornato
+    def aggiorna_sintomi(self,lista_label):
+        lista_nomi = [d for d, f in zip(self.contesto['sintomi'],lista_label) if f != ""]
+        lista_label = [f for f in lista_label if f != ""]
+        for nome, label in zip(lista_nomi,lista_label):
+            
+            query = f"""
+            MATCH (o) WHERE id(o) = $id
+            MERGE (s:Sintomo:{label} {{nome_sintomo: $nome}})
+            MERGE (o)-[:HA_SINTOMO]->(s)
+            """
+            
+            parametri = {
+                "id": self.contesto['ospite'].id,
+                "nome": nome
+            }
+            
+            # Esecuzione singola
+            self.sincro.interrogaGraphDatabase(query, parametri)
+        return True
 
     def recupera_dati_per_suggerimento(self):
         query = """
                 MATCH (o)
                 WHERE id(o) = $id
                 OPTIONAL MATCH (o)-[:SOFFRE_DI]->(pat)
-                OPTIONAL MATCH (s:Sintomo)-[:CRITICA_PER]->(pat)
-                OPTIONAL MATCH (s)-[:CRITICA_PER]->(pat_connessa)
-                WHERE pat_connessa <> pat
+                OPTIONAL MATCH (o)-[:HA_SINTOMO]->(s:Sintomo)
+            
                 WITH o, 
                     collect(DISTINCT pat) AS patologie, 
-                    collect(DISTINCT s) AS sintomi, 
-                    collect(DISTINCT pat_connessa) AS pat_connesse
-                WITH [o] + patologie + sintomi + pat_connesse AS nodi_totali
+                    collect(DISTINCT s) AS sintomi
+                   
+                WITH [o] + patologie + sintomi AS nodi_totali
                 UNWIND nodi_totali AS n
                 RETURN DISTINCT id(n) AS node_id
              """
@@ -132,6 +148,7 @@ class InteragisciScenarioC(InteragisciConOspite):
             self.stato = "FINE"
         elif self.stato == "DESCRIZIONE_SINTOMI":
             lista_sintomi = self.rileva_sintomi(testo)
+            #self.contesto['sintomi'] = lista_sintomi
             self.nodo.parla(lista_sintomi)
             # ritornano i sintomi e si salvano i sintomi su neo4j
             self.nodo.get_logger().info(f"{self.aggiorna_sintomi(lista_sintomi)}")
