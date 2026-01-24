@@ -24,23 +24,16 @@ CREATE
 
 (r1:Robot {nome_robot: "Pippor"}),
 
-(pat1:Cardiopatia {bpm_anomala: 100, bpm_allerta: 150, soglia_urgente: 1.5}),
-(pat2:Ipertensione {pressione_min_allerta: 90, pressione_min_anomala: 100, pressione_max_allerta: 140, pressione_max_anomala: 160, soglia_urgente: 1.0}),
+(pat1:Cardiopatia {bpm_anomala: 100, bpm_allerta: 150}),
+(pat2:Ipertensione {pressione_min_allerta: 90, pressione_min_anomala: 100, pressione_max_allerta: 140, pressione_max_anomala: 160}),
 
 (o)-[:SOFFRE_DI]->(pat1),
 
-(si1:Sintomo {nome_sintomo: "Palpitazioni", punteggio_base_sintomo: 0.5, punteggio_aggravante_sintomo: 1.5}),
-(si2:Sintomo {nome_sintomo: "Vertigini", punteggio_base_sintomo: 0.3, punteggio_aggravante_sintomo: 1.2}),
-(si3:Sintomo {nome_sintomo: "Pressione Toracica", punteggio_base_sintomo: 0.2, punteggio_aggravante_sintomo: 0.8}),
-
-(si1)-[:CRITICA_PER]->(pat1),
-(si2)-[:CRITICA_PER]->(pat2),
-(si3)-[:CRITICA_PER]->(pat1),
-(si3)-[:CRITICA_PER]->(pat2),
-
-(i1:Interesse:Citta {nome_interesse: "vino"}),
+(i1:Citta {nome_interesse: "vino"}),
+(i2:Montagna {nome_interesse: "trekking"}),
 
 (o)-[:HA_INTERESSE]->(i1),
+(o)-[:HA_INTERESSE]->(i2),
 
 (e1:EventoCitta {nome_evento_locale: "Degustazione Cantina Cellaro", data_ora_evento_locale: datetime("2026-01-14T21:00:00")}),
 (e2:EventoMontagna {nome_evento_locale: "Escursione Monte Genuardo", data_ora_evento_locale: datetime("2026-01-14T08:00:00")}),
@@ -75,67 +68,28 @@ CREATE
 (m22:PrevisioneMeteo {data_ora_meteo: datetime("2026-01-14T22:00:00"), condizione: "sereno", gradi: 9.9}),
 (m23:PrevisioneMeteo {data_ora_meteo: datetime("2026-01-14T23:00:00"), condizione: "sereno", gradi: 10.0}),
 
-(a1:Anomalia {
-    nome_anomalia: "Puzza di bruciato",
-    punteggio_base_anomalia: 0.5,
-    punteggio_aggravante_anomalia: 2.0
-}),
-(a2:Anomalia {
-    nome_anomalia: "Fa rumore forte",
-    punteggio_base_anomalia: 0.1,
-    punteggio_aggravante_anomalia: 0.9
-}),
-(a3:Anomalia {
-    nome_anomalia: "Perde acqua",
-    punteggio_base_anomalia: 0.3,
-    punteggio_aggravante_anomalia: 1.2
-}),
-(a4:Anomalia {
-    nome_anomalia: "Non emette aria fredda",
-    punteggio_base_anomalia: 0.1,
-    punteggio_aggravante_anomalia: 1.9
-}),
-
-(o)-[:AVVERTE]->(a1),
-(o)-[:AVVERTE]->(a2),
-(o)-[:AVVERTE]->(a3),
-(o)-[:AVVERTE]->(a4),
-
 (og1:Condizionatore {
-    tipo_oggetto: "elettrico",
+    tipo_oggetto_guastabile: "elettrico",
     tempo_acceso: 35,
     temperatura_stanza: 18,
     temperatura_impostata: 22,
-    modalita: "HEAT",
-    soglia_assistenza: 2.0
+    modalita: "HEAT"
 }),
 (og2:Lavandino {
-    tipo_oggetto: "idraulico",
-    soglia_assistenza: 1.0
+    tipo_oggetto_guastabile: "idraulico"
 }),
 (og3:Phon {
-    tipo_oggetto: "elettrico",
-    soglia_assistenza: 2.0
+    tipo_oggetto_guastabile: "elettrico"
 }),
-
-(a1)-[:DANNOSO_PER]->(og3),
-(a2)-[:DANNOSO_PER]->(og1),
-(a2)-[:DANNOSO_PER]->(og2),
-(a2)-[:DANNOSO_PER]->(og3),
-(a3)-[:DANNOSO_PER]->(og2),
-(a4)-[:DANNOSO_PER]->(og1),
 
 (g1:Guasto {
-    data_ora_guasto: datetime(),
-    assistenza: true
+    tipo_oggetto_guasto: "elettrico"
 }),
 (g2:Guasto {
-    data_ora_guasto: datetime(),
-    assistenza: true
+    tipo_oggetto_guasto: "idraulico"
 }),
 (g3:Guasto {
-    data_ora_guasto: datetime(),
-    assistenza: true
+    tipo_oggetto_guasto: "elettrico"
 }),
 
 (o)-[:SEGNALA]->(g1),
