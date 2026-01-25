@@ -24,8 +24,10 @@ CREATE
 
 (r1:Robot {nome_robot: "Pippor"}),
 
-(pat1:Cardiopatia {bpm_anomala: 100, bpm_allerta: 150}),
-(pat2:Ipertensione {pressione_min_allerta: 90, pressione_min_anomala: 100, pressione_max_allerta: 140, pressione_max_anomala: 160}),
+(sog:Soglie {bpm_anomala_soglia: 130, bpm_allerta_soglia: 170, pressione_min_allerta_soglia: 110, pressione_min_anomala_soglia: 100, pressione_max_allerta_soglia: 170, pressione_max_anomala_soglia: 150}),
+
+(pat1:Cardiopatia {bpm_anomala_cardiopatia: 100, bpm_allerta_cardiopatia: 150}),
+(pat2:Ipertensione {pressione_min_allerta_ipertensione: 100, pressione_min_anomala_ipertensione: 90, pressione_max_allerta_ipertensione: 160, pressione_max_anomala_ipertensione: 140}),
 
 (o)-[:SOFFRE_DI]->(pat1),
 
