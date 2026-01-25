@@ -2,9 +2,9 @@ MATCH (n) DETACH DELETE n;
 
 CREATE
 
-(o:Ospite {nome: "Peppe", cognome: "Rossi", eta: 30, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
-(o1:Ospite {nome: "Carletta", cognome: "Bianchi", eta: 40, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
-(o2:Ospite {nome: "Mr", cognome: "President", eta: 50, lingua: "EN", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80}),
+(o:Ospite {nome: "Peppe", cognome: "Rossi", eta: 30, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80, soglia_bpm_anomala: 100, soglia_bpm_allerta: 150}),
+(o1:Ospite {nome: "Carletta", cognome: "Bianchi", eta: 40, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80, soglia_bpm_anomala: 120, soglia_bpm_allerta: 170}),
+(o2:Ospite {nome: "Mr", cognome: "President", eta: 50, lingua: "EN", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80, soglia_bpm_anomala: 110, soglia_bpm_allerta: 160}),
 
 (l1:Hall {x: 0.0, y: 10.0}),
 (l2:CoffeeRoom {x: 0.0, y: -5.0}),
@@ -24,10 +24,8 @@ CREATE
 
 (r1:Robot {nome_robot: "Pippor"}),
 
-(sog:Soglie {bpm_anomala_soglia: 130, bpm_allerta_soglia: 170, pressione_min_allerta_soglia: 110, pressione_min_anomala_soglia: 100, pressione_max_allerta_soglia: 170, pressione_max_anomala_soglia: 150}),
-
-(pat1:Cardiopatia {bpm_anomala_cardiopatia: 100, bpm_allerta_cardiopatia: 150}),
-(pat2:Ipertensione {pressione_min_allerta_ipertensione: 100, pressione_min_anomala_ipertensione: 90, pressione_max_allerta_ipertensione: 160, pressione_max_anomala_ipertensione: 140}),
+(pat1:Cardiopatia),
+(pat2:Ipertensione),
 
 (o)-[:SOFFRE_DI]->(pat1),
 
