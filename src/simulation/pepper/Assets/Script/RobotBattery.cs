@@ -1,27 +1,27 @@
 using UnityEngine;
-using UnityEngine.UI; // Se usi Slider standard
-using TMPro;          // Se usi TextMeshPro
+using UnityEngine.UI;
+using TMPro;
 using Unity.Robotics.ROSTCPConnector;
-using RosMessageTypes.Std; // O sensor_msgs/BatteryState se preferisci, qui uso Int32 o String per semplicità
+using RosMessageTypes.Std; // Usiamo StringMsg per inviare il JSON
 
 public class RobotBattery : MonoBehaviour
 {
     [Header("Impostazioni Batteria")]
     [Range(0, 100)] public float currentBattery = 100f;
-    public float dischargeRate = 2.0f; // Quanto scarica al secondo
-    public float chargeRate = 10.0f;   // Quanto carica al secondo
+    public float dischargeRate = 2.0f;
+    public float chargeRate = 10.0f;
 
     [Header("Riferimenti UI")]
-    public GameObject batteryUIPanel; // Il pannello che contiene slider/testo
-    public Slider batterySlider;      // Opzionale
-    public TextMeshProUGUI batteryText; // Opzionale
+    public GameObject batteryUIPanel;
+    public Slider batterySlider;
+    public TextMeshProUGUI batteryText;
 
     [Header("ROS Settings")]
     public string batteryTopic = "/unity/battery_state";
-    public float publishRate = 1.0f; // Ogni quanto inviare i dati
+    public float publishRate = 1.0f;
 
     [Header("Debug")]
-    public bool canRecharge = true; // Funzionalità attivabile/disattivabile
+    public bool canRecharge = true;
     public bool isCharging = false;
 
     private ROSConnection ros;
@@ -30,23 +30,17 @@ public class RobotBattery : MonoBehaviour
     void Start()
     {
         ros = ROSConnection.GetOrCreateInstance();
-        // Usiamo Int32Msg per inviare la percentuale intera (0-100)
-        ros.RegisterPublisher<Int32Msg>(batteryTopic);
+        ros.RegisterPublisher<StringMsg>(batteryTopic);
     }
 
     void Update()
     {
         // 1. Gestione Carica/Scarica
         if (isCharging && canRecharge)
-        {
             currentBattery += chargeRate * Time.deltaTime;
-        }
         else
-        {
             currentBattery -= dischargeRate * Time.deltaTime;
-        }
 
-        // Clamp per restare tra 0 e 100
         currentBattery = Mathf.Clamp(currentBattery, 0f, 100f);
 
         // 2. Aggiornamento UI
@@ -63,22 +57,26 @@ public class RobotBattery : MonoBehaviour
 
     void UpdateUI()
     {
-        if (batterySlider != null) batterySlider.value = currentBattery / 100f; // Slider vuole 0-1
+        if (batterySlider != null) batterySlider.value = currentBattery / 100f;
         if (batteryText != null) batteryText.text = $"Bat: {Mathf.RoundToInt(currentBattery)}%";
 
-        // Cambio colore se scarica (opzionale)
         if (batteryText != null && currentBattery < 20) batteryText.color = Color.red;
         else if (batteryText != null) batteryText.color = Color.white;
     }
 
+    // MODIFICA: Funzione aggiornata per inviare JSON
     void PublishBatteryState()
     {
-        // Inviamo un intero
-        Int32Msg msg = new Int32Msg((int)currentBattery);
+        int batteryInt = Mathf.RoundToInt(currentBattery);
+        
+        // Creiamo il JSON manualmente.
+        // Esempio output: {"level": 85, "is_charging": true}
+        // Nota: convertiamo il booleano isCharging in "true" o "false" minuscoli per compatibilità JSON standard
+        string jsonString = $"{{\"level\": {batteryInt}, \"is_charging\": {isCharging.ToString().ToLower()}}}";
+
+        StringMsg msg = new StringMsg(jsonString);
         ros.Publish(batteryTopic, msg);
     }
-
-    // --- Rilevamento Stazione di Ricarica ---
 
     void OnTriggerEnter(Collider other)
     {
