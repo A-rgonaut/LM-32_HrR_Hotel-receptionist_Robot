@@ -44,7 +44,7 @@ class Arbitraggio(Node):
                                                 self.salva_dati_salute, 10,
                                                 callback_group=self.cb_group)
 
-        self.timer = self.create_timer(60.0, self.gestione_periodica_salute)
+        self.timer = self.create_timer(10.0, self.gestione_periodica_salute)
         self.dati_salute = None
 
         self.nome_robot = None
@@ -151,17 +151,77 @@ class Arbitraggio(Node):
         except Exception as e:
             self.get_logger().error(f"Errore in salva_dati_salute: {e}")
 
+    def carica_dati(self):
+        
+        query = """
+        UNWIND $batch AS row
+        MATCH (o)
+        
+        // Casting esplicito: l'ID nel JSON è stringa, id(o) è intero
+        WHERE id(o) = toInteger(row.id)
+
+        SET o.bpm_attuale = toInteger(row.hr),
+            o.pressione_min_attuale = toInteger(row.pmin),
+            o.pressione_max_attuale = toInteger(row.pmax)
+
+        // Ritorno i valori per debug
+        RETURN id(o) as ID_Interno, o.nome, o.bpm_attuale, o.pressione_min_attuale, o.pressione_max_attuale
+        """ 
+        
+        # Mappiamo la lista Python sul parametro Cypher $batch
+        parametri = {
+            "batch": self.dati_salute 
+        }
+                
+        # Esecuzione
+        self.sincro.interrogaGraphDatabase(query, parametri)
+        
+        return None
+    
+
+    def importa_dati(self):
+        # Recuperiamo gli ID di tutti gli Ospiti, delle Soglie globali e delle loro Patologie specifiche.
+        # Questo permette a crea_ontologia_istanze di scaricare i nodi completi e le relazioni.
+        query = """
+        MATCH (o:Ospite)
+        MATCH (s:Soglie)
+        WITH collect(DISTINCT o) + collect(DISTINCT s) as nodi_totali
+        UNWIND nodi_totali as n
+        RETURN DISTINCT id(n) as node_id
+        """
+        
+        # Esecuzione query
+        risultati = self.sincro.interrogaGraphDatabase(query, {})
+
+        if risultati:
+            # Creiamo la lista piatta di ID per crea_ontologia_istanze
+            lista_ids = [record['node_id'] for record in risultati if record['node_id'] is not None]
+            
+            self.get_logger().info(f"[Monitoraggio] Recuperati {len(lista_ids)} nodi (Ospiti e Soglie).")
+            return lista_ids
+
+        self.get_logger().info("[Monitoraggio] Nessun dato trovato.")
+        return []
+
+
+
     def gestione_periodica_salute(self):
         self.get_logger().info("gestione_periodica_salute()")
         # TODO:
 
+        #self.get_logger().info(f"{self.dati_salute}")
         # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
+        self.carica_dati()
 
-        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascuno...
-
-        # - creare l'ontologia con i dati aggiornati dei braccialetti .   #
-        #self.sincro.crea_ontologia_istanze(dati_braccialetti)
-
+        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non 
+        dati=self.importa_dati()
+        if dati:
+            self.get_logger().info(f"Iddu è  {dati}")
+            self.sincro.crea_ontologia_istanze(dati)
+            assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
+            data = json.loads(assiomi)
+            self.get_logger().info(f"Iddu è assiomi  {data}")
+      
         # lo SpiegamiTutto stampa la lista di tutti coloro che sono in StatoChiamareSpecialista.
         #assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
         #forse ritornano tutte le persone e in particolare dice se sono in specialista o allerta

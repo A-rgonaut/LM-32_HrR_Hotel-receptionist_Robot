@@ -111,7 +111,7 @@ public class Neo4jManager : MonoBehaviour
             await _driver.VerifyConnectivityAsync();
 
             await using var session = _driver.AsyncSession();
-            var query = "MATCH(n: Ospite | OspiteInStatodiAllerta ) RETURN " +
+            var query = "MATCH(n: Ospite | OspiteInStatodiAllerta | OspiteStatoChiamataSpecialista ) RETURN " +
                         "id(n) AS id, " +
                         "n.nome AS nome, " +
                         "n.cognome AS cognome " +

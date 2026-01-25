@@ -180,6 +180,8 @@ class BraccialettiManager(Node):
                 if dt <= 0.0:
                     dt = 1.0
             ospite.last_packet_time = current_time
+            val_x = float(data.get("x", 0.0))
+            val_z = float(data.get("z", 0.0))
             raw_hr   = float(data.get("hr", 0.0))
             raw_pmin = float(data.get("pmin", 0.0))
             raw_pmax = float(data.get("pmax", 0.0))
@@ -198,6 +200,8 @@ class BraccialettiManager(Node):
                 "hr":   round(clean_hr,   2),
                 "pmin": round(clean_pmin, 2),
                 "pmax": round(clean_pmax, 2),
+                "x": val_x,
+                "z": val_z,
                 "timestamp": current_time.nanoseconds / 1e9  # s
             }
             output_list.append(output_data)
