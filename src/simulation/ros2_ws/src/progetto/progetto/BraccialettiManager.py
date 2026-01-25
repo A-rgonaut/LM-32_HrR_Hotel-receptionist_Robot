@@ -5,9 +5,6 @@ import numpy as np
 import json
 from std_msgs.msg import String
 
-from progetto.SincronizzaManager import SincronizzaManager
-from progetto.Specialista import Specialista
-
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 
@@ -105,10 +102,8 @@ class BraccialettiManager(Node):
             10
         )
         self.ospiti = {}
-        self.sincro = SincronizzaManager(self)
-        self.specialista = Specialista()
         self.get_logger().info('BraccialettiManager avviato.')
-        self.timer = self.create_timer(60.0, self.gestione_periodica_salute)
+        #self.timer = self.create_timer(60.0, self.gestione_periodica_salute)
 
     def get_or_create_ospite(self, ospite_id):
         if ospite_id not in self.ospiti:
@@ -210,23 +205,6 @@ class BraccialettiManager(Node):
         out_msg = String()
         out_msg.data = json.dumps(output_data)
         self.pub.publish(out_msg)
-
-    def gestione_periodica_salute(self):
-        self.get_logger().info("gestione_periodica_salute()")
-        # TODO:
-        # - Ogni minuto scrivere su output_data Neo4j!
-        # - Aggiornare l'ontologia.
-        # - SpiegamiTutto.
-        # - Stampare lista di tutti coloro che sono in StatoChiamareSpecialista.
-        # - if len(lista) != 0:
-        #       for persona in lista:
-        if len(self.ospiti) != 0:
-            self.specialista.chiama(self, "medico", "ospite", "assiomi ritornati da spiegami tutto (es. bpm alti)")
-        # - Stampare lista di tutti coloro che sono in StatoAllerta.
-        # - if len(lista) != 0:
-        #       InteragisciScenarioC(lista[0])
-        #       for persona in lista[1:]:
-        #           # self.specialista.chiama(...)
 
 def main(args=None):
     rclpy.init(args=args)

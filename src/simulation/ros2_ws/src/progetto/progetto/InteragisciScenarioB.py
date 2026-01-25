@@ -9,10 +9,10 @@ class InteragisciScenarioB(InteragisciConOspite):
     def reset(self, ospite=None):
         super().reset(ospite)
         #self.nodo.destinazione_target = (-10, 11)
-        #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
+        self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
         #self.nodo.destinazione_target = (7 + (-0.28921), 4.2 + 2.5634)  # stanza 1
-        self.nodo.destinazione_target = (6, 4)  # stanza 1
+        #self.nodo.destinazione_target = (6, 4)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioB"
@@ -38,17 +38,22 @@ class InteragisciScenarioB(InteragisciConOspite):
         result = kb.interrogaGraphDatabase(query, {'id': self.contesto['ospite'].id})[0]
         return result['o.eta'], result['o.lingua']
 
-    def rileva_guasto(self, testo, kb, llm):
+    def rileva_guasto(self, testo):
         # testo = "Ciao Pippor, continuo a sentire molto freddo."
-        nome_guasto_raw = "caldo"  # llm.handle_request(scenario="B", tipo="estrazione_semantica", msg=testo)
+        nome_guasto_raw = "caldo"  # self.sincro.ask_llm(testo, scenario="B", tipo="estrazione_semantica")
         self.contesto['tipologia_guasto'] = nome_guasto_raw
-        nome_classe_ufficiale = kb.trova_classe_da_sinonimo(nome_guasto_raw, nome_radice="Guasto")
+        
+        risultati = self.sincro.trova_classe_da_sinonimo([nome_guasto_raw], nome_radice="Guasto")
+        #Se la lista è vuota, assegna None (o un valore di default), altrimenti il primo elemento
+        nome_classe_ufficiale = risultati[0] if risultati else None
+
+        nome_classe_ufficiale =self.sincro.trova_classe_da_sinonimo(nome_guasto_raw, nome_radice="Guasto")
         if nome_classe_ufficiale:  # es. condizionatore
             self.nodo.get_logger().info(f"Guasto rilevato: '{nome_guasto_raw}' -> Mapped to: '{nome_classe_ufficiale}'")
             return nome_classe_ufficiale  # es. ritorno che il problema è il condizionatore
         else:
             self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{nome_guasto_raw}'")
-            return None
+            return []
 
     """
     def ritorna_soglia_regola(self, oggetto, modalita=None):
@@ -134,22 +139,17 @@ class InteragisciScenarioB(InteragisciConOspite):
         # in cui spiega che ... SpiegamiTutto()
         return None
 
-    def esegui(self, testo, kb, llm):
+    def esegui(self, testo):
         self.nodo.get_logger().info(f"[ScenarioB] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
-            p = self.contesto['ospite']
-            eta, lingua = self.recupera_eta_lingua(kb)
-            self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, eta, lingua)
-            print(self.contesto['ospite'])
-            self.nodo.get_logger().info(f"Buonasera, Sig. Mario. Sono qui per assisterLa nel risolvere la situazione nel modo più rapido possibile.")
+            self.nodo.parla(f"Buonasera, Sono qui per assisterLa e nel risolvere la situazione nel modo più rapido possibile. Mi dica l'oggetto  in questione danneggiato")
             self.stato = "RILEVA_GUASTO"
         elif self.stato == "RILEVA_GUASTO":
-            oggetto_guasto = self.rileva_guasto(testo, kb, llm)
+            oggetto_guasto = self.rileva_guasto(testo)
             if oggetto_guasto:
                 self.nodo.get_logger().info(oggetto_guasto)
                 self.contesto['oggetto_guasto'] = oggetto_guasto
-                #self.nodo.parla(self.dialogo_scriptato(tipo="conferma_oggetto_guasto"))
-                self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
+                #self.nodo.parla(self.dialogo_scriptato(tipo="conferma_oggetto_guasto")) # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
                 self.stato = "CONFERMA_GUASTO"
         elif self.stato == "CONFERMA_GUASTO":
             if self.rileva_conferma(testo):
@@ -158,7 +158,7 @@ class InteragisciScenarioB(InteragisciConOspite):
                 # dire che non ha capito bene il robot o probabilmente non ha detto qualcosa che concerne la stanza
                 self.stato = "RILEVA_GUASTO"
         elif self.stato == "SUGGERISCI_SOLUZIONE_1":
-            #self.dialogo_scriptato_suggerisci_soluzioni(kb, llm)
+            # self.dialogo_scriptato_suggerisci_soluzioni()
             # recuperare 20 SE RISCALDARE O 40 SE RAFFREDARE attenzione che caldo->HEAT e freddo->COOL
             self.nodo.get_logger().info(f"Innanzitutto, Sig. Mario, il condizionatore è acceso da almeno (20|40) minuti ?")
             self.stato = "CONFERMA_SUGGERISCI_SOLUZIONE_1"
@@ -188,11 +188,12 @@ class InteragisciScenarioB(InteragisciConOspite):
                 self.rileva_temperatura(testo)
                 temp_ambiente = 23  # self.termostato()
                 # reasoner
-                self.salva_guasto(kb)
-                self.nodo.get_logger().info("La ringrazio, Sig. Mario, per la Sua collaborazione. Dalle Sue risposte, deduco che il problema non derivi da un uso errato del dispositivo, bensì da un potenziale guasto tecnico all'unità. Non è un problema che posso risolvere autonomamente. Mi scuso per il disagio. Provvederò immediatamente a contattare e informare personalmente il tecnico di turno, richiedendo che intervenga nella Sua stanza nel più breve tempo possibile.")
+                self.salva_guasto()
+               
+                self.nodo.get_logger().info("La ringrazio, per la Sua collaborazione. Dalle Sue risposte, deduco che il problema non derivi da un uso errato del dispositivo, bensì da un potenziale guasto tecnico all'unità. Non è un problema che posso risolvere autonomamente. Mi scuso per il disagio. Provvederò immediatamente a contattare e informare personalmente il tecnico di turno, richiedendo che intervenga nella Sua stanza nel più breve tempo possibile.")
                 self.stato = "CONTATTA_SPECIALISTA"
         elif self.stato == "CONTATTA_SPECIALISTA":
-            self.contatta_specialista(kb, llm)
+            self.specialista.chiama(self.nodo, "tecnico idoneo", self.contesto['ospite'], self.motivo_chiamata )
             self.stato = "FINE"
         elif self.stato == "FINE":
 

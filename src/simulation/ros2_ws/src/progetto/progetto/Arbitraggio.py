@@ -40,6 +40,11 @@ class Arbitraggio(Node):
         self.batteria = self.create_subscription(Int32, '/unity/battery_state',
                                                  self.gestisci_batteria, 10,
                                                  callback_group=self.cb_group)
+        '''
+        self.braccialetti = self.create_subscription(String, '/health_filtered',
+                                                self.gestione_periodica_salute, 10,
+                                                callback_group=self.cb_group)
+        '''
         
         self.nome_robot = None
         self.destinazione_target = None
@@ -135,6 +140,41 @@ class Arbitraggio(Node):
             msg = String()
             msg.data = json.dumps({"stato_attivo": self.comportamento_attivo})
             self.stato.publish(msg)
+
+
+
+    def gestione_periodica_salute(self):
+        self.get_logger().info("gestione_periodica_salute()")
+        # TODO:
+
+        # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
+
+        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascuno... 
+
+        # - creare l'ontologia con i dati aggiornati dei braccialetti .   #
+        #self.sincro.crea_ontologia_istanze(dati_braccialetti)
+
+        # lo SpiegamiTutto stampa la lista di tutti coloro che sono in StatoChiamareSpecialista.
+        #assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
+        #forse ritornano tutte le persone e in particolare dice se sono in specialista o allerta
+
+        #Forse lo spiegamitutto,per ogni persona, a caso , dice cosa è e si va camminando 
+
+
+        # - if len(listaStatoChiamareSpecialista) != 0:
+        #       for persona in lista:
+
+        #if len(self.ospitiChiamatoSpecialista) != 0:
+        #    self.specialista.chiama(self, "medico", "ospite", "assiomi ritornati da spiegami tutto (es. bpm alti)")
+
+        # lo SpiegamiTutto stampa la lista di tutti coloro che sono  in StatoAllerta.
+        # - if len(listaAllerta) != 0:
+        #       InteragisciScenarioC(lista[0])
+        #       for persona in lista[1:]:
+        #           # self.specialista.chiama(...)
+
+
+
 
     def processa_input(self, msg):
         testo = msg.data.strip()
