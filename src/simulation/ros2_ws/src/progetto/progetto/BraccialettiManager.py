@@ -103,7 +103,6 @@ class BraccialettiManager(Node):
         )
         self.ospiti = {}
         self.get_logger().info('BraccialettiManager avviato.')
-        #self.timer = self.create_timer(60.0, self.gestione_periodica_salute)
 
     def get_or_create_ospite(self, ospite_id):
         if ospite_id not in self.ospiti:
@@ -167,44 +166,45 @@ class BraccialettiManager(Node):
             self.get_logger().error(f"Errore parsing JSON: {e}")
             return
         data_list = raw_data if isinstance(raw_data, list) else [raw_data]
+        output_list = []
         for data in data_list:
             ospite_id = str(data.get("id", "")).strip()
             if not ospite_id:
                 self.get_logger().warn("JSON senza campo 'id', salto.")
                 continue
-
             ospite = self.get_or_create_ospite(ospite_id)
-        if ospite.last_packet_time is None:
-            dt = 0.1
-        else:
-            dt = (current_time - ospite.last_packet_time).nanoseconds / 1e9
-            if dt <= 0.0:
-                dt = 1.0
-        ospite.last_packet_time = current_time
-        raw_hr   = float(data.get("hr", 0.0))
-        raw_pmin = float(data.get("pmin", 0.0))
-        raw_pmax = float(data.get("pmax", 0.0))
-        hr_valid   = raw_hr   > 30.0
-        pmin_valid = raw_pmin > 10.0
-        pmax_valid = raw_pmax > 10.0
-        clean_hr   = self.handle_single_signal(ospite, 'hr',   raw_hr,   hr_valid,   ospite.kf_hr,   dt, current_time)
-        clean_pmin = self.handle_single_signal(ospite, 'pmin', raw_pmin, pmin_valid, ospite.kf_pmin, dt, current_time)
-        clean_pmax = self.handle_single_signal(ospite, 'pmax', raw_pmax, pmax_valid, ospite.kf_pmax, dt, current_time)
-        # self.get_logger().info(f"{clean_hr} {clean_pmin} {clean_pmax}")
-        if clean_hr is None or clean_pmin is None or clean_pmax is None:
-            self.get_logger().debug("Dati insufficienti o braccialetto rimosso")
-            return
-        # Pubblicazione singola per ogni ospite (più semplice per ora, ma forse manco serve se gestiamo qua dentro...)
-        output_data = {
-            "id": ospite_id,
-            "hr":   round(clean_hr,   2),
-            "pmin": round(clean_pmin, 2),
-            "pmax": round(clean_pmax, 2),
-            "timestamp": current_time.nanoseconds / 1e9  # s
-        }
-        out_msg = String()
-        out_msg.data = json.dumps(output_data)
-        self.pub.publish(out_msg)
+            if ospite.last_packet_time is None:
+                dt = 0.1
+            else:
+                dt = (current_time - ospite.last_packet_time).nanoseconds / 1e9
+                if dt <= 0.0:
+                    dt = 1.0
+            ospite.last_packet_time = current_time
+            raw_hr   = float(data.get("hr", 0.0))
+            raw_pmin = float(data.get("pmin", 0.0))
+            raw_pmax = float(data.get("pmax", 0.0))
+            hr_valid   = raw_hr   > 30.0
+            pmin_valid = raw_pmin > 10.0
+            pmax_valid = raw_pmax > 10.0
+            clean_hr   = self.handle_single_signal(ospite, 'hr',   raw_hr,   hr_valid,   ospite.kf_hr,   dt, current_time)
+            clean_pmin = self.handle_single_signal(ospite, 'pmin', raw_pmin, pmin_valid, ospite.kf_pmin, dt, current_time)
+            clean_pmax = self.handle_single_signal(ospite, 'pmax', raw_pmax, pmax_valid, ospite.kf_pmax, dt, current_time)
+            # self.get_logger().info(f"{clean_hr} {clean_pmin} {clean_pmax}")
+            if clean_hr is None or clean_pmin is None or clean_pmax is None:
+                self.get_logger().debug("Dati insufficienti o braccialetto rimosso")
+                continue
+            output_data = {
+                "id": ospite_id,
+                "hr":   round(clean_hr,   2),
+                "pmin": round(clean_pmin, 2),
+                "pmax": round(clean_pmax, 2),
+                "timestamp": current_time.nanoseconds / 1e9  # s
+            }
+            output_list.append(output_data)
+        if output_list:
+            out_msg = String()
+            out_msg.data = json.dumps(output_list)
+            self.pub.publish(out_msg)
 
 def main(args=None):
     rclpy.init(args=args)

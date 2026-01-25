@@ -142,6 +142,7 @@ public class SpiegamiTutto {
                         // 4. Il Reasoner controlla se è vero
                         if (reasoner.isEntailed(ax)) {
                             try {
+                                // https://owlcs.github.io/owlapi/apidocs_4/com/clarkparsia/owlapi/explanation/DefaultExplanationGenerator.html
                                 Set<OWLAxiom> explanation = gen.getExplanation(ax);
                                 testoSpiegazione = explanation.toString()
                                     .replace("[", "").replace("]", "")

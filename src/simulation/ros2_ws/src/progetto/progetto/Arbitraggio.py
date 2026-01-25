@@ -40,12 +40,13 @@ class Arbitraggio(Node):
         self.batteria = self.create_subscription(Int32, '/unity/battery_state',
                                                  self.gestisci_batteria, 10,
                                                  callback_group=self.cb_group)
-        '''
         self.braccialetti = self.create_subscription(String, '/health_filtered',
-                                                self.gestione_periodica_salute, 10,
+                                                self.salva_dati_salute, 10,
                                                 callback_group=self.cb_group)
-        '''
-        
+
+        self.timer = self.create_timer(60.0, self.gestione_periodica_salute)
+        self.dati_salute = None
+
         self.nome_robot = None
         self.destinazione_target = None
         self.raggiunta_destinazione = True
@@ -141,7 +142,14 @@ class Arbitraggio(Node):
             msg.data = json.dumps({"stato_attivo": self.comportamento_attivo})
             self.stato.publish(msg)
 
-
+    def salva_dati_salute(self, msg):
+        self.get_logger().info("salva_dati_salute()")
+        try:
+            self.dati_salute = json.loads(msg.data)
+        except json.JSONDecodeError:
+            self.get_logger().error("Errore nel formato JSON ricevuto da BraccialettiManager.")
+        except Exception as e:
+            self.get_logger().error(f"Errore in salva_dati_salute: {e}")
 
     def gestione_periodica_salute(self):
         self.get_logger().info("gestione_periodica_salute()")
@@ -149,7 +157,7 @@ class Arbitraggio(Node):
 
         # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
 
-        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascuno... 
+        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascuno...
 
         # - creare l'ontologia con i dati aggiornati dei braccialetti .   #
         #self.sincro.crea_ontologia_istanze(dati_braccialetti)
@@ -158,7 +166,7 @@ class Arbitraggio(Node):
         #assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
         #forse ritornano tutte le persone e in particolare dice se sono in specialista o allerta
 
-        #Forse lo spiegamitutto,per ogni persona, a caso , dice cosa è e si va camminando 
+        #Forse lo spiegamitutto,per ogni persona, a caso , dice cosa è e si va camminando
 
 
         # - if len(listaStatoChiamareSpecialista) != 0:
@@ -172,9 +180,6 @@ class Arbitraggio(Node):
         #       InteragisciScenarioC(lista[0])
         #       for persona in lista[1:]:
         #           # self.specialista.chiama(...)
-
-
-
 
     def processa_input(self, msg):
         testo = msg.data.strip()
@@ -239,7 +244,7 @@ class Arbitraggio(Node):
         msg.data = f"{self.nome_robot}: {testo}"
         self.pub.publish(msg)
         self.get_logger().info(msg.data)
-        
+
     def gestisci_batteria(self, msg):
         self.get_logger().info(f"Batteria = {msg.data}%")
 
