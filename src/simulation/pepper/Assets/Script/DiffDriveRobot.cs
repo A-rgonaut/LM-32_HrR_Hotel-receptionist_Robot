@@ -4,7 +4,6 @@ using RosMessageTypes.Std;
 using RosMessageTypes.Sensor;
 using System.Collections.Generic;
 using System.Globalization;
-using System;
 
 public class DiffDriveRobot : MonoBehaviour
 {
@@ -151,6 +150,18 @@ public class DiffDriveRobot : MonoBehaviour
     void PublishWheelStates()
     {
         JointStateMsg stateMsg = new JointStateMsg();
+        double currentTime = Time.time;
+        int sec = (int)currentTime;
+        uint nanosec = (uint)((currentTime - sec) * 1e9);
+        stateMsg.header = new RosMessageTypes.Std.HeaderMsg
+        {
+            frame_id = "",
+            stamp = new RosMessageTypes.BuiltinInterfaces.TimeMsg
+            {
+                sec = sec,
+                nanosec = nanosec
+            }
+        };
         stateMsg.name = new string[] { "right_wheel_joint", "left_wheel_joint" };
 
         stateMsg.velocity = new double[] {

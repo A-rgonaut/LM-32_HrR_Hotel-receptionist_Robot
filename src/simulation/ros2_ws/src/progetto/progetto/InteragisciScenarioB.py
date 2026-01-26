@@ -9,10 +9,9 @@ class InteragisciScenarioB(InteragisciConOspite):
     def reset(self, ospite=None):
         super().reset(ospite)
         #self.nodo.destinazione_target = (-10, 11)
-        self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
+        #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
-        #self.nodo.destinazione_target = (7 + (-0.28921), 4.2 + 2.5634)  # stanza 1
-        #self.nodo.destinazione_target = (6, 4)  # stanza 1
+        self.nodo.destinazione_target = (7, 4.2)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioB"
@@ -42,7 +41,7 @@ class InteragisciScenarioB(InteragisciConOspite):
         # testo = "Ciao Pippor, continuo a sentire molto freddo."
         nome_guasto_raw = "caldo"  # self.sincro.ask_llm(testo, scenario="B", tipo="estrazione_semantica")
         self.contesto['tipologia_guasto'] = nome_guasto_raw
-        
+
         risultati = self.sincro.trova_classe_da_sinonimo([nome_guasto_raw], nome_radice="Guasto")
         #Se la lista è vuota, assegna None (o un valore di default), altrimenti il primo elemento
         nome_classe_ufficiale = risultati[0] if risultati else None
@@ -189,7 +188,7 @@ class InteragisciScenarioB(InteragisciConOspite):
                 temp_ambiente = 23  # self.termostato()
                 # reasoner
                 self.salva_guasto()
-               
+
                 self.nodo.get_logger().info("La ringrazio, per la Sua collaborazione. Dalle Sue risposte, deduco che il problema non derivi da un uso errato del dispositivo, bensì da un potenziale guasto tecnico all'unità. Non è un problema che posso risolvere autonomamente. Mi scuso per il disagio. Provvederò immediatamente a contattare e informare personalmente il tecnico di turno, richiedendo che intervenga nella Sua stanza nel più breve tempo possibile.")
                 self.stato = "CONTATTA_SPECIALISTA"
         elif self.stato == "CONTATTA_SPECIALISTA":

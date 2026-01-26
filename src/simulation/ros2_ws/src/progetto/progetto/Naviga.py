@@ -8,6 +8,11 @@ import array
 
 from progetto.Pianifica import astar_8conn
 
+from tf2_ros import Buffer, TransformListener
+from tf2_ros import LookupException, ConnectivityException, ExtrapolationException
+
+from rclpy.time import Time
+
 class Naviga:
     def __init__(self, nodo_padre):
         self.nodo = nodo_padre  # Riferimento all'Arbitraggio (che è il nodo ROS)
@@ -32,14 +37,21 @@ class Naviga:
 
         # --- Parametri Controllo ---
         self.Kp_linear = 0.5
-        self.Kp_angular = 2.0
+        self.Kp_angular = 1.0
         self.dist_threshold = 0.15 # 15 cm di tolleranza
+
+        self.sum_angular_error = 0.0  # Accumulatore per l'errore (Termine Integrale)
+        self.Ki_angular = 0.05        # Guadagno Integrale (piccolo ma costante)
+        self.prev_angle_error = 0.0   # Per resettare l'integrale se cambia il target
+        self.state_rotating = True
 
         self.pub_cmd_vel = self.nodo.create_publisher(Twist, '/cmd_vel', 10)
         self.pub_path = self.nodo.create_publisher(Path, '/pianifica_path', 10)
 
         self.nodo.create_subscription(OccupancyGrid, '/map', self.map_callback, map_qos)
-        self.nodo.create_subscription(Odometry, '/odom', self.odom_callback, 10)
+        # self.nodo.create_subscription(Odometry, '/odom', self.odom_callback, 10)
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self.nodo)
 
         self.nodo.get_logger().info("Naviga...")
 
@@ -47,8 +59,10 @@ class Naviga:
 
     # --- 1. LOGICA DI CONTROLLO (Chiamata dall'Arbitraggio) ---
     def control_loop(self):
-        # Se non ho la posa o la mappa, non posso fare nulla
-        if self.robot_pose is None or self.map_data is None:
+        # Prima cosa: aggiorna la posa
+        if not self.update_pose():
+            return  # Se non so dove sono, non mi muovo
+        if self.map_data is None:
             return
         # Se ho una destinazione ma non ho ancora un percorso, PIANIFICO
         if not self.current_path_world and self.nodo.destinazione_target:
@@ -56,13 +70,13 @@ class Naviga:
             return
         if not self.current_path_world:
             return
-        # Se ho finito il percorso
+
+        # --- GESTIONE FINE PERCORSO ---
+        # Controllo se siamo all'ultimo punto PRIMA di fare calcoli
         if self.current_goal_idx >= len(self.current_path_world):
             self.stop_robot()
             self.nodo.get_logger().info("Naviga: Destinazione raggiunta!")
-            # Segnalo all'arbitraggio che ho finito
             self.nodo.raggiunta_destinazione = True
-            # Pulisco il path per la prossima volta
             self.current_path_world = []
             return
 
@@ -82,24 +96,75 @@ class Naviga:
         while angle_error < -pi:
             angle_error += 2 * pi
 
-        cmd = Twist()
-
-        # Se sono vicino al waypoint, passo al prossimo
+        # --- LOGICA CAMBIO WAYPOINT (MODIFICATA) ---
+        # Se siamo vicini al waypoint corrente
         if distance < self.dist_threshold:
             self.current_goal_idx += 1
+            # MODIFICA 1: Ho rimosso "self.state_rotating = True"
+            # Non forziamo lo stop. Se il prossimo punto è dritto, continuerà fluido.
+            # Se è una curva a 90°, l'if sulla "TOLLERANZA_START_ROT" qui sotto
+            # lo fermerà nel prossimo ciclo del timer (0.1s dopo).
+            return
+
+        # Reset dell'integrale se cambia segno o cambio drastico
+        if (angle_error * self.prev_angle_error < 0) or (abs(angle_error - self.prev_angle_error) > 1.0):
+             self.sum_angular_error = 0.0
+        self.prev_angle_error = angle_error
+
+        cmd = Twist()
+
+        # --- PARAMETRI ---
+        MAX_ANG_VEL = 0.4
+        TOLLERANZA_STOP_ROT = 0.10   # ~6 gradi
+        TOLLERANZA_START_ROT = 0.35  # Aumentato leggermente (~20 gradi) per renderlo meno nervoso
+
+        # --- MACCHINA A STATI ---
+        if self.state_rotating:
+            # Smetto di ruotare se sono allineato
+            if abs(angle_error) < TOLLERANZA_STOP_ROT:
+                self.state_rotating = False
+                self.sum_angular_error = 0.0
         else:
-            # Sterzata
-            cmd.angular.z = self.Kp_angular * angle_error
+            # Mi fermo per ruotare SOLO se l'errore è grande (curva secca)
+            if abs(angle_error) > TOLLERANZA_START_ROT:
+                self.state_rotating = True
+                self.sum_angular_error = 0.0
 
-            # Velocità lineare: vado veloce solo se sono allineato
-            if abs(angle_error) < 0.5:  # ~30 gradi
-                cmd.linear.x = min(self.Kp_linear * distance, 0.4)  # Max 0.4 m/s
-            # elif abs(angle_error) < 1.0:
-                # cmd.linear.x = 0.05  # Avanza piano mentre giri
-            else:
-                cmd.linear.x = 0.0  # Giro sul posto se disallineato
+        # --- ESECUZIONE ---
+        if self.state_rotating:
+            # --- RUOTA SUL POSTO ---
+            cmd.linear.x = 0.0
 
-            self.pub_cmd_vel.publish(cmd)
+            sign = 1.0 if angle_error > 0 else -1.0
+            raw_rot = (self.Kp_angular * angle_error) + (self.Ki_angular * self.sum_angular_error)
+
+            min_push = 0.15
+            angular_speed = raw_rot + (min_push * sign)
+
+            if abs(angular_speed) > MAX_ANG_VEL:
+                angular_speed = MAX_ANG_VEL * sign
+
+            cmd.angular.z = angular_speed
+
+        else:
+            cmd.linear.x = min(self.Kp_linear * distance, 0.2)
+
+            # Clamp sull'errore per evitare scatti violenti mentre si guida
+            correction = angle_error * 1.5 # Kp dinamico per la guida
+
+            if abs(angle_error) < 0.03:
+                correction = 0.0
+
+            # Limito la velocità angolare MENTRE guido per evitare sbandate
+            max_drive_ang_vel = 0.6
+            if correction > max_drive_ang_vel:
+                correction = max_drive_ang_vel
+            if correction < -max_drive_ang_vel:
+                correction = -max_drive_ang_vel
+
+            cmd.angular.z = correction
+
+        self.pub_cmd_vel.publish(cmd)
 
     def stop_robot(self):
         self.pub_cmd_vel.publish(Twist())
@@ -200,13 +265,28 @@ class Naviga:
                                     new_map[ny * width + nx] = 100
         return new_map
 
-    # --- 4. GESTIONE ODOMETRIA ---
+    """
     def odom_callback(self, msg):
         self.robot_pose = (msg.pose.pose.position.x, msg.pose.pose.position.y)
         q = msg.pose.pose.orientation
         siny_cosp = 2 * (q.w * q.z + q.x * q.y)
         cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
         self.robot_theta = atan2(siny_cosp, cosy_cosp)
+    """
+    def update_pose(self):
+        try:
+            # Dove si trova il robot (base_link) rispetto alla mappa (map)?
+            from rclpy.time import Time
+            t = self.tf_buffer.lookup_transform('map', 'base_link', Time())
+            self.robot_pose = (t.transform.translation.x, t.transform.translation.y)
+            q = t.transform.rotation
+            siny_cosp = 2 * (q.w * q.z + q.x * q.y)
+            cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
+            self.robot_theta = atan2(siny_cosp, cosy_cosp)
+            return True
+        except (LookupException, ConnectivityException, ExtrapolationException):
+            self.nodo.get_logger().warning('In attesa di localizzazione AMCL (map->base_link)...', throttle_duration_sec=2.0)
+            return False
 
     # --- 5. UTILS ---
     def simplify_path(self, path_grid):
@@ -243,8 +323,8 @@ class Naviga:
         return gx, gy
 
     def grid_to_world(self, gx, gy):
-        wx = (gx * self.resolution) + self.origin_x
-        wy = (gy * self.resolution) + self.origin_y
+        wx = (gx * self.resolution) + (self.resolution * 0.5) + self.origin_x
+        wy = (gy * self.resolution) + (self.resolution * 0.5) + self.origin_y
         return wx, wy
 
     def reset(self):

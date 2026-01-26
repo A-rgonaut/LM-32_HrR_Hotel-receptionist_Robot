@@ -2,24 +2,21 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry, Path
 from sensor_msgs.msg import JointState
-from geometry_msgs.msg import Twist, Quaternion, PoseStamped, TransformStamped
+from geometry_msgs.msg import Twist, Quaternion, PoseStamped, TransformStamped, PoseWithCovarianceStamped
 from std_msgs.msg import Float64
 from tf2_ros import TransformBroadcaster
+from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
 from math import sin, cos, atan2, pi
 
 class DiffRobotController(Node):
     def __init__(self):
         super().__init__("DiffRobotController")
-
         self.L          = 0.28  # m
         self.R          = 0.07  # m
-        # self.init_x     = 10.0 + (-0.28921)
-        # self.init_y     = 11.0 + 2.5634
         self.init_x     = 10.0
         self.init_y     = 11.0
-        self.init_theta = pi  # Il robot ha rotation = 270 ma l'albergo ha rotation = -90 ->
-                              # Complessivamente guarda a 180 anche se sembra guardare Z+ !!!
+        self.init_theta = pi
 
         self.odometry_publisher = self.create_publisher(Odometry,
             '/odom', 10)
@@ -32,7 +29,12 @@ class DiffRobotController(Node):
         self.r_wheel_publisher = self.create_publisher(Float64,
             '/right_wheel_cmd', 10)
 
+        self.initial_pose_pub = self.create_publisher(PoseWithCovarianceStamped,
+            '/initialpose', 10)
+
         self.tf_broadcaster = TransformBroadcaster(self)
+        self.tf_static_broadcaster = StaticTransformBroadcaster(self)
+        self.publish_static_transforms()
 
         self.path_pub = self.create_publisher(Path, '/percorso_effettivo', 10)
         self.actual_path = Path()
@@ -40,25 +42,71 @@ class DiffRobotController(Node):
 
         self.odom_timer = self.create_timer(0.1, self.publish_odometry)
 
-        self.x     = self.init_x
-        self.y     = self.init_y
-        self.theta = self.init_theta
+        self.x     = 0.0
+        self.y     = 0.0
+        self.theta = 0.0
+
+        self.amcl_init_timer = self.create_timer(3.0, self.send_initial_pose_to_amcl)
 
         self.current_time = self.get_clock().now()
 
         self.get_logger().info('DiffRobotController avviato.')
 
+    def send_initial_pose_to_amcl(self):
+        msg = PoseWithCovarianceStamped()
+        msg.header.frame_id = 'map'
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.pose.pose.position.x = self.init_x
+        msg.pose.pose.position.y = self.init_y
+        msg.pose.pose.position.z = 0.0
+        q = self.euler_to_quaternion(0, 0, self.init_theta)
+        msg.pose.pose.orientation = q
+        msg.pose.covariance = [0.0] * 36
+        msg.pose.covariance[0]  = 0.001
+        msg.pose.covariance[7]  = 0.001
+        msg.pose.covariance[35] = 0.001
+        self.initial_pose_pub.publish(msg)
+        self.get_logger().info(f'Inviata posa iniziale ad AMCL: x={self.init_x}, y={self.init_y}')
+        self.amcl_init_timer.cancel()
+
+    def publish_static_transforms(self):
+        now = self.get_clock().now().to_msg()
+        # 1. Transform: base_footprint -> base_link
+        t_base = TransformStamped()
+        t_base.header.stamp.sec = 0
+        t_base.header.stamp.nanosec = 0
+        t_base.header.frame_id = 'base_footprint'
+        t_base.child_frame_id = 'base_link'
+        t_base.transform.translation.x = 0.0
+        t_base.transform.translation.y = 0.0
+        t_base.transform.translation.z = 0.0
+        t_base.transform.rotation.w = 1.0
+        # 2. Transform: base_link -> lidar_link
+        t_lidar = TransformStamped()
+        t_lidar.header.stamp.sec = 0
+        t_lidar.header.stamp.nanosec = 0
+        t_lidar.header.frame_id = 'base_link'
+        t_lidar.child_frame_id = 'lidar_link'
+        t_lidar.transform.translation.x = 0.0
+        t_lidar.transform.translation.y = 0.0
+        t_lidar.transform.translation.z = 0.3
+        t_lidar.transform.rotation.w = 1.0
+        self.tf_static_broadcaster.sendTransform([t_base, t_lidar])
+
     def compute_odometry(self, encoder_msgs):
-        now = self.get_clock().now()
-        dt = (now - self.current_time).nanoseconds / 1e9  # s
-        self.current_time = now
-        # if dt > 1.0:
-            # return
+        msg_time_sec = encoder_msgs.header.stamp.sec
+        msg_time_nanosec = encoder_msgs.header.stamp.nanosec
+        current_msg_time = msg_time_sec + msg_time_nanosec * 1e-9
+        if not hasattr(self, 'last_msg_time'):
+            self.last_msg_time = current_msg_time
+            return
+        dt = current_msg_time - self.last_msg_time
+        self.last_msg_time = current_msg_time
+        if dt <= 0 or dt > 1.0:
+            return
+
         w_R = encoder_msgs.velocity[0]
         w_L = encoder_msgs.velocity[1]
-
-        # if abs(w_R) > 0.01 or abs(w_L) > 0.01:
-            # self.get_logger().info(f"ODOM INPUT -> Right(idx0): {w_R:.3f} | Left(idx1): {w_L:.3f}")
 
         v_R = w_R * self.R
         v_L = w_L * self.R
@@ -88,7 +136,7 @@ class DiffRobotController(Node):
         odometry_msg = Odometry()
         odometry_msg.header.stamp = now
         odometry_msg.header.frame_id = 'odom'
-        odometry_msg.child_frame_id = 'base_link'
+        odometry_msg.child_frame_id = 'base_footprint'
         odometry_msg.pose.pose.position.x = self.x
         odometry_msg.pose.pose.position.y = self.y
         odometry_msg.pose.pose.position.z = 0.0
@@ -98,7 +146,7 @@ class DiffRobotController(Node):
         t = TransformStamped()
         t.header.stamp = now
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
+        t.child_frame_id = 'base_footprint'
         t.transform.translation.x = self.x
         t.transform.translation.y = self.y
         t.transform.translation.z = 0.0

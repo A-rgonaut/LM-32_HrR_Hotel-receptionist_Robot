@@ -15,7 +15,7 @@ public class LidarPublisher : MonoBehaviour
     public float maxDistance = 10f;       // Distanza massima del laser (metri)
     public float fieldOfView = 360f;      // Angolo di visione (es. 360 per giro completo)
     public int numRays = 360;             // Risoluzione: numero di raggi per scansione
-    public float scanHeight = 0f;         // Offset verticale se necessario
+    public float scanHeight = 0.30f;         // Offset verticale se necessario
 
     // Variabili interne
     private ROSConnection ros;
@@ -32,6 +32,21 @@ public class LidarPublisher : MonoBehaviour
 
         // Calcola l'intervallo di pubblicazione
         publishInterval = 1.0f / publishFrequency;
+
+
+        // ======================= AGGIUNGI QUESTO LOG =======================
+        // Calcola l'altezza esatta rispetto al mondo (assumendo pavimento a Y=0)
+        float altezzaMondo = transform.position.y;
+
+        // Cerca di capire se c'è scaling strano nei parent
+        float scalaRealeY = transform.lossyScale.y;
+
+        Debug.LogWarning($"[DEBUG LIDAR] ==============================================");
+        Debug.LogWarning($"[DEBUG LIDAR] Altezza REALE dal suolo (World Y): {altezzaMondo} metri");
+        Debug.LogWarning($"[DEBUG LIDAR] Posizione Locale (Local Y): {transform.localPosition.y}");
+        Debug.LogWarning($"[DEBUG LIDAR] Scala Globale (LossyScale Y): {scalaRealeY} (Se non è 1, occhio!)");
+        Debug.LogWarning($"[DEBUG LIDAR] ==============================================");
+        // ===================================================================
     }
     void OnDestroy()
     {
@@ -59,7 +74,7 @@ public class LidarPublisher : MonoBehaviour
         // Messaggio di debug per la console (costruiamo una stringa)
         // string consoleOutput = $"[Lidar] Scansione inviata a '{topicName}'. Rilevamenti vicini (< 2m): ";
         // bool objectDetected = false;
-        HashSet<string> oggettiVisti = new HashSet<string>();
+        Dictionary<string, float> oggettiVisti = new Dictionary<string, float>();
 
         // 2. Ciclo di Raycasting
         for (int i = 0; i < numRays; i++)
@@ -68,7 +83,7 @@ public class LidarPublisher : MonoBehaviour
 
             // Calcolo la direzione del raggio rispetto alla rotazione attuale del sensore
             // Ruotiamo il vettore 'Forward' (asse Z) sull'asse Y
-            Quaternion rotation = Quaternion.Euler(0, currentAngle, 0);
+            Quaternion rotation = Quaternion.Euler(0, -currentAngle, 0);
             Vector3 rayDirection = transform.rotation * rotation * Vector3.forward;
 
             // Punto di origine leggermente alzato se necessario
@@ -78,7 +93,12 @@ public class LidarPublisher : MonoBehaviour
             if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, maxDistance))
             {
                 ranges[i] = hit.distance; // Abbiamo colpito qualcosa
-                oggettiVisti.Add(hit.collider.gameObject.name);
+                string nomeOggetto = hit.collider.gameObject.name;
+                if (!oggettiVisti.ContainsKey(nomeOggetto)) {
+                    oggettiVisti.Add(nomeOggetto, hit.distance);
+                } else if (hit.distance < oggettiVisti[nomeOggetto]) {
+                    oggettiVisti[nomeOggetto] = hit.distance;
+                }
 
                 // Disegna il raggio nella scena (solo per debug visivo in Unity)
                 Debug.DrawRay(rayOrigin, rayDirection * hit.distance, Color.red);
@@ -93,7 +113,7 @@ public class LidarPublisher : MonoBehaviour
             }
             else
             {
-                ranges[i] = float.PositiveInfinity; // Nessun oggetto colpito (simula distanza infinita)
+                ranges[i] = maxDistance;  // Nessun oggetto colpito
                 Debug.DrawRay(rayOrigin, rayDirection * maxDistance, Color.green);
             }
         }
@@ -111,6 +131,9 @@ public class LidarPublisher : MonoBehaviour
         }
 
         // 4. Creazione e invio messaggio ROS
+        double time = Time.time;
+        int sec = (int)time;
+        uint nanosec = (uint)((time - sec) * 1e9);
         LaserScanMsg scanMsg = new LaserScanMsg
         {
             header = new RosMessageTypes.Std.HeaderMsg
@@ -118,8 +141,8 @@ public class LidarPublisher : MonoBehaviour
                 frame_id = "lidar_link", // Importante per TF
                 stamp = new RosMessageTypes.BuiltinInterfaces.TimeMsg
                 {
-                    sec = (int)Time.time,
-                    nanosec = (uint)((Time.time - (int)Time.time) * 1e9)
+                    sec = sec,
+                    nanosec = nanosec
                 }
             },
             angle_min = startAngle * Mathf.Deg2Rad, // Convertire in radianti
