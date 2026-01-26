@@ -11,6 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/config', ['config/grafo_rqt.perspective']),
+        ('share/' + package_name + '/config', ['config/amcl_params.yaml']),
         ('share/' + package_name + '/config', ['config/your.rviz']),
         ('share/' + package_name + '/maps', ['maps/map_ros.png']),
         ('share/' + package_name + '/maps', ['maps/map_ros.yaml']),
