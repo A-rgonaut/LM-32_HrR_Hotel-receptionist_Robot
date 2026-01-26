@@ -6,11 +6,12 @@ import time
 
 class InteragisciScenarioC(InteragisciConOspite):
 
-    def __init__(self, nodo, specialista):  # , spiegazione): # da vedere dove viene chiamato e controllare il costruttore
+    def __init__(self, nodo, specialista,spiegazione):  # , spiegazione): # da vedere dove viene chiamato e controllare il costruttore
         super().__init__(nodo)
         self.specialista = specialista
         self.motivo_chiamata = ""
-        self.spiegazione="Sei qua perchè ho rilevato un'emergenza"# self.spiegazione = spiegazione # se viene dal rilevamento automatico allora spiegazione != null, altrimenti se vuoto veniamo dal bottone
+        self.spiegazione=spiegazione
+        #self.spiegazione="Sei qua perchè ho rilevato un'emergenza"# self.spiegazione = spiegazione # se viene dal rilevamento automatico allora spiegazione != null, altrimenti se vuoto veniamo dal bottone
         # in fase di testing, per adesso quando clicchiamo i lbottone dobbiamo provare con spiegazione e senza
 
     def rileva_sintomi(self, testo):

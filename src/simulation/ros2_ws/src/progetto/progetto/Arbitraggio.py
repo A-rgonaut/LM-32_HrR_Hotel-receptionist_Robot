@@ -26,7 +26,7 @@ class Arbitraggio(Node):
 
         self.sincro = SincronizzaManager(self)
         self.specialista = Specialista()
-
+        self.spiegazioneC = ""  # Inizializzalo come stringa vuota
         self.cb_group = ReentrantCallbackGroup()
 
         self.pub = self.create_publisher(String, '/unity/dialogo_robot', 10)
@@ -44,7 +44,7 @@ class Arbitraggio(Node):
                                                 self.salva_dati_salute, 10,
                                                 callback_group=self.cb_group)
 
-        self.timer = self.create_timer(30.0, self.gestione_periodica_salute)
+        self.timer = self.create_timer(180.0, self.gestione_periodica_salute)# da sistemare tempo
         self.dati_salute = None
 
         self.nome_robot = None
@@ -58,7 +58,7 @@ class Arbitraggio(Node):
         self.ospite_corrente = None
 
         self.comportamenti = {
-            "InteragisciScenarioC": InteragisciScenarioC(self, self.specialista),
+            "InteragisciScenarioC": InteragisciScenarioC(self, self.specialista,self.spiegazioneC),
             "RicaricaBatteria": RicaricaBatteria(self),
             "InteragisciScenarioB": InteragisciScenarioB(self, self.specialista),
             "InteragisciScenarioA": InteragisciScenarioA(self),
@@ -143,6 +143,8 @@ class Arbitraggio(Node):
             self.stato.publish(msg)
 
     def salva_dati_salute(self, msg):
+        """
+        #da scommentare poi
         self.get_logger().info("salva_dati_salute()")
         try:
             self.dati_salute = json.loads(msg.data)
@@ -150,7 +152,8 @@ class Arbitraggio(Node):
             self.get_logger().error("Errore nel formato JSON ricevuto da BraccialettiManager.")
         except Exception as e:
             self.get_logger().error(f"Errore in salva_dati_salute: {e}")
-
+        """
+            
     def carica_dati(self):
         
         query = """
@@ -200,7 +203,25 @@ class Arbitraggio(Node):
         self.get_logger().info("[Monitoraggio] Nessun dato trovato.")
         return []
 
-
+    def cambia_stato_spe(self, nome,cognome):
+        #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
+        query = "MATCH (n) WHERE n.nome = $nome AND n.cognome = $cognome REMOVE n:Ospite, n:OspiteInStatodiAllerta, n:OspiteStatoChiamataSpecialista SET n:OspiteStatoChiamataSpecialista RETURN id(n) AS id "
+        parametri = {
+            "nome":     nome,
+            "cognome": cognome
+        }
+        aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
+        return aggiornato
+    
+    def cambia_stato_allerta(self, nome,cognome):
+        #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
+        query = "MATCH (n) WHERE n.nome = $nome AND n.cognome = $cognome REMOVE n:Ospite, n:OspiteInStatodiAllerta, n:OspiteStatoChiamataSpecialista SET n:OspiteInStatodiAllerta RETURN id(n) AS id "
+        parametri = {
+            "nome":     nome,
+            "cognome": cognome
+        }
+        aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
+        return aggiornato
 
     def gestione_periodica_salute(self):
         self.get_logger().info("gestione_periodica_salute()")
@@ -220,10 +241,12 @@ class Arbitraggio(Node):
             #stampare sti assiommi
             data = json.loads(assiomi)
             self.get_logger().info(f"Iddu è assiomi  {data}")
-            robotLibero=True
+            robotLibero=True #da gabriele
             for ospite_json_str, risultati in data.items():
                             # 1. Decodifica dati ospite
                             dati_ospite = json.loads(ospite_json_str)
+                            nome=dati_ospite.get('nome', '')
+                            cognome=dati_ospite.get('cognome', '')
                             nome_completo = f"{dati_ospite.get('nome', '')} {dati_ospite.get('cognome', '')}".strip()
                             self.get_logger().info(nome_completo)
                             # 2. Itera sui risultati
@@ -240,22 +263,26 @@ class Arbitraggio(Node):
                                     if not non_ha_dedotto and robotLibero:
                                         self.get_logger().info(f"OspiteInStatodiAllerta:  {messaggio}")
                                         robotLibero=False
-                                        #self.ospite_corrente[id]=
+                                        self.ospite_corrente=Persona(self.cambia_stato_allerta( nome,cognome), nome, cognome)
+                                        InteragisciScenarioC(self, "medico",self.spiegazioneC)
+                                        
                                         #il robot inizia lo scenario C
-                                        #cambia tipo
+                                        
                                     elif not non_ha_dedotto and not robotLibero:
                                         self.get_logger().info(f"not non_ha_dedotto and not robotLibero:{messaggio}")
-                                        
-                                        #chiama specialista per questa persona con id.. 
-                                        #cambia tipo peer questa persona 
+                                        self.cambia_stato_spe(nome,cognome) 
+                                        self.spiegazioneC=messaggio
+                                        self.specialista.chiama(self, "medico",nome_completo, " Il Robot è impegnato in un'emergenza e non può andare dall'ospite in Allerta")
 
+                                        
                                 if tipo_assioma == "OspiteStatoChiamataSpecialista":
                                     non_ha_dedottoSpecialista = "NON deduce" in messaggio
                                     #self.get_logger().info(f"OspiteStatoChiamataSpecialista:  {messaggio}")
                                     if not non_ha_dedottoSpecialista:
                                         self.get_logger().info(f"not non_ha_dedottoSpecialista: {messaggio}")
                                         #chiama specialista per questa persona con id.. 
-                                        #cambia tipo peer questa persona 
+                                        self.cambia_stato_spe(nome,cognome)
+                                        self.specialista.chiama(self, "medico",nome_completo, " l'ospite è in chiamataSpecialista") 
 
     def processa_input(self, msg):
         testo = msg.data.strip()
@@ -272,6 +299,7 @@ class Arbitraggio(Node):
             self.get_logger().error(f"Comportamento '{self.comportamento_attivo}' non trovato!")
 
     def gestisci_bottone(self, msg):
+        #self.spiegazioneC=""
         self.get_logger().info(f"Ricevuto bottone: {msg.data}")
         try:
             dati = json.loads(msg.data)
