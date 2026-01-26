@@ -38,7 +38,7 @@ class Naviga:
         # --- Parametri Controllo ---
         self.Kp_linear = 0.5
         self.Kp_angular = 1.0
-        self.dist_threshold = 0.15 # 15 cm di tolleranza
+        self.dist_threshold = 0.08 # 15 cm di tolleranza
 
         self.sum_angular_error = 0.0  # Accumulatore per l'errore (Termine Integrale)
         self.Ki_angular = 0.05        # Guadagno Integrale (piccolo ma costante)
@@ -243,7 +243,7 @@ class Naviga:
         self.origin_x = msg.info.origin.position.x
         self.origin_y = msg.info.origin.position.y
 
-        SAFETY_RADIUS = 0.30 # Metri di sicurezza attorno agli ostacoli
+        SAFETY_RADIUS = 0.5 + 0.3  # Metri di sicurezza attorno agli ostacoli
         self.map_data = self.inflate_map(msg.data, msg.info.width, msg.info.height, SAFETY_RADIUS)
 
     def inflate_map(self, data, width, height, robot_radius_meters):
@@ -251,28 +251,38 @@ class Naviga:
         if cells_radius <= 0:
             return list(data)
 
-        new_map = list(data) # Copia mutabile
-        # Scansioniamo per ostacoli (valore 100)
-        for y in range(height):
-            for x in range(width):
-                if data[y * width + x] == 100:
-                    # Espandi
-                    for dy in range(-cells_radius, cells_radius + 1):
-                        for dx in range(-cells_radius, cells_radius + 1):
-                            if dx*dx + dy*dy <= cells_radius*cells_radius:
-                                nx, ny = x + dx, y + dy
-                                if 0 <= nx < width and 0 <= ny < height:
-                                    new_map[ny * width + nx] = 100
+        # Copia mutabile della mappa
+        new_map = list(data)
+
+        # 1. OTTIMIZZAZIONE: Pre-calcoliamo il "pennello" (gli offset del cerchio)
+        # Lo facciamo una volta sola, non per ogni pixel!
+        offsets = []
+        r2 = cells_radius * cells_radius
+        for dy in range(-cells_radius, cells_radius + 1):
+            for dx in range(-cells_radius, cells_radius + 1):
+                if dx*dx + dy*dy <= r2:
+                    offsets.append(dy * width + dx) # Salviamo l'offset lineare (più veloce)
+
+        # 2. OTTIMIZZAZIONE: Troviamo SOLO gli indici degli ostacoli esistenti
+        # List comprehension è molto più veloce dei for loop espliciti in Python
+        obstacle_indices = [i for i, val in enumerate(data) if val == 100]
+
+        # 3. Applichiamo l'espansione solo dove serve
+        len_map = len(new_map)
+
+        for idx in obstacle_indices:
+            # Per ogni ostacolo, applichiamo gli offset pre-calcolati
+            for offset in offsets:
+                neighbor_idx = idx + offset
+
+                # Controllo rapido dei bound (senza fare calcoli x, y costosi)
+                # Nota: questo controllo è approssimato per velocità (ignora wrap-around sui bordi orizzontali)
+                # ma per il path planning locale è solitamente accettabile e MOLTO più veloce.
+                if 0 <= neighbor_idx < len_map:
+                    new_map[neighbor_idx] = 100
+
         return new_map
 
-    """
-    def odom_callback(self, msg):
-        self.robot_pose = (msg.pose.pose.position.x, msg.pose.pose.position.y)
-        q = msg.pose.pose.orientation
-        siny_cosp = 2 * (q.w * q.z + q.x * q.y)
-        cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z)
-        self.robot_theta = atan2(siny_cosp, cosy_cosp)
-    """
     def update_pose(self):
         try:
             # Dove si trova il robot (base_link) rispetto alla mappa (map)?

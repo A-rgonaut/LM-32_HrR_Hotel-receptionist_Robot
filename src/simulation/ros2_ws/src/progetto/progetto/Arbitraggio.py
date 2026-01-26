@@ -153,13 +153,13 @@ class Arbitraggio(Node):
         except Exception as e:
             self.get_logger().error(f"Errore in salva_dati_salute: {e}")
         """
-            
+
     def carica_dati(self):
-        
+
         query = """
         UNWIND $batch AS row
         MATCH (o)
-        
+
         // Casting esplicito: l'ID nel JSON è stringa, id(o) è intero
         WHERE id(o) = toInteger(row.id)
 
@@ -169,18 +169,18 @@ class Arbitraggio(Node):
 
         // Ritorno i valori per debug
         RETURN id(o) as ID_Interno, o.nome, o.bpm_attuale, o.pressione_min_attuale, o.pressione_max_attuale
-        """ 
-        
+        """
+
         # Mappiamo la lista Python sul parametro Cypher $batch
         parametri = {
-            "batch": self.dati_salute 
+            "batch": self.dati_salute
         }
-                
+
         # Esecuzione
         self.sincro.interrogaGraphDatabase(query, parametri)
-        
+
         return None
-    
+
 
     def importa_dati(self):
         # Recuperiamo gli ID di tutti gli Ospiti, delle Soglie globali e delle loro Patologie specifiche.
@@ -189,14 +189,14 @@ class Arbitraggio(Node):
         MATCH (o:Ospite)
         RETURN id(o) as node_id
         """
-        
+
         # Esecuzione query
         risultati = self.sincro.interrogaGraphDatabase(query, {})
 
         if risultati:
             # Creiamo la lista piatta di ID per crea_ontologia_istanze
             lista_ids = [record['node_id'] for record in risultati if record['node_id'] is not None]
-            
+
             self.get_logger().info(f"[Monitoraggio] Recuperati {len(lista_ids)} nodi (Ospiti e Soglie).")
             return lista_ids
 
@@ -212,7 +212,7 @@ class Arbitraggio(Node):
         }
         aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
         return aggiornato
-    
+
     def cambia_stato_allerta(self, nome,cognome):
         #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
         query = "MATCH (n) WHERE n.nome = $nome AND n.cognome = $cognome REMOVE n:Ospite, n:OspiteInStatodiAllerta, n:OspiteStatoChiamataSpecialista SET n:OspiteInStatodiAllerta RETURN id(n) AS id "
@@ -229,10 +229,10 @@ class Arbitraggio(Node):
 
         #self.get_logger().info(f"{self.dati_salute}")
         # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
-        
+
         self.carica_dati()
 
-        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non 
+        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non
         dati=self.importa_dati()
         if dati:
             self.get_logger().info(f"Iddu è  {dati}")
@@ -251,10 +251,10 @@ class Arbitraggio(Node):
                             self.get_logger().info(nome_completo)
                             # 2. Itera sui risultati
                             for tipo_assioma, messaggio in risultati.items():
-                                
+
                                 # Ci interessa agire solo in base all'assioma "OspiteInStatodiAllerta"
                                 if tipo_assioma == "OspiteInStatodiAllerta":
-                                    
+
                                     # Logica richiesta:
                                     # 1. "NON deduce" è presente nel messaggio (quindi non c'è allerta dedotta logicamente)
                                     non_ha_dedotto = "NON deduce" in messaggio
@@ -265,24 +265,24 @@ class Arbitraggio(Node):
                                         robotLibero=False
                                         self.ospite_corrente=Persona(self.cambia_stato_allerta( nome,cognome), nome, cognome)
                                         InteragisciScenarioC(self, "medico",self.spiegazioneC)
-                                        
+
                                         #il robot inizia lo scenario C
-                                        
+
                                     elif not non_ha_dedotto and not robotLibero:
                                         self.get_logger().info(f"not non_ha_dedotto and not robotLibero:{messaggio}")
-                                        self.cambia_stato_spe(nome,cognome) 
+                                        self.cambia_stato_spe(nome,cognome)
                                         self.spiegazioneC=messaggio
                                         self.specialista.chiama(self, "medico",nome_completo, " Il Robot è impegnato in un'emergenza e non può andare dall'ospite in Allerta")
 
-                                        
+
                                 if tipo_assioma == "OspiteStatoChiamataSpecialista":
                                     non_ha_dedottoSpecialista = "NON deduce" in messaggio
                                     #self.get_logger().info(f"OspiteStatoChiamataSpecialista:  {messaggio}")
                                     if not non_ha_dedottoSpecialista:
                                         self.get_logger().info(f"not non_ha_dedottoSpecialista: {messaggio}")
-                                        #chiama specialista per questa persona con id.. 
+                                        #chiama specialista per questa persona con id..
                                         self.cambia_stato_spe(nome,cognome)
-                                        self.specialista.chiama(self, "medico",nome_completo, " l'ospite è in chiamataSpecialista") 
+                                        self.specialista.chiama(self, "medico",nome_completo, " l'ospite è in chiamataSpecialista")
 
     def processa_input(self, msg):
         testo = msg.data.strip()
@@ -350,9 +350,9 @@ class Arbitraggio(Node):
         self.get_logger().info(msg.data)
 
     def gestisci_batteria(self, msg):
-        self.get_logger().info(f"{msg.data}")
+        #self.get_logger().info(f"{msg.data}")
         bat = json.loads(msg.data)
-        self.get_logger().info(f"{bat['level']}% - {bat['is_charging']}")
+        #self.get_logger().info(f"{bat['level']}% - {bat['is_charging']}")
         # self.livello_batteria = bat['level']
         # self.in_carica = bat['is_charging'] == "true"
 

@@ -89,7 +89,7 @@ class DiffRobotController(Node):
         t_lidar.child_frame_id = 'lidar_link'
         t_lidar.transform.translation.x = 0.0
         t_lidar.transform.translation.y = 0.0
-        t_lidar.transform.translation.z = 0.3
+        t_lidar.transform.translation.z = 0.25
         t_lidar.transform.rotation.w = 1.0
         self.tf_static_broadcaster.sendTransform([t_base, t_lidar])
 

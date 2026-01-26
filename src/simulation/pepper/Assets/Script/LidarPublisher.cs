@@ -15,7 +15,7 @@ public class LidarPublisher : MonoBehaviour
     public float maxDistance = 10f;       // Distanza massima del laser (metri)
     public float fieldOfView = 360f;      // Angolo di visione (es. 360 per giro completo)
     public int numRays = 360;             // Risoluzione: numero di raggi per scansione
-    public float scanHeight = 0.30f;         // Offset verticale se necessario
+    public float scanHeight = 0.25f;         // Offset verticale se necessario
 
     // Variabili interne
     private ROSConnection ros;
@@ -32,21 +32,6 @@ public class LidarPublisher : MonoBehaviour
 
         // Calcola l'intervallo di pubblicazione
         publishInterval = 1.0f / publishFrequency;
-
-
-        // ======================= AGGIUNGI QUESTO LOG =======================
-        // Calcola l'altezza esatta rispetto al mondo (assumendo pavimento a Y=0)
-        float altezzaMondo = transform.position.y;
-
-        // Cerca di capire se c'è scaling strano nei parent
-        float scalaRealeY = transform.lossyScale.y;
-
-        Debug.LogWarning($"[DEBUG LIDAR] ==============================================");
-        Debug.LogWarning($"[DEBUG LIDAR] Altezza REALE dal suolo (World Y): {altezzaMondo} metri");
-        Debug.LogWarning($"[DEBUG LIDAR] Posizione Locale (Local Y): {transform.localPosition.y}");
-        Debug.LogWarning($"[DEBUG LIDAR] Scala Globale (LossyScale Y): {scalaRealeY} (Se non è 1, occhio!)");
-        Debug.LogWarning($"[DEBUG LIDAR] ==============================================");
-        // ===================================================================
     }
     void OnDestroy()
     {
