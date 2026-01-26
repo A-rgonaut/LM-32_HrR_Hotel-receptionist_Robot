@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String, Int32
+from std_msgs.msg import String
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import ReentrantCallbackGroup
 
@@ -37,14 +37,14 @@ class Arbitraggio(Node):
                                                 self.gestisci_bottone, 10,
                                                 callback_group=self.cb_group)
         self.stato = self.create_publisher(String, '/unity/stato', 10)
-        self.batteria = self.create_subscription(Int32, '/unity/battery_state',
+        self.batteria = self.create_subscription(String, '/unity/battery_state',
                                                  self.gestisci_batteria, 10,
                                                  callback_group=self.cb_group)
         self.braccialetti = self.create_subscription(String, '/health_filtered',
                                                 self.salva_dati_salute, 10,
                                                 callback_group=self.cb_group)
 
-        self.timer = self.create_timer(10.0, self.gestione_periodica_salute)
+        self.timer = self.create_timer(30.0, self.gestione_periodica_salute)
         self.dati_salute = None
 
         self.nome_robot = None
@@ -184,10 +184,7 @@ class Arbitraggio(Node):
         # Questo permette a crea_ontologia_istanze di scaricare i nodi completi e le relazioni.
         query = """
         MATCH (o:Ospite)
-        MATCH (s:Soglie)
-        WITH collect(DISTINCT o) + collect(DISTINCT s) as nodi_totali
-        UNWIND nodi_totali as n
-        RETURN DISTINCT id(n) as node_id
+        RETURN id(o) as node_id
         """
         
         # Esecuzione query
@@ -211,6 +208,7 @@ class Arbitraggio(Node):
 
         #self.get_logger().info(f"{self.dati_salute}")
         # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
+        
         self.carica_dati()
 
         # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non 
@@ -219,27 +217,45 @@ class Arbitraggio(Node):
             self.get_logger().info(f"Iddu è  {dati}")
             self.sincro.crea_ontologia_istanze(dati)
             assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
+            #stampare sti assiommi
             data = json.loads(assiomi)
             self.get_logger().info(f"Iddu è assiomi  {data}")
-      
-        # lo SpiegamiTutto stampa la lista di tutti coloro che sono in StatoChiamareSpecialista.
-        #assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
-        #forse ritornano tutte le persone e in particolare dice se sono in specialista o allerta
+            robotLibero=True
+            for ospite_json_str, risultati in data.items():
+                            # 1. Decodifica dati ospite
+                            dati_ospite = json.loads(ospite_json_str)
+                            nome_completo = f"{dati_ospite.get('nome', '')} {dati_ospite.get('cognome', '')}".strip()
+                            self.get_logger().info(nome_completo)
+                            # 2. Itera sui risultati
+                            for tipo_assioma, messaggio in risultati.items():
+                                
+                                # Ci interessa agire solo in base all'assioma "OspiteInStatodiAllerta"
+                                if tipo_assioma == "OspiteInStatodiAllerta":
+                                    
+                                    # Logica richiesta:
+                                    # 1. "NON deduce" è presente nel messaggio (quindi non c'è allerta dedotta logicamente)
+                                    non_ha_dedotto = "NON deduce" in messaggio
+                                    #self.get_logger().info(f"not non_ha_dedotto and robotLibero:  {messaggio}")
+                                    # 2. Condizione composta: Nessuna deduzione AND Robot Libero
+                                    if not non_ha_dedotto and robotLibero:
+                                        self.get_logger().info(f"OspiteInStatodiAllerta:  {messaggio}")
+                                        robotLibero=False
+                                        #self.ospite_corrente[id]=
+                                        #il robot inizia lo scenario C
+                                        #cambia tipo
+                                    elif not non_ha_dedotto and not robotLibero:
+                                        self.get_logger().info(f"not non_ha_dedotto and not robotLibero:{messaggio}")
+                                        
+                                        #chiama specialista per questa persona con id.. 
+                                        #cambia tipo peer questa persona 
 
-        #Forse lo spiegamitutto,per ogni persona, a caso , dice cosa è e si va camminando
-
-
-        # - if len(listaStatoChiamareSpecialista) != 0:
-        #       for persona in lista:
-
-        #if len(self.ospitiChiamatoSpecialista) != 0:
-        #    self.specialista.chiama(self, "medico", "ospite", "assiomi ritornati da spiegami tutto (es. bpm alti)")
-
-        # lo SpiegamiTutto stampa la lista di tutti coloro che sono  in StatoAllerta.
-        # - if len(listaAllerta) != 0:
-        #       InteragisciScenarioC(lista[0])
-        #       for persona in lista[1:]:
-        #           # self.specialista.chiama(...)
+                                if tipo_assioma == "OspiteStatoChiamataSpecialista":
+                                    non_ha_dedottoSpecialista = "NON deduce" in messaggio
+                                    #self.get_logger().info(f"OspiteStatoChiamataSpecialista:  {messaggio}")
+                                    if not non_ha_dedottoSpecialista:
+                                        self.get_logger().info(f"not non_ha_dedottoSpecialista: {messaggio}")
+                                        #chiama specialista per questa persona con id.. 
+                                        #cambia tipo peer questa persona 
 
     def processa_input(self, msg):
         testo = msg.data.strip()
@@ -306,7 +322,11 @@ class Arbitraggio(Node):
         self.get_logger().info(msg.data)
 
     def gestisci_batteria(self, msg):
-        self.get_logger().info(f"Batteria = {msg.data}%")
+        self.get_logger().info(f"{msg.data}")
+        bat = json.loads(msg.data)
+        self.get_logger().info(f"{bat['level']}% - {bat['is_charging']}")
+        # self.livello_batteria = bat['level']
+        # self.in_carica = bat['is_charging'] == "true"
 
 def main(args=None):
     rclpy.init(args=args)
