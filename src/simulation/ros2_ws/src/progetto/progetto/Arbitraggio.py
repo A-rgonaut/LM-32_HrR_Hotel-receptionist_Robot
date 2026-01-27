@@ -16,6 +16,7 @@ from progetto.Riposo import Riposo                              # 5
 from progetto.SincronizzaManager import SincronizzaManager
 from progetto.utils import Persona
 from progetto.Specialista import Specialista
+from progetto.Emergenza import Emergenza
 
 import json
 import traceback
@@ -25,8 +26,11 @@ class Arbitraggio(Node):
         super().__init__('Arbitraggio')
 
         self.sincro = SincronizzaManager(self)
+
         self.specialista = Specialista()
+        self.emergenza = Emergenza(self)
         self.spiegazioneC = ""  # Inizializzalo come stringa vuota
+
         self.cb_group = ReentrantCallbackGroup()
 
         self.pub = self.create_publisher(String, '/unity/dialogo_robot', 10)
@@ -44,7 +48,7 @@ class Arbitraggio(Node):
                                                 self.salva_dati_salute, 10,
                                                 callback_group=self.cb_group)
 
-        self.timer = self.create_timer(180.0, self.gestione_periodica_salute)# da sistemare tempo
+        self.timer_salute = self.create_timer(60.0, self.gestione_periodica_salute, callback_group=self.cb_group)
         self.dati_salute = None
 
         self.nome_robot = None
@@ -58,7 +62,7 @@ class Arbitraggio(Node):
         self.ospite_corrente = None
 
         self.comportamenti = {
-            "InteragisciScenarioC": InteragisciScenarioC(self, self.specialista,self.spiegazioneC),
+            "InteragisciScenarioC": InteragisciScenarioC(self, self.specialista, self.spiegazioneC),
             "RicaricaBatteria": RicaricaBatteria(self),
             "InteragisciScenarioB": InteragisciScenarioB(self, self.specialista),
             "InteragisciScenarioA": InteragisciScenarioA(self),
@@ -72,8 +76,7 @@ class Arbitraggio(Node):
                 "oggetto": self.comportamenti["InteragisciScenarioC"],
                 "trigger": lambda: (
                     self.bottone_premuto == "InteragisciScenarioC" or
-                    self.parametri_vitali_sballati or
-                    self.is_running("InteragisciScenarioC")
+                    self.parametri_vitali_sballati
                 )
             },
             {
@@ -87,18 +90,12 @@ class Arbitraggio(Node):
             {
                 "nome": "InteragisciScenarioB",
                 "oggetto": self.comportamenti["InteragisciScenarioB"],
-                "trigger": lambda: (
-                    self.bottone_premuto == "InteragisciScenarioB" or
-                    self.is_running("InteragisciScenarioB")
-                )
+                "trigger": lambda: self.bottone_premuto == "InteragisciScenarioB"
             },
             {
                 "nome": "InteragisciScenarioA",
                 "oggetto": self.comportamenti["InteragisciScenarioA"],
-                "trigger": lambda: (
-                    self.bottone_premuto == "InteragisciScenarioA" or
-                    self.is_running("InteragisciScenarioA")
-                )
+                "trigger": lambda: self.bottone_premuto == "InteragisciScenarioA"
             },
             {
                 "nome": "Naviga",
@@ -118,171 +115,140 @@ class Arbitraggio(Node):
         self.comportamento_attivo = "Riposo"
         self.get_logger().info("Arbitraggio avviato.")
 
-        self.timer = self.create_timer(0.1, self.loop_arbitraggio)
+        self.timer_arbitraggio = self.create_timer(0.1, self.loop_arbitraggio, callback_group=self.cb_group)
 
     def loop_arbitraggio(self):
-        nuovo_comportamento = None
-        nuovo_obj = None
+        attivo = self.comportamento_attivo
+        obj_attivo = self.comportamenti.get(attivo)
+        # SE LO SCENARIO HA FINITO, LIBERA IL ROBOT
+        if obj_attivo and hasattr(obj_attivo, "stato"):
+            if obj_attivo.stato == "FINE":
+                self.get_logger().info(f"[Arbitraggio] Scenario {attivo} terminato, ritorno a Riposo")
+                self.concludi_scenario_msg(attivo)
+                self.comportamento_attivo = "Riposo"
+                return
+
+        candidato = None
+        obj = None
+
+        # --- 1. SELEZIONE CANDIDATO TRAMITE lista_priorita (ESCLUSO RIPOSO) ---
         for item in self.lista_priorita:
+            if item["nome"] == "Riposo":
+                continue  # Riposo è fallback, non compete
             if item["trigger"]():
-                nuovo_comportamento = item["nome"]
-                nuovo_obj = item["oggetto"]
+                candidato = item["nome"]
+                obj = item["oggetto"]
                 break
-        if nuovo_comportamento != self.comportamento_attivo:
-            if "Scenario" in self.comportamento_attivo:
-                self.concludi_scenario_msg(self.comportamento_attivo)
-            self.get_logger().info(f"Cambio comportamento: {self.comportamento_attivo} -> {nuovo_comportamento}")
-            if "Scenario" in nuovo_comportamento and self.bottone_premuto == nuovo_comportamento:
-                nuovo_obj.reset(self.ospite_corrente)
-                self.bottone_premuto = None
-            else:
-                nuovo_obj.reset()
-            self.comportamento_attivo = nuovo_comportamento
+
+        # --- 2. FALLBACK ---
+        if candidato is None:
+            candidato = "Riposo"
+            obj = self.comportamenti["Riposo"]
+
+        # --- 3. BLOCCO SCENARI A/B (solo C può interrompere) ---
+        if attivo in ("InteragisciScenarioA", "InteragisciScenarioB"):
+            if candidato != "InteragisciScenarioC":
+                candidato = attivo
+                obj = self.comportamenti[attivo]
+
+                # consuma eventuali bottoni A/B
+                if self.bottone_premuto in (
+                    "InteragisciScenarioA",
+                    "InteragisciScenarioB",
+                ):
+                    self.bottone_premuto = None
+
+        # --- 4. TRANSIZIONE ---
+        if candidato != attivo:
+            # chiusura scenario precedente
+            if "Scenario" in attivo:
+                self.concludi_scenario_msg(attivo)
+
+            self.get_logger().info(
+                f"Cambio comportamento: {attivo} -> {candidato}"
+            )
+            self.comportamento_attivo = candidato
+
+            # notifica Unity
             msg = String()
-            msg.data = json.dumps({"stato_attivo": self.comportamento_attivo})
+            msg.data = json.dumps({"stato_attivo": candidato})
             self.stato.publish(msg)
 
+            # reset comportamento
+            if candidato == "InteragisciScenarioC":
+                obj.spiegazione = self.spiegazioneC
+                obj.reset(self.ospite_corrente)
+                self.parametri_vitali_sballati = False
+
+            elif "Scenario" in candidato:
+                obj.reset(self.ospite_corrente)
+
+            else:
+                obj.reset()
+
+            # bottone consumato SOLO se ha causato transizione
+            self.bottone_premuto = None
+
+
     def salva_dati_salute(self, msg):
-        """
-        #da scommentare poi
-        self.get_logger().info("salva_dati_salute()")
+        # self.get_logger().info("salva_dati_salute()")
         try:
             self.dati_salute = json.loads(msg.data)
         except json.JSONDecodeError:
             self.get_logger().error("Errore nel formato JSON ricevuto da BraccialettiManager.")
         except Exception as e:
             self.get_logger().error(f"Errore in salva_dati_salute: {e}")
-        """
-
-    def carica_dati(self):
-
-        query = """
-        UNWIND $batch AS row
-        MATCH (o)
-
-        // Casting esplicito: l'ID nel JSON è stringa, id(o) è intero
-        WHERE id(o) = toInteger(row.id)
-
-        SET o.bpm_attuale = toInteger(row.hr),
-            o.pressione_min_attuale = toInteger(row.pmin),
-            o.pressione_max_attuale = toInteger(row.pmax)
-
-        // Ritorno i valori per debug
-        RETURN id(o) as ID_Interno, o.nome, o.bpm_attuale, o.pressione_min_attuale, o.pressione_max_attuale
-        """
-
-        # Mappiamo la lista Python sul parametro Cypher $batch
-        parametri = {
-            "batch": self.dati_salute
-        }
-
-        # Esecuzione
-        self.sincro.interrogaGraphDatabase(query, parametri)
-
-        return None
-
-
-    def importa_dati(self):
-        # Recuperiamo gli ID di tutti gli Ospiti, delle Soglie globali e delle loro Patologie specifiche.
-        # Questo permette a crea_ontologia_istanze di scaricare i nodi completi e le relazioni.
-        query = """
-        MATCH (o:Ospite)
-        RETURN id(o) as node_id
-        """
-
-        # Esecuzione query
-        risultati = self.sincro.interrogaGraphDatabase(query, {})
-
-        if risultati:
-            # Creiamo la lista piatta di ID per crea_ontologia_istanze
-            lista_ids = [record['node_id'] for record in risultati if record['node_id'] is not None]
-
-            self.get_logger().info(f"[Monitoraggio] Recuperati {len(lista_ids)} nodi (Ospiti e Soglie).")
-            return lista_ids
-
-        self.get_logger().info("[Monitoraggio] Nessun dato trovato.")
-        return []
-
-    def cambia_stato_spe(self, nome,cognome):
-        #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
-        query = "MATCH (n) WHERE n.nome = $nome AND n.cognome = $cognome REMOVE n:Ospite, n:OspiteInStatodiAllerta, n:OspiteStatoChiamataSpecialista SET n:OspiteStatoChiamataSpecialista RETURN id(n) AS id "
-        parametri = {
-            "nome":     nome,
-            "cognome": cognome
-        }
-        aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
-        return aggiornato
-
-    def cambia_stato_allerta(self, nome,cognome):
-        #query = "MATCH (n) WHERE id(n) = $p.id REMOVE n:Ospite:OspiteInEmergenza SET n:OspiteChiamatoSpecialista,  n.aggiornato_il = datetime() RETURN n" per mettere il timestamp
-        query = "MATCH (n) WHERE n.nome = $nome AND n.cognome = $cognome REMOVE n:Ospite, n:OspiteInStatodiAllerta, n:OspiteStatoChiamataSpecialista SET n:OspiteInStatodiAllerta RETURN id(n) AS id "
-        parametri = {
-            "nome":     nome,
-            "cognome": cognome
-        }
-        aggiornato = self.sincro.interrogaGraphDatabase(query, parametri)
-        return aggiornato
 
     def gestione_periodica_salute(self):
-        self.get_logger().info("gestione_periodica_salute()")
-        # TODO:
-
-        #self.get_logger().info(f"{self.dati_salute}")
+        #self.get_logger().info("gestione_periodica_salute()")
+        # self.get_logger().info(f"{self.dati_salute}")
         # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
-
-        self.carica_dati()
-
-        # da neo4 j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non
-        dati=self.importa_dati()
+        self.emergenza.carica_dati()
+        # da neo4j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non
+        dati=self.emergenza.importa_dati()
         if dati:
-            self.get_logger().info(f"Iddu è  {dati}")
-            self.sincro.crea_ontologia_istanze(dati)
-            assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite")
-            #stampare sti assiommi
+            self.get_logger().info(f"Iddu è {dati}")
+            self.sincro.crea_ontologia_istanze(dati, braccialetti=True)
+            assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite", braccialetti=True)
+            # stampare sti assiommi
             data = json.loads(assiomi)
-            self.get_logger().info(f"Iddu è assiomi  {data}")
+            self.get_logger().info(f"Iddu è assiomi {data}")
             robotLibero=True #da gabriele
             for ospite_json_str, risultati in data.items():
-                            # 1. Decodifica dati ospite
-                            dati_ospite = json.loads(ospite_json_str)
-                            nome=dati_ospite.get('nome', '')
-                            cognome=dati_ospite.get('cognome', '')
-                            nome_completo = f"{dati_ospite.get('nome', '')} {dati_ospite.get('cognome', '')}".strip()
-                            self.get_logger().info(nome_completo)
-                            # 2. Itera sui risultati
-                            for tipo_assioma, messaggio in risultati.items():
-
-                                # Ci interessa agire solo in base all'assioma "OspiteInStatodiAllerta"
-                                if tipo_assioma == "OspiteInStatodiAllerta":
-
-                                    # Logica richiesta:
-                                    # 1. "NON deduce" è presente nel messaggio (quindi non c'è allerta dedotta logicamente)
-                                    non_ha_dedotto = "NON deduce" in messaggio
-                                    #self.get_logger().info(f"not non_ha_dedotto and robotLibero:  {messaggio}")
-                                    # 2. Condizione composta: Nessuna deduzione AND Robot Libero
-                                    if not non_ha_dedotto and robotLibero:
-                                        self.get_logger().info(f"OspiteInStatodiAllerta:  {messaggio}")
-                                        robotLibero=False
-                                        self.ospite_corrente=Persona(self.cambia_stato_allerta( nome,cognome), nome, cognome)
-                                        InteragisciScenarioC(self, "medico",self.spiegazioneC)
-
-                                        #il robot inizia lo scenario C
-
-                                    elif not non_ha_dedotto and not robotLibero:
-                                        self.get_logger().info(f"not non_ha_dedotto and not robotLibero:{messaggio}")
-                                        self.cambia_stato_spe(nome,cognome)
-                                        self.spiegazioneC=messaggio
-                                        self.specialista.chiama(self, "medico",nome_completo, " Il Robot è impegnato in un'emergenza e non può andare dall'ospite in Allerta")
-
-
-                                if tipo_assioma == "OspiteStatoChiamataSpecialista":
-                                    non_ha_dedottoSpecialista = "NON deduce" in messaggio
-                                    #self.get_logger().info(f"OspiteStatoChiamataSpecialista:  {messaggio}")
-                                    if not non_ha_dedottoSpecialista:
-                                        self.get_logger().info(f"not non_ha_dedottoSpecialista: {messaggio}")
-                                        #chiama specialista per questa persona con id..
-                                        self.cambia_stato_spe(nome,cognome)
-                                        self.specialista.chiama(self, "medico",nome_completo, " l'ospite è in chiamataSpecialista")
+                # 1. Decodifica dati ospite
+                dati_ospite = json.loads(ospite_json_str)
+                nome=dati_ospite.get('nome', '')
+                cognome=dati_ospite.get('cognome', '')
+                nome_completo = f"{dati_ospite.get('nome', '')} {dati_ospite.get('cognome', '')}".strip()
+                self.get_logger().info(nome_completo)
+                # 2. Itera sui risultati
+                for tipo_assioma, messaggio in risultati.items():
+                    # Ci interessa agire solo in base all'assioma "OspiteInStatodiAllerta"
+                    if tipo_assioma == "OspiteInStatodiAllerta":
+                        # Logica richiesta:
+                        # 1. "NON deduce" è presente nel messaggio (quindi non c'è allerta dedotta logicamente)
+                        non_ha_dedotto = "NON deduce" in messaggio
+                        #self.get_logger().info(f"not non_ha_dedotto and robotLibero:  {messaggio}")
+                        # 2. Condizione composta: Nessuna deduzione AND Robot Libero
+                        if not non_ha_dedotto and robotLibero:
+                            self.get_logger().info(f"OspiteInStatodiAllerta:  {messaggio}")
+                            robotLibero=False
+                            self.ospite_corrente=Persona(self.emergenza.cambia_stato_allerta( nome,cognome), nome, cognome)
+                            self.spiegazioneC = messaggio
+                            self.parametri_vitali_sballati = True  # il robot inizia lo scenario C
+                        elif not non_ha_dedotto and not robotLibero:
+                            self.get_logger().info(f"not non_ha_dedotto and not robotLibero:{messaggio}")
+                            self.emergenza.cambia_stato_spe(nome,cognome)
+                            self.spiegazioneC=messaggio
+                            self.specialista.chiama(self, "medico",nome_completo, " Il Robot è impegnato in un'emergenza e non può andare dall'ospite in Allerta")
+                    if tipo_assioma == "OspiteStatoChiamataSpecialista":
+                        non_ha_dedottoSpecialista = "NON deduce" in messaggio
+                        #self.get_logger().info(f"OspiteStatoChiamataSpecialista:  {messaggio}")
+                        if not non_ha_dedottoSpecialista:
+                            self.get_logger().info(f"not non_ha_dedottoSpecialista: {messaggio}")
+                            #chiama specialista per questa persona con id..
+                            self.emergenza.cambia_stato_spe(nome,cognome)
+                            self.specialista.chiama(self, "medico",nome_completo, " l'ospite è in chiamataSpecialista")
 
     def processa_input(self, msg):
         testo = msg.data.strip()
@@ -299,38 +265,48 @@ class Arbitraggio(Node):
             self.get_logger().error(f"Comportamento '{self.comportamento_attivo}' non trovato!")
 
     def gestisci_bottone(self, msg):
-        #self.spiegazioneC=""
         self.get_logger().info(f"Ricevuto bottone: {msg.data}")
+
         try:
             dati = json.loads(msg.data)
-            self.ospite_corrente = Persona(int(dati["id"]), dati["nome"], dati["cognome"])
-            bottone_premuto_raw = dati["bottone"]
+
+            # aggiorna ospite SEMPRE (serve a C e al reset iniziale)
+            self.ospite_corrente = Persona(
+                int(dati["id"]),
+                dati["nome"],
+                dati["cognome"]
+            )
+
             mappa_bottoni = {
                 "Scenario A": "InteragisciScenarioA",
                 "Scenario B": "InteragisciScenarioB",
                 "Scenario C": "InteragisciScenarioC",
             }
-            scenario_target = mappa_bottoni.get(bottone_premuto_raw)
+
+            scenario_target = mappa_bottoni.get(dati.get("bottone"))
             if not scenario_target:
-                self.get_logger().warning(f"Bottone '{bottone_premuto_raw}' non riconosciuto.")
+                self.get_logger().warning("Bottone non riconosciuto.")
                 return
-            if scenario_target == "InteragisciScenarioC":
-                self.bottone_premuto = "InteragisciScenarioC"
-            else:
-                if self.comportamento_attivo != scenario_target:
-                    self.bottone_premuto = scenario_target
-                else:
-                    self.get_logger().info(f"Scenario '{scenario_target}' già attivo.")
+
+            # REGOLA CHIAVE:
+            # A/B non possono preemptare A/B
+            if (
+                scenario_target in ["InteragisciScenarioA", "InteragisciScenarioB"]
+                and self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]
+            ):
+                self.get_logger().info(
+                    f"Ignorato bottone {scenario_target}: "
+                    f"{self.comportamento_attivo} già attivo"
+                )
+                return
+
+            # C può sempre passare
+            self.bottone_premuto = scenario_target
+
         except json.JSONDecodeError:
-            self.get_logger().error("Errore nel formato JSON ricevuto da Unity.")
+            self.get_logger().error("Errore JSON da Unity.")
         except Exception as e:
             self.get_logger().error(f"Errore in gestisci_bottone: {e}")
-
-    def is_running(self, nome_scenario):
-        obj = self.comportamenti.get(nome_scenario)
-        if obj and hasattr(obj, 'stato'):
-            return obj.stato not in ["FINE", None]
-        return False
 
     def concludi_scenario_msg(self, nome_scenario):
         msg = String()
@@ -350,11 +326,20 @@ class Arbitraggio(Node):
         self.get_logger().info(msg.data)
 
     def gestisci_batteria(self, msg):
-        #self.get_logger().info(f"{msg.data}")
-        bat = json.loads(msg.data)
-        #self.get_logger().info(f"{bat['level']}% - {bat['is_charging']}")
-        # self.livello_batteria = bat['level']
-        # self.in_carica = bat['is_charging'] == "true"
+        try:
+            bat = json.loads(msg.data)
+            livello_unity = float(bat['level'])
+            is_charging_unity = (str(bat.get('is_charging')).lower() == "true")
+            # FIX PER TESTING:
+            # Se la mia simulazione interna dice che sono al 100%, ignoro Unity
+            # se Unity mi dice che sono scarico (altrimenti tornerei subito in ricarica).
+            if self.livello_batteria == 100.0 and livello_unity < 90.0:
+                return
+            # Altrimenti aggiorno normalmente
+            self.livello_batteria = livello_unity
+            self.in_carica = is_charging_unity
+        except Exception as e:
+            self.get_logger().error(f"Errore lettura batteria: {e}")
 
 def main(args=None):
     rclpy.init(args=args)

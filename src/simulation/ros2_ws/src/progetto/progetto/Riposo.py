@@ -2,7 +2,7 @@ class Riposo:
     def __init__(self, nodo):
         self.nodo = nodo
 
-    def esegui(self, testo=None, sincro=None):
+    def esegui(self, testo=None):
         # In questa fase il robot potrebbe aggiungere
         # previsioni meteo, eventi locali, non so...
         self.nodo.parla("Sono a riposo. Seleziona uno scenario su Unity.")

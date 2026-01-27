@@ -134,7 +134,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             data_ora_evento_locale = dettagli_evento.get('data_ora_evento_locale', 'N/A')
             proprieta_con_assiomi = [k for k, v in proprieta.items() if v != "Il reasoner NON deduce assiomi inerenti"]
             num_con_assiomi = len(proprieta_con_assiomi)
-            self.nodo.parla(self.dialogo_scriptato("titolo_evento", nome_evento_locale=nome_evento, data_ora_evento_locale=data_ora))
+            self.nodo.parla(self.dialogo_scriptato("titolo_evento", nome_evento_locale=nome_evento_locale, data_ora_evento_locale=data_ora_evento_locale))
             if num_con_assiomi == 0:  # CASO 1: Nessuna informazione
                 self.nodo.parla(self.dialogo_scriptato("evento_consiglio_base"))
             elif num_con_assiomi > 1:  # CASO 4: Conflitto

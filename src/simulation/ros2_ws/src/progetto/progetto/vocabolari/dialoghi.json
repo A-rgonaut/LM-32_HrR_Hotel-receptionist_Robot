@@ -49,5 +49,41 @@
   "evento_info_generica": {
     "IT": "{chiave_attiva}: {valore_attivo}",
     "EN": "{chiave_attiva}: {valore_attivo}"
+  },
+  "attesa_analisi_medico": {
+    "IT": "Un attimo, analizzo i sintomi e consulto il sistema esperto...",
+    "EN": "One moment, I am analyzing symptoms and consulting the expert system..."
+  },
+  "reasoner_negativo": {
+    "IT": "L'analisi non indica un'emergenza medica immediata basata sui sintomi descritti. Se preferisci, posso chiamare comunque il dottore.",
+    "EN": "The analysis does not indicate an immediate medical emergency based on the described symptoms. If you prefer, I can call the doctor anyway."
+  },
+  "emergenza_auto": {
+    "IT": "{spiegazione} Puoi dirmi se sei cosciente?",
+    "EN": "{spiegazione} Can you tell me if you are conscious?"
+  },
+  "emergenza_manuale": {
+    "IT": "Dal mio ultimo rilevamento i parametri sembrano stabili, ma hai richiesto assistenza. Dimmi quali sintomi avverti.",
+    "EN": "From my last reading parameters seem stable, but you requested assistance. Tell me what symptoms you are feeling."
+  },
+  "timeout_coscienza": {
+    "IT": "Non ricevo risposta da troppo tempo. Chiamo subito i soccorsi.",
+    "EN": "I am not receiving a response for too long. Calling for help immediately."
+  },
+  "chiedi_sintomi": {
+    "IT": "Dimmi pure che sintomi hai.",
+    "EN": "Please tell me what symptoms you have."
+  },
+  "chiamata_in_corso": {
+    "IT": "Sto chiamando il dottore, stai tranquillo, faccio subito.",
+    "EN": "I am calling the doctor, stay calm, I am on it."
+  },
+  "elenco_sintomi": {
+    "IT": "Ho rilevato questi sintomi: {lista}.",
+    "EN": "I detected these symptoms: {lista}."
+  },
+  "conferma_chiamata_manuale": {
+    "IT": "Non ho dati sufficienti per stabilire un'emergenza, vuoi che chiami comunque il dottore?",
+    "EN": "I do not have enough data to determine an emergency, do you want me to call the doctor anyway?"
   }
 }

@@ -16,6 +16,7 @@ CREATE
 (l8:Stanza {x: -7.0, y: 4.2, nome_camera: "Camera 6"}),
 (l9:Stanza {x: -7.0, y: -1.8, nome_camera: "Camera 7"}),
 (l10:Stanza {x: -7.0, y: -7.8, nome_camera: "Camera 8"}),
+(l11:Ricarica {x: 10.0, y: 11.0}),
 
 (p1:Prenotazione {data_inizio: datetime("2026-01-12T15:00:00"), data_fine: datetime("2026-01-16T12:00:00")}),
 

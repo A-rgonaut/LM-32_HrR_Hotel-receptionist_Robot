@@ -45,14 +45,22 @@ class SpiegamiTutto(Node):
             success = True
             error_msg = ""
             if action == "crea_ontologia_istanze":
+                if bool(data.get("braccialetti")):
+                    owl_path = os.getenv("PATH_TEMP_ONTO_BRACCIALETTI")
+                else:
+                    owl_path = os.getenv("PATH_TEMP_ONTO")
                 try:
-                    self.logic_crea_ontologia_istanze(data.get("ids", []))
+                    self.logic_crea_ontologia_istanze(data.get("ids", []), owl_path)
                     response_payload = "Ontologia con istanze creata con successo."
                 except Exception as e:
                     success = False
                     error_msg = f"Errore creazione ontologia con istanze: {str(e)}"
             elif action == "spiegami_tutto":
-                owl_path = os.getenv("PATH_TEMP_ONTO")
+                if bool(data.get("braccialetti")):
+                    owl_path = os.getenv("PATH_TEMP_ONTO_BRACCIALETTI")
+                else:
+                    owl_path = os.getenv("PATH_TEMP_ONTO")
+                self.get_logger().info(f"Usando owl_path: {owl_path}")
                 risultato = self.logic_spiegami_tutto(
                     owl_path=owl_path,
                     parentClassName=data.get("parentClassName"),
@@ -97,8 +105,7 @@ class SpiegamiTutto(Node):
             return Literal(value, datatype=XSD.string)
         return Literal(value)
 
-    def logic_crea_ontologia_istanze(self, ids):
-        PATH_TEMP_ONTO = os.getenv("PATH_TEMP_ONTO")
+    def logic_crea_ontologia_istanze(self, ids, owl_path):
         PATH_ONTO = os.getenv("PATH_ONTO")
         g = Graph()
         g.parse(PATH_ONTO, format="xml")
@@ -146,8 +153,8 @@ class SpiegamiTutto(Node):
             pred = NS[record["rel"]]                           # ObjectProperty
             g.add((pred, RDF.type, OWL.ObjectProperty))        # Dichiara la proprieta' OWL
             g.add((subj, pred, obj))                           # Aggiungi la tripla
-        g.serialize(destination=PATH_TEMP_ONTO, format="xml")  # Salvataggio
-        self.get_logger().info(f"Export completato: {PATH_TEMP_ONTO}")
+        g.serialize(destination=owl_path, format="xml")  # Salvataggio
+        self.get_logger().info(f"Export completato: {owl_path}")
 
     def logic_spiegami_tutto(self, owl_path, parentClassName, debug):
         base_java_path = os.getenv("PATH_JAVA_PROJECT")

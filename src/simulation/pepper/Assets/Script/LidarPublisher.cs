@@ -107,7 +107,7 @@ public class LidarPublisher : MonoBehaviour
         if (oggettiVisti.Count > 0)  // if (objectDetected)
         {
             // Debug.Log(consoleOutput + "RILEVATO OSTACOLO!");
-            Debug.Log($"[LIDAR VEDE]: {string.Join(", ", oggettiVisti)}");
+            // Debug.Log($"[LIDAR VEDE]: {string.Join(", ", oggettiVisti)}");
         }
         else
         {

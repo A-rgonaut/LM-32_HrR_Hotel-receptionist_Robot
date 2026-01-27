@@ -35,7 +35,7 @@ class Ospite(Persona):
 
     def __repr__(self):
         return f"Ospite({self.id!r}, {self.nome!r}, {self.cognome!r}, {self.eta!r}, {self.lingua!r})"
-
+"""
 class Luogo(Entity):
     def __init__(self, id, x, y):
         super().__init__(id)
@@ -66,3 +66,4 @@ class Stanza(Luogo):
 class CoffeeRoom(Luogo):
     def __init__(self, id, x, y):
         super().__init__(id, x, y)
+"""

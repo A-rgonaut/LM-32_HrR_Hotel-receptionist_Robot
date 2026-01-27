@@ -74,10 +74,11 @@ class SincronizzaManager():
             self.nodo.get_logger().error(f"Errore chiamata LLM: {e}")
             return None
 
-    def crea_ontologia_istanze(self, ids):
+    def crea_ontologia_istanze(self, ids, braccialetti=False):
         payload = {
             "action": "crea_ontologia_istanze",
-            "ids": ids
+            "ids": ids,
+            "braccialetti": braccialetti
         }
         try:
             return self.explain_client.call(payload)
@@ -85,11 +86,12 @@ class SincronizzaManager():
             self.nodo.get_logger().error(f"Errore richiesta ontologia istanze: {e}")
             return None
 
-    def spiegami_tutto(self, parentClassName, debug="False"):
+    def spiegami_tutto(self, parentClassName, debug="False", braccialetti=False):
         payload = {
             "action": "spiegami_tutto",
             "parentClassName": parentClassName,
-            "debug": debug
+            "debug": debug,
+            "braccialetti": braccialetti
         }
         try:
             return self.explain_client.call(payload)
