@@ -70,6 +70,8 @@ class ServerLLM(Node):
     def process_llm_logic(self, scenario, tipo, msg):
         base_folder = os.getenv("SYSTEM_INSTRUCTIONS")
         nome_file = None
+        if tipo == "dom":
+            nome_file = "dom.md"
         if tipo == "estrazione_semantica":
             if scenario == "A":
                 nome_file = "estrazione_semantica_a.md"
