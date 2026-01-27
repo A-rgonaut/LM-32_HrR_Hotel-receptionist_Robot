@@ -47,7 +47,7 @@ class InteragisciConOspite():
             self.nodo.get_logger().error(f"Errore caricamento {file_nome}: {e}")
         return parole
 
-    def dialogo_scriptato(self, tipo):
+    def dialogo_scriptato(self, tipo, **kwargs):
         if tipo == "errore_lingua":
             return self.dialoghi["errore_lingua"]["DEFAULT"]
         lingua = self.contesto['ospite'].lingua
@@ -57,6 +57,7 @@ class InteragisciConOspite():
             "num_notti": self.contesto.get('num_notti', ''),
             "interesse": self.contesto.get('interesse', '')
         }
+        dati.update(kwargs)
         try:
             template = self.dialoghi[tipo].get(lingua, self.dialoghi[tipo].get("EN", ""))
             return template.format(**dati)

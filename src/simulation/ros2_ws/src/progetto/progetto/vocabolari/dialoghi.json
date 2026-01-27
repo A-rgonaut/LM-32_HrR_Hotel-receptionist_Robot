@@ -1,17 +1,53 @@
 {
   "benvenuto": {
     "IT": "Benvenuto {nome} {cognome}! Piacere sono Pippor e sono qui per assisterti. Vedo che hai prenotato per {num_notti} notti. Posso chiederti il motivo del tuo viaggio? Hai interessi particolari?",
-    "EN": "Welcome {nome} {cognome}. I see {num_notti} nights. Any interests?"
+    "EN": "Welcome {nome} {cognome}. I am Pippor, here to assist you. I see you booked for {num_notti} nights. May I ask the reason for your trip? Do you have any specific interests?"
   },
   "conferma_interesse": {
     "IT": "Ah confermi che il tuo interesse è {interesse}?",
-    "EN": "Do you confirm you like: {interesse}?"
+    "EN": "So you confirm that your interest is {interesse}?"
   },
   "arrivederci": {
     "IT": "Grazie a te {nome}, rimango a disposizione!",
-    "EN": "Thanks {nome}, I am here for you."
+    "EN": "Thank you {nome}, I remain at your disposal!"
   },
   "errore_lingua": {
     "DEFAULT": "Non ho capito la lingua, puoi ripetere? (Prova 'Ciao'). I don't understand the language, could you repeat? (Try 'Hello')."
+  },
+  "attesa_analisi": {
+    "IT": "Un attimo, analizzo gli eventi e chiedo al sistema esperto...",
+    "EN": "Just a moment, I am analyzing the events and asking the expert system..."
+  },
+  "dati_insufficienti": {
+    "IT": "Non ho trovato dati sufficienti nel database.",
+    "EN": "I did not find sufficient data in the database."
+  },
+  "nessuna_prenotazione": {
+    "IT": "Non trovo nessuna prenotazione attiva.",
+    "EN": "I cannot find any active reservation."
+  },
+  "titolo_evento": {
+    "IT": "--- {nome_evento_locale} {data_ora_evento_locale} ---",
+    "EN": "--- {nome_evento_locale} {data_ora_evento_locale} ---"
+  },
+  "evento_consiglio_base": {
+    "IT": "Te lo consiglio perche' potrebbe piacerti in base ai tuoi interessi.",
+    "EN": "I recommend it because you might like it based on your interests."
+  },
+  "evento_conflitto": {
+    "IT": "Nonostante le cose a favore ({valore_pro}), abbiamo queste contro: {valore_contro}, quindi te lo sconsiglio.",
+    "EN": "Despite the pros ({valore_pro}), we have these cons: {valore_contro}, so I advise against it."
+  },
+  "evento_consigliabile_per": {
+    "IT": "Consigliabile per: {valore_attivo}",
+    "EN": "Recommended for: {valore_attivo}"
+  },
+  "evento_sconsigliabile_per": {
+    "IT": "Sconsigliabile per: {valore_attivo}",
+    "EN": "Not recommended for: {valore_attivo}"
+  },
+  "evento_info_generica": {
+    "IT": "{chiave_attiva}: {valore_attivo}",
+    "EN": "{chiave_attiva}: {valore_attivo}"
   }
 }
