@@ -429,6 +429,15 @@
     
 
 
+    <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#theta -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#theta">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#Luogo"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tipo_oggetto_guastabile -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/utente/ontologies/2025/11/untitled-ontology-13#tipo_oggetto_guastabile">
