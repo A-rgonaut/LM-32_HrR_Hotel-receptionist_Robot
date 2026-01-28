@@ -65,7 +65,7 @@ class Naviga:
         if self.map_data is None:
             return
         # Se ho una destinazione ma non ho ancora un percorso, PIANIFICO
-        if not self.current_path_world and self.nodo.destinazione_target:
+        if not self.current_path_world and self.nodo.destinazione_target and not self.nodo.raggiunta_destinazione:
             self.pianifica()
             return
         if not self.current_path_world:

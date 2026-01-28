@@ -15,35 +15,117 @@ class InteragisciScenarioB(InteragisciConOspite):
             "dom2": "tempo_acceso",
 
         }
-    """
+    
     def reset(self, ospite=None):
         super().reset(ospite)
         #self.nodo.destinazione_target = (-10, 11)
         #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
-        self.nodo.destinazione_target = (6, -8)  # stanza 1
+        self.nodo.destinazione_target = (10,10)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
-        #self.nodo.comportamento_precedente = "InteragisciScenarioB"
+        self.nodo.comportamento_precedente = "InteragisciScenarioB"
         self.stato = "ASPETTA_ROBOT"
-        #self.nodo.comportamenti["Naviga"].reset()
-    """
+        self.nodo.comportamenti["Naviga"].reset()
     
-    """
-   def esegui(self, testo):
+    
+   
+    def esegui(self, testo):
         self.nodo.get_logger().info(f"[ScenarioB] Stato: {self.stato}, Input: {testo}")
         if self.stato == "ASPETTA_ROBOT":
             if self.nodo.raggiunta_destinazione:
-                self.specialista.chiama(self.nodo, "elettricista", "camera 1", "assiomi ritornati da spiegami tutto (es. phon guasto)")
-                self.stato = "FINE"
+                self.nodo.destinazione_target = None
             else:
                 self.nodo.parla("Arrivo subito, sto arrivando da te!")
+            p = self.contesto['ospite']
+            self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT") 
+            self.nodo.parla(f"Buonasera, sono qui per assisterLa e nel risolvere la situazione nel modo più rapido possibile. Mi dica l'oggetto  in questione danneggiato")
+            self.stato = "RILEVA_GUASTO"    
+        elif self.stato == "RILEVA_GUASTO":
+
+            oggetto_guasto = self.rileva_guasto(testo) 
+            if oggetto_guasto:
+                #self.nodo.parla(oggetto_guasto) 
+                self.contesto['oggetto_guasto'] = oggetto_guasto
+                self.nodo.parla(f"Se ho capito bene , l'oggetto in questione è {oggetto_guasto} , giusto?")
+                #self.nodo.parla(self.dialogo_scriptato(tipo="conferma_oggetto_guasto")) # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
+                self.stato = "CONFERMA_GUASTO"
+            else :
+                self.nodo.parla("non ho capito bene, puoi ripetere?") # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
+                self.stato = "RILEVA_GUASTO"
+        elif self.stato == "CONFERMA_GUASTO":
+            if self.rileva_conferma(testo):
+                self.nodo.parla(self.domande_diagnostica["setpoint_temperatura"]) #TODO alla gabriele
+                self.stato = "SUGGERISCI_SOLUZIONE_1" 
+            else:
+                self.nodo.parla("non ho capito allora bene, puoi ripetere il guasto?")
+                # dire che non ha capito bene il robot o probabilmente non ha detto qualcosa che concerne la stanza
+                self.stato = "RILEVA_GUASTO"
+
+        elif self.stato == "SUGGERISCI_SOLUZIONE_1":
+            dom1 = self.sincro.ask_llm(testo, scenario="B", tipo="dom")
+            #self.nodo.parla(dom1)
+            if dom1:
+                self.contesto[self.domande_diagnostica["dom1"]]=dom1
+                
+                self.nodo.parla(self.domande_diagnostica["tempo_accensione"]) #TODO alla gabriele
+                self.stato = "SUGGERISCI_SOLUZIONE_2"
+            else:
+                self.nodo.parla("non ho capito allora bene, puoi ripetere?")
+                # print(non e' guasto perche non e' acceso da almeno xxx minuti...)
+                self.stato = "SUGGERISCI_SOLUZIONE_1"
+
+
+        elif self.stato == "SUGGERISCI_SOLUZIONE_2":
+            dom2 = self.sincro.ask_llm(testo, scenario="B", tipo="dom")
+            #self.nodo.parla(dom2)
+            if dom2:
+                
+                self.contesto[self.domande_diagnostica["dom2"]]=dom2
+
+                #metto su db dom1 e dom 2 TODO
+                self.aggiorna_stato_oggetto()
+                #chiamiamo lo spiegami tutto per vedere se ci sono oggetti in Guasto TODO
+
+
+
+
+
+                spiegazione = self.suggerisci_specialista()
+                if spiegazione:
+                    self.nodo.parla(f"ti chiamo lo specialista perchè {spiegazione}  ")
+
+                    self.stato = "CONTATTA_SPECIALISTA"
+                    self.esegui("")
+                else:
+                    self.nodo.parla("non so che dirti, non ci sono assiomi che dicono che l'oggetto è rotto , vuoi che ti chiami cmq lo specialista ")
+                    self.stato = "MEDICO_SI-NO"
+            else:
+                self.nodo.parla("non ho capito allora bene, puoi ripetere?")
+                self.stato = "SUGGERISCI_SOLUZIONE_2"
+                
+        elif self.stato == "MEDICO_SI-NO":
+            risposta = self.rileva_conferma(testo)
+            if risposta in [None, False]:
+                self.stato = "FINE"
+            else:
+                #self.motivo_chiamata = "I sintomi detti dal paziente non sono risultati compatibili con le sue malattie pregresse, però lui vuole chiamarti lo stesso."
+                #fare query per dire che l'oggetto è guasto 
+                self.stato = "CONTATTA_SPECIALISTA"
+                self.esegui("")
+
+        elif self.stato == "CONTATTA_SPECIALISTA":
+            #TODO
+            
+            self.specialista.chiama(self.nodo,self.contesto['tipo_oggetto_guasto'], self.contesto['ospite'], self.contesto['oggetto_guasto'] ) 
+            self.stato = "FINE"
+
+
         elif self.stato == "FINE":
             pass
         else:
             self.nodo.get_logger().error(f"[ScenarioB] Stato sconosciuto o non gestito: '{self.stato}'")
-
-    """   
+       
 
     
    
@@ -196,7 +278,12 @@ class InteragisciScenarioB(InteragisciConOspite):
         # in cui spiega che ... SpiegamiTutto()
         return None
 
-    def esegui(self, testo):
+
+
+
+           
+
+    def eseguid(self, testo):
         self.nodo.get_logger().info(f"[ScenarioB] Stato: {self.stato}, Input: {testo}")
         if self.stato == "INIZIO":
             p = self.contesto['ospite']
