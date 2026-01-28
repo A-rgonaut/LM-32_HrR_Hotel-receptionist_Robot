@@ -16,7 +16,6 @@ CREATE
 (l8:Stanza {x: -7.0, y: 4.2, nome_camera: "Camera 6"}),
 (l9:Stanza {x: -7.0, y: -1.8, nome_camera: "Camera 7"}),
 (l10:Stanza {x: -7.0, y: -7.8, nome_camera: "Camera 8"}),
-(l11:Ricarica {x: 10.0, y: 11.0}),
 
 (p1:Prenotazione {data_inizio: datetime("2026-01-12T15:00:00"), data_fine: datetime("2026-01-16T12:00:00")}),
 
@@ -69,12 +68,12 @@ CREATE
 (m22:PrevisioneMeteo {data_ora_meteo: datetime("2026-01-14T22:00:00"), condizione: "sereno", gradi: 9.9}),
 (m23:PrevisioneMeteo {data_ora_meteo: datetime("2026-01-14T23:00:00"), condizione: "sereno", gradi: 10.0}),
 
-(og1:Condizionatore {
+(og1:Stufa {
     tipo_oggetto_guastabile: "elettrico",
-    tempo_acceso: 35,
-    temperatura_stanza: 18,
-    temperatura_impostata: 22,
-    modalita: "HEAT"
+    tempo_acceso_soglia: 30,
+    tempo_acceso: null,
+    temperatura_stanza: 22,
+    temperatura_impostata: null
 }),
 (og2:Lavandino {
     tipo_oggetto_guastabile: "idraulico"
@@ -83,23 +82,7 @@ CREATE
     tipo_oggetto_guastabile: "elettrico"
 }),
 
-(g1:Guasto {
-    tipo_oggetto_guasto: "elettrico"
-}),
-(g2:Guasto {
-    tipo_oggetto_guasto: "idraulico"
-}),
-(g3:Guasto {
-    tipo_oggetto_guasto: "elettrico"
-}),
-
-(o)-[:SEGNALA]->(g1),
-(o)-[:SEGNALA]->(g2),
-(o)-[:SEGNALA]->(g3),
-
-(g1)-[:INERENTE_A]->(og1),
-(g2)-[:INERENTE_A]->(og2),
-(g3)-[:INERENTE_A]->(og3),
+(og1)-[:CONTENUTO_IN]->(l3),
 
 (r1)-[:NOTIFICA]->(s1),
 (r1)-[:NOTIFICA]->(s2),
