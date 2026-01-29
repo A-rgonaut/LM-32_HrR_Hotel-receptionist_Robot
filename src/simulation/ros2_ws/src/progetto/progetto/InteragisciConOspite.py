@@ -47,7 +47,7 @@ class InteragisciConOspite():
             self.nodo.get_logger().error(f"Errore caricamento {file_nome}: {e}")
         return parole
 
-    def dialogo_scriptato(self, tipo, **kwargs):
+    def dialogo(self, tipo, **kwargs):
         if tipo == "errore_lingua":
             return self.dialoghi["errore_lingua"]["DEFAULT"]
         lingua = self.contesto['ospite'].lingua

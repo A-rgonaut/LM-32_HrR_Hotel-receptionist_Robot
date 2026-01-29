@@ -111,9 +111,9 @@ class InteragisciScenarioA(InteragisciConOspite):
         return False
 
     def suggerisci_evento_locale(self):
-        self.nodo.parla(self.dialogo_scriptato("attesa_analisi"))
+        self.nodo.parla(self.dialogo("attesa_analisi"))
         if not self.recupera_dati_per_suggerimento():
-            self.nodo.parla(self.dialogo_scriptato("dati_insufficienti"))
+            self.nodo.parla(self.dialogo("dati_insufficienti"))
             return
         self.sincro.crea_ontologia_istanze(self.contesto["ids"])
         assiomi = self.sincro.spiegami_tutto(parentClassName="Evento")
@@ -134,22 +134,22 @@ class InteragisciScenarioA(InteragisciConOspite):
             data_ora_evento_locale = dettagli_evento.get('data_ora_evento_locale', 'N/A')
             proprieta_con_assiomi = [k for k, v in proprieta.items() if v != "Il reasoner NON deduce assiomi inerenti"]
             num_con_assiomi = len(proprieta_con_assiomi)
-            self.nodo.parla(self.dialogo_scriptato("titolo_evento", nome_evento_locale=nome_evento_locale, data_ora_evento_locale=data_ora_evento_locale))
+            self.nodo.parla(self.dialogo("titolo_evento", nome_evento_locale=nome_evento_locale, data_ora_evento_locale=data_ora_evento_locale))
             if num_con_assiomi == 0:  # CASO 1: Nessuna informazione
-                self.nodo.parla(self.dialogo_scriptato("evento_consiglio_base"))
+                self.nodo.parla(self.dialogo("evento_consiglio_base"))
             elif num_con_assiomi > 1:  # CASO 4: Conflitto
                 valore_pro    = proprieta.get("EventoConsigliabile")
                 valore_contro = proprieta.get("EventoNonConsigliabile")
-                self.nodo.parla(self.dialogo_scriptato("evento_conflitto", valore_pro=valore_pro, valore_contro=valore_contro))
+                self.nodo.parla(self.dialogo("evento_conflitto", valore_pro=valore_pro, valore_contro=valore_contro))
             else:
                 chiave_attiva = proprieta_con_assiomi[0]
                 valore_attivo = proprieta[chiave_attiva]
                 if chiave_attiva == "EventoConsigliabile":  # CASO 2: Solo Incentivo
-                    self.nodo.parla(self.dialogo_scriptato("evento_consigliabile_per", valore_attivo=valore_attivo))
+                    self.nodo.parla(self.dialogo("evento_consigliabile_per", valore_attivo=valore_attivo))
                 elif chiave_attiva == "EventoNonConsigliabile":  # CASO 3: Solo Divieto
-                    self.nodo.parla(self.dialogo_scriptato("evento_sconsigliabile_per", valore_attivo=valore_attivo))
+                    self.nodo.parla(self.dialogo("evento_sconsigliabile_per", valore_attivo=valore_attivo))
                 else:
-                    self.nodo.parla(self.dialogo_scriptato("evento_info_generica", chiave_attiva=chiave_attiva, valore_attivo=valore_attivo))
+                    self.nodo.parla(self.dialogo("evento_info_generica", chiave_attiva=chiave_attiva, valore_attivo=valore_attivo))
             self.nodo.parla("")
         # risposta = self.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
         # self.nodo.parla(risposta)
@@ -175,7 +175,7 @@ class InteragisciScenarioA(InteragisciConOspite):
         if self.stato == "INIZIO":
             lingua = self.rileva_lingua(testo)
             if lingua is None:
-                self.nodo.parla(self.dialogo_scriptato(tipo="errore_lingua"))
+                self.nodo.parla(self.dialogo(tipo="errore_lingua"))
                 self.stato = "INIZIO"
             p = self.contesto['ospite']
             self.nodo.get_logger().info(f"{self.contesto['ospite']}")
@@ -184,17 +184,17 @@ class InteragisciScenarioA(InteragisciConOspite):
             self.nodo.get_logger().info(f"{self.contesto['ospite']}")
             self.nodo.get_logger().info(f"{self.aggiorna_lingua()}")
             if self.recupera_dati_prenotazione():
-                self.nodo.parla(self.dialogo_scriptato(tipo="benvenuto"))
+                self.nodo.parla(self.dialogo(tipo="benvenuto"))
                 self.stato = "RILEVA_INTERESSE"
             else:
-                self.nodo.parla(self.dialogo_scriptato(tipo="nessuna_prenotazione"))
+                self.nodo.parla(self.dialogo(tipo="nessuna_prenotazione"))
                 self.stato = "FINE"
         elif self.stato == "RILEVA_INTERESSE":
             interesse = self.rileva_interesse(testo)
             if interesse:
                 self.nodo.get_logger().info(interesse)
                 self.contesto['interesse'] = interesse
-                self.nodo.parla(self.dialogo_scriptato(tipo="conferma_interesse"))
+                self.nodo.parla(self.dialogo(tipo="conferma_interesse"))
                 self.stato = "CONFERMA"
             else:
                 self.stato = "RILEVA_INTERESSE"
@@ -215,7 +215,7 @@ class InteragisciScenarioA(InteragisciConOspite):
             # Qualsiasi cosa l'utente abbia detto (testo), noi chiudiamo.
             # (Analizzare 'testo' per vedere se e' un insulto o un grazie,
             # per ora assumiamo sia un ringraziamento...).
-            self.nodo.parla(self.dialogo_scriptato(tipo="arrivederci"))
+            self.nodo.parla(self.dialogo(tipo="arrivederci"))
             self.stato = "FINE"
         elif self.stato == "FINE":
             pass

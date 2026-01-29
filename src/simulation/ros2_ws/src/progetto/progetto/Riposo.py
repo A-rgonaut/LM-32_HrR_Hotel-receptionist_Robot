@@ -9,3 +9,10 @@ class Riposo:
 
     def reset(self, ospite=None):
         self.nodo.get_logger().info("Entrato in modalità Riposo.")
+        # Se la destinazione è già quella di home, non resettare il flag
+        nuovo_target = (10, 11)
+        if self.nodo.destinazione_target != nuovo_target:
+            self.nodo.destinazione_target = nuovo_target
+            self.nodo.raggiunta_destinazione = False
+        self.nodo.comportamento_precedente = "Riposo"
+        self.nodo.comportamenti["Naviga"].reset()

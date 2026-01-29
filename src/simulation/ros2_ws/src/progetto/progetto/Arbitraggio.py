@@ -14,7 +14,7 @@ from progetto.Riposo import Riposo                              # 5
 # --- ------------- ---
 
 from progetto.SincronizzaManager import SincronizzaManager
-from progetto.utils import Persona
+from progetto.utils import Persona, Ospite
 from progetto.Specialista import Specialista
 from progetto.Emergenza import Emergenza
 
@@ -126,6 +126,7 @@ class Arbitraggio(Node):
                 self.get_logger().info(f"[Arbitraggio] Scenario {attivo} terminato, ritorno a Riposo")
                 self.concludi_scenario_msg(attivo)
                 self.comportamento_attivo = "Riposo"
+                self.comportamenti["Riposo"].reset()
                 return
 
         candidato = None
@@ -145,6 +146,21 @@ class Arbitraggio(Node):
             candidato = "Riposo"
             obj = self.comportamenti["Riposo"]
 
+        
+        # --- 3. BLOCCO SCENARI (Solo C può interrompere A/B, ma C deve persistere) ---
+        if attivo in ("InteragisciScenarioA", "InteragisciScenarioB", "InteragisciScenarioC"):
+            # Se l'attuale è C, resta in C finché non finisce
+            # Se l'attuale è A o B, resta lì a meno che non arrivi un C
+            if attivo == "InteragisciScenarioC" or candidato != "InteragisciScenarioC":
+                candidato = attivo
+                obj = self.comportamenti[attivo]
+                
+                # Consuma bottoni pendenti per non triggerare cambi indesiderati dopo
+                if self.bottone_premuto in ("InteragisciScenarioA", "InteragisciScenarioB", "InteragisciScenarioC"):
+                    self.bottone_premuto = None
+
+
+        """
         # --- 3. BLOCCO SCENARI A/B (solo C può interrompere) ---
         if attivo in ("InteragisciScenarioA", "InteragisciScenarioB"):
             if candidato != "InteragisciScenarioC":
@@ -157,7 +173,7 @@ class Arbitraggio(Node):
                     "InteragisciScenarioB",
                 ):
                     self.bottone_premuto = None
-
+        """
         # --- 4. TRANSIZIONE ---
         if candidato != attivo:
             # chiusura scenario precedente
@@ -233,7 +249,8 @@ class Arbitraggio(Node):
                         if not non_ha_dedotto and robotLibero:
                             self.get_logger().info(f"OspiteInStatodiAllerta:  {messaggio}")
                             robotLibero=False
-                            self.ospite_corrente=Persona(self.emergenza.cambia_stato_allerta( nome,cognome), nome, cognome)
+                            self.ospite_corrente=Ospite(self.emergenza.cambia_stato_allerta( nome,cognome), nome, cognome, "2000", "IT")
+                            self.get_logger().info(f"ospite_corrente  { self.ospite_corrente}")
                             self.spiegazioneC = messaggio
                             self.parametri_vitali_sballati = True  # il robot inizia lo scenario C
                         elif not non_ha_dedotto and not robotLibero:

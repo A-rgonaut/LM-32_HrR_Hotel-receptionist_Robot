@@ -7,13 +7,12 @@ class InteragisciScenarioB(InteragisciConOspite):
     def __init__(self, nodo, specialista):
         super().__init__(nodo)
         self.specialista = specialista
-        
+
         self.domande_diagnostica = {
             "setpoint_temperatura": "A che temperatura è impostata la stufa ?",
             "tempo_accensione": "Da quanto tempo è accesa la stufa?",
             "dom1": "temperatura_impostata",
             "dom2": "tempo_acceso",
-
         }
     
     def reset(self, ospite=None):
@@ -37,6 +36,7 @@ class InteragisciScenarioB(InteragisciConOspite):
                 self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT") 
                 self.nodo.destinazione_target = None
                 self.stato = "RILEVA_GUASTO"    
+                #self.stato = "FINE"  
             else:
                 self.nodo.parla("Arrivo subito, sto arrivando da te!")
         elif self.stato == "RILEVA_GUASTO":
@@ -45,7 +45,7 @@ class InteragisciScenarioB(InteragisciConOspite):
                 #self.nodo.parla(oggetto_guasto) 
                 self.contesto['oggetto_guasto'] = oggetto_guasto
                 self.nodo.parla(f"Se ho capito bene , l'oggetto in questione è {oggetto_guasto} , giusto?")
-                #self.nodo.parla(self.dialogo_scriptato(tipo="conferma_oggetto_guasto")) # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
+                #self.nodo.parla(self.dialogo(tipo="conferma_oggetto_guasto")) # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
                 self.stato = "CONFERMA_GUASTO"
             else :
                 self.nodo.parla("non ho capito bene, puoi ripetere?") # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
@@ -182,9 +182,9 @@ class InteragisciScenarioB(InteragisciConOspite):
         return False
 
     def suggerisci_specialista(self):
-        self.nodo.parla(self.dialogo_scriptato("attesa_analisi_medico"))
+        self.nodo.parla(self.dialogo("attesa_analisi_medico"))
         if not self.recupera_dati_per_suggerimento():
-            self.nodo.parla(self.dialogo_scriptato("dati_insufficienti"))
+            self.nodo.parla(self.dialogo("dati_insufficienti"))
             return
         self.sincro.crea_ontologia_istanze(self.contesto["ids"])
         assiomi = self.sincro.spiegami_tutto(parentClassName="Guasto")

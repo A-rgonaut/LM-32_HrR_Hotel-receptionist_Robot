@@ -38,7 +38,8 @@ class Naviga:
         # --- Parametri Controllo ---
         self.Kp_linear = 0.5
         self.Kp_angular = 1.0
-        self.dist_threshold = 0.08 # 15 cm di tolleranza
+        self.dist_threshold = 0.08 #  cm di tolleranza
+        self.dist_threshold2 = 0.02 #  cm di tolleranza
 
         self.sum_angular_error = 0.0  # Accumulatore per l'errore (Termine Integrale)
         self.Ki_angular = 0.05        # Guadagno Integrale (piccolo ma costante)
@@ -77,7 +78,7 @@ class Naviga:
             self.stop_robot()
             self.nodo.get_logger().info("Naviga: Destinazione raggiunta!")
             self.nodo.raggiunta_destinazione = True
-            self.nodo.comportamenti["InteragisciScenarioB"].esegui("")
+            self.nodo.comportamenti[self.nodo.comportamento_attivo].esegui("")
             self.current_path_world = []
             return
 
@@ -179,6 +180,12 @@ class Naviga:
         if not start_pose or not goal_pose:
             return
 
+        dist_attuale = sqrt((start_pose[0] - goal_pose[0])**2 + (start_pose[1] - goal_pose[1])**2)
+        if dist_attuale < self.dist_threshold2:
+            self.nodo.get_logger().info("Naviga: Già a destinazione (sotto soglia).")
+            self.nodo.raggiunta_destinazione = True
+            return
+    
         self.nodo.get_logger().info(f"Naviga: Calcolo percorso da {start_pose} a {goal_pose}...")
 
         # Coordinate Griglia

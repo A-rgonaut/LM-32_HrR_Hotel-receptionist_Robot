@@ -8,7 +8,7 @@ class Specialista():
             """
         # Eseguo la query
         risultati = nodo.sincro.interrogaGraphDatabase(query, {'tipo': chi_chiamare})
-        nodo.get_logger().info(f"{risultati} {riguardo_chi} {perche}")
+        nodo.get_logger().info(f"Specialista {risultati} {riguardo_chi} {perche}")
 
         #response = nodo.sincro.interrogaGraphDatabase("MATCH (n) RETURN n LIMIT 1")  # INSERT della segnalazione
         # response = nodo.sincro.interrogaGraphDatabase("MATCH (n) RETURN n LIMIT 1")  # SELECT nome, cognome, numero di telefono dello specialista

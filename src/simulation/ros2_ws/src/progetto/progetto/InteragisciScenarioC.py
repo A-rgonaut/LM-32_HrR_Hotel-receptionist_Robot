@@ -14,6 +14,20 @@ class InteragisciScenarioC(InteragisciConOspite):
         #self.spiegazione="Sei qua perchè ho rilevato un'emergenza"# self.spiegazione = spiegazione # se viene dal rilevamento automatico allora spiegazione != null, altrimenti se vuoto veniamo dal bottone
         # in fase di testing, per adesso quando clicchiamo i lbottone dobbiamo provare con spiegazione e senza
 
+    
+    def reset(self, ospite=None):
+        super().reset(ospite)
+        #self.nodo.destinazione_target = (-10, 11)
+        #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
+        #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
+        self.nodo.destinazione_target = (10,10)  # stanza 1
+        #self.nodo.destinazione_target = (11, 11)  # narrè
+        self.nodo.raggiunta_destinazione = False
+        self.nodo.comportamento_precedente = "InteragisciScenarioC"
+        self.stato = "ASPETTA_ROBOT"
+        self.nodo.comportamenti["Naviga"].reset()
+    
+        
     def rileva_sintomi(self, testo):
         lista_sintomi = self.sincro.ask_llm(testo, scenario="C", tipo="estrazione_semantica")
         lista_sintomi = ast.literal_eval(lista_sintomi)
@@ -73,9 +87,9 @@ class InteragisciScenarioC(InteragisciConOspite):
         return False
 
     def suggerisci_medico(self):
-        self.nodo.parla(self.dialogo_scriptato("attesa_analisi_medico"))
+        self.nodo.parla(self.dialogo("attesa_analisi_medico"))
         if not self.recupera_dati_per_suggerimento():
-            self.nodo.parla(self.dialogo_scriptato("dati_insufficienti"))
+            self.nodo.parla(self.dialogo("dati_insufficienti"))
             return
         self.sincro.crea_ontologia_istanze(self.contesto["ids"])
         # nello spiegami tutto mi serve vedere la classe OspiteStatoChiamataSpecialista
@@ -85,7 +99,7 @@ class InteragisciScenarioC(InteragisciConOspite):
         data = json.loads(assiomi)
         for evento_str, proprieta in data.items():
             if proprieta["OspiteStatoChiamataSpecialista"] == "Il reasoner NON deduce assiomi inerenti":
-                self.nodo.parla(self.dialogo_scriptato("reasoner_negativo"))
+                self.nodo.parla(self.dialogo("reasoner_negativo"))
             else:
                 spiegazione = proprieta['OspiteStatoChiamataSpecialista']
                 # spiegazione = self.sincro.ask_llm(spiegazione, scenario="c", tipo="explainability") # da allineare il prompt
@@ -168,36 +182,43 @@ class InteragisciScenarioC(InteragisciConOspite):
     """
     def esegui(self, testo):
         self.nodo.get_logger().info(f"[ScenarioC] Stato: {self.stato}, Input: {testo}")
-        if self.stato == "INIZIO":
-            if self.spiegazione:
-                self.nodo.parla(self.dialogo_scriptato("emergenza_auto", spiegazione=self.spiegazione))
-                self.inizio_stato_di_coscienza = time.time()
-                self.stato = "COSCIENZA"
+        if self.stato == "ASPETTA_ROBOT":
+            if self.nodo.raggiunta_destinazione:
+                p = self.contesto['ospite']
+                self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT") 
+                if self.spiegazione:
+                    
+                    self.nodo.parla(self.dialogo("emergenza_auto", spiegazione=self.spiegazione))
+                    #self.nodo.parla(self.dialogo("emergenza_auto"))
+                    self.inizio_stato_di_coscienza = time.time()
+                    self.stato = "COSCIENZA"
+                else:
+                    self.nodo.parla(self.dialogo("emergenza_manuale"))
+                    self.stato = "DESCRIZIONE_SINTOMI" 
             else:
-                self.nodo.parla(self.dialogo_scriptato("emergenza_manuale"))
-                self.stato = "DESCRIZIONE_SINTOMI"
+                self.nodo.parla("Arrivo subito, sto arrivando da te!")
+            
+
         elif self.stato == "COSCIENZA":
-            p = self.contesto['ospite']
-            self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT") # TODO: Recuperare dati veri
             tempo_trascorso = time.time() - self.inizio_stato_di_coscienza
             risposta = self.rileva_conferma(testo)
             if not risposta or tempo_trascorso > 30:
-                self.nodo.parla(self.dialogo_scriptato("timeout_coscienza"))
+                self.nodo.parla(self.dialogo("timeout_coscienza"))
                 self.motivo_chiamata = "Tempo di risposta superiore ai 30 secondi"
                 self.cambia_stato()
                 self.stato = "CHIAMATA_SPECIALISTA"
                 self.esegui("")
             else:
-                self.nodo.parla(self.dialogo_scriptato("chiedi_sintomi"))
+                self.nodo.parla(self.dialogo("chiedi_sintomi"))
                 self.stato = "DESCRIZIONE_SINTOMI"
         elif self.stato == "CHIAMATA_SPECIALISTA":
-            self.nodo.parla(self.dialogo_scriptato("chiamata_in_corso"))
+            self.nodo.parla(self.dialogo("chiamata_in_corso"))
             self.specialista.chiama(self.nodo, "medico", self.contesto['ospite'], self.motivo_chiamata)
             self.stato = "FINE"
         elif self.stato == "DESCRIZIONE_SINTOMI":
             lista_sintomi = self.rileva_sintomi(testo)
             str_sintomi = ", ".join(lista_sintomi) if isinstance(lista_sintomi, list) else str(lista_sintomi)
-            self.nodo.parla(self.dialogo_scriptato("elenco_sintomi", lista=str_sintomi))
+            self.nodo.parla(self.dialogo("elenco_sintomi", lista=str_sintomi))
             self.nodo.get_logger().info(f"{self.aggiorna_sintomi(lista_sintomi)}")
             spiegazione = self.suggerisci_medico()
             if spiegazione:
@@ -206,7 +227,7 @@ class InteragisciScenarioC(InteragisciConOspite):
                 self.stato = "CHIAMATA_SPECIALISTA"
                 self.esegui("")
             else:
-                self.nodo.parla(self.dialogo_scriptato("conferma_chiamata_manuale"))
+                self.nodo.parla(self.dialogo("conferma_chiamata_manuale"))
                 self.stato = "MEDICO_SI-NO"
         elif self.stato == "MEDICO_SI-NO":
             risposta = self.rileva_conferma(testo)
