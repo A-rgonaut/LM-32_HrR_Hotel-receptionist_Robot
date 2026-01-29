@@ -77,6 +77,7 @@ class Naviga:
             self.stop_robot()
             self.nodo.get_logger().info("Naviga: Destinazione raggiunta!")
             self.nodo.raggiunta_destinazione = True
+            self.nodo.comportamenti["InteragisciScenarioB"].esegui("")
             self.current_path_world = []
             return
 
