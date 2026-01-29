@@ -230,6 +230,10 @@ class Arbitraggio(Node):
             data = json.loads(assiomi)
             self.get_logger().info(f"Iddu è assiomi {data}")
             robotLibero=True #da gabriele
+            """
+            robotLibero = [x["nome"] for x in self.lista_priorita].index(self.comportamento_attivo) >= 2
+            robotLibero = self.comportamento_attivo in ["InteragisciScenarioB", "InteragisciScenarioA", "Naviga", "Riposo"]
+            """
             for ospite_json_str, risultati in data.items():
                 # 1. Decodifica dati ospite
                 dati_ospite = json.loads(ospite_json_str)

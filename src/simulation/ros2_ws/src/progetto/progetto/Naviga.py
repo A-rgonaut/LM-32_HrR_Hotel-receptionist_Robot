@@ -39,7 +39,7 @@ class Naviga:
         self.Kp_linear = 0.5
         self.Kp_angular = 1.0
         self.dist_threshold = 0.08 #  cm di tolleranza
-        self.dist_threshold2 = 0.02 #  cm di tolleranza
+        self.dist_threshold2 = 0.3 #  cm di tolleranza
 
         self.sum_angular_error = 0.0  # Accumulatore per l'errore (Termine Integrale)
         self.Ki_angular = 0.05        # Guadagno Integrale (piccolo ma costante)
@@ -78,7 +78,13 @@ class Naviga:
             self.stop_robot()
             self.nodo.get_logger().info("Naviga: Destinazione raggiunta!")
             self.nodo.raggiunta_destinazione = True
-            self.nodo.comportamenti[self.nodo.comportamento_attivo].esegui("")
+            # FIX 2 OTTIMIZZATO: 
+            # Invece di chiamare il comportamento_attivo (che è Naviga),
+            # svegliamo solo il comportamento che ci ha chiamati (B o C).
+            target = self.nodo.comportamento_precedente 
+            if target in ["InteragisciScenarioB", "InteragisciScenarioC"]:
+                self.nodo.get_logger().info(f"Sveglio lo {target}...")
+                self.nodo.comportamenti[target].esegui("")
             self.current_path_world = []
             return
 
