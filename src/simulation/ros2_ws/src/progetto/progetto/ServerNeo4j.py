@@ -4,6 +4,7 @@ from std_msgs.msg import String
 
 import json
 import os
+import logging
 
 from neo4j import GraphDatabase
 from neo4j.time import DateTime, Date, Duration, Time
@@ -20,6 +21,7 @@ class Neo4jEncoder(json.JSONEncoder):
 class ServerNeo4j(Node):
     def __init__(self):
         super().__init__("ServerNeo4j")
+        logging.getLogger("neo4j").setLevel(logging.ERROR)
         self.driver = None
         self.init_neo4j()
         self.sub = self.create_subscription(String, "/neo4j/request", self.handle_request, 10)
@@ -37,7 +39,7 @@ class ServerNeo4j(Node):
             self.get_logger().info(f"Errore connessione Neo4j: {e}")
 
     def handle_request(self, msg):
-        self.get_logger().info(f"RICEVUTA RICHIESTA: {msg.data}")
+        # self.get_logger().info(f"[DEBUG 0] RICEVUTA RICHIESTA: {msg.data}")
         try:
             req = json.loads(msg.data)
             req_id = req.get('id')

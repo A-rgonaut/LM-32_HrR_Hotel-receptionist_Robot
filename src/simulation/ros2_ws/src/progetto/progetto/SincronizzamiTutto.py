@@ -36,21 +36,21 @@ class SincronizzamiTutto:
 
     def call(self, payload):
         req_id = uuid.uuid4().hex
-        self.nodo.get_logger().info(f"[DEBUG 1] Preparo richiesta ID: {req_id}")
+        # self.nodo.get_logger().info(f"[DEBUG 1] Preparo richiesta ID: {req_id}")
         fut = concurrent.futures.Future()
         with self.lock:
             self.pending[req_id] = fut
         ros_msg = String()
         ros_msg.data = json.dumps({"id": req_id, "payload": payload})
-        self.nodo.get_logger().info(f"[DEBUG 2] Sto pubblicando su {self.pub.topic_name}...")
+        # self.nodo.get_logger().info(f"[DEBUG 2] Sto pubblicando su {self.pub.topic_name}...")
         self.pub.publish(ros_msg)
-        self.nodo.get_logger().info(f"[DEBUG 3] Pubblicato! Ora aspetto la risposta...")
+        # self.nodo.get_logger().info(f"[DEBUG 3] Pubblicato! Ora aspetto la risposta...")
         try:
             risultato = fut.result(timeout=self.timeout)
-            self.nodo.get_logger().info(f"[DEBUG 4] Risposta ricevuta!")
+            # self.nodo.get_logger().info(f"[DEBUG 4] Risposta ricevuta!")
             return risultato
         except concurrent.futures.TimeoutError:
-            self.nodo.get_logger().error(f"[DEBUG ERROR] Timeout scaduto per ID {req_id}")
+            # self.nodo.get_logger().error(f"[DEBUG ERROR] Timeout scaduto per ID {req_id}")
             with self.lock:
                 self.pending.pop(req_id, None)
             raise Exception(f"Timeout ({self.timeout}s)! Nessuna risposta ricevuta.")
