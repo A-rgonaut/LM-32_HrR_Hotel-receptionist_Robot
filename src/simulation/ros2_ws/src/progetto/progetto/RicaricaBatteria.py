@@ -23,6 +23,7 @@ class RicaricaBatteria:
             self.timer_simulazione.destroy()
             self.timer_simulazione = None
 """
+from math import pi
 class RicaricaBatteria:
     def __init__(self, nodo):
         self.nodo = nodo
@@ -40,10 +41,8 @@ class RicaricaBatteria:
 
     def reset(self, ospite=None):
         self.nodo.get_logger().info("Comportamento RicaricaBatteria attivato.")
-        
         # 1. Definiamo le coordinate della stazione di ricarica (es. la base)
-        target_stazione = (10, 11)
-        
+        target_stazione = (10, 11,pi)
         # 2. Impostiamo il target solo se necessario per attivare il modulo Naviga
         if self.nodo.destinazione_target != target_stazione:
             self.nodo.destinazione_target = target_stazione

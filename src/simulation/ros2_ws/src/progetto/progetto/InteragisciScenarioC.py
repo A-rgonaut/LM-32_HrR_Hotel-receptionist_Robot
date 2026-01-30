@@ -3,6 +3,7 @@ from progetto.utils import Ospite
 import ast
 import json
 import time
+from math import pi
 
 class InteragisciScenarioC(InteragisciConOspite):
 
@@ -20,7 +21,7 @@ class InteragisciScenarioC(InteragisciConOspite):
         #self.nodo.destinazione_target = (-10, 11)
         #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
-        self.nodo.destinazione_target = (10,10)  # stanza 1
+        self.nodo.destinazione_target = (10,10,pi)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioC"
