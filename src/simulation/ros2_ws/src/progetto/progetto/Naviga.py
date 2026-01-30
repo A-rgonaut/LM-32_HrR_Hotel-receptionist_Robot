@@ -232,6 +232,36 @@ class Naviga:
         w = self.map_info.width
         h = self.map_info.height
 
+        # Se il robot si trova su un pixel "nero" (causa inflazione),
+        # cerchiamo il primo pixel libero in un raggio di 8 celle (circa 40cm)
+        start_idx = sy * w + sx
+        if self.map_data[start_idx] == 100:
+            self.nodo.get_logger().warn(f"Start {sx},{sy} bloccato dall'inflazione! Cerco via di fuga...")
+            found_free = False
+            raggio_max = 8  # Aumenta se la risoluzione è molto alta
+            for r in range(1, raggio_max + 1):
+                # Controlla un quadrato attorno al robot
+                for dy in range(-r, r + 1):
+                    for dx in range(-r, r + 1):
+                        nx = sx + dx
+                        ny = sy + dy
+                        # Controllo limiti mappa
+                        if 0 <= nx < w and 0 <= ny < h:
+                            if self.map_data[ny * w + nx] != 100:
+                                # Trovato un punto libero! Aggiorno lo start
+                                sx, sy = nx, ny
+                                found_free = True
+                                break
+                    if found_free:
+                        break
+                if found_free:
+                    break
+            if found_free:
+                self.nodo.get_logger().info(f"Nuovo start libero trovato: {sx},{sy}")
+            else:
+                self.nodo.get_logger().error("Impossibile trovare punto libero vicino al robot!")
+                return # Fallimento reale
+
         # Bounding Box per ottimizzare A*
         dx = abs(sx - gx)
         dy = abs(sy - gy)
