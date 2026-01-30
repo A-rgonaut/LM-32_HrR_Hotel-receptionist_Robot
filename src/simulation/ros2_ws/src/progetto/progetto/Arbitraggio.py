@@ -55,7 +55,7 @@ class Arbitraggio(Node):
         self.destinazione_target = None
         self.raggiunta_destinazione = True
 
-        self.livello_batteria = 100.0
+        #self.livello_batteria = 100.0
         self.in_carica = False
         self.bottone_premuto = None
         self.parametri_vitali_sballati = False
@@ -83,8 +83,8 @@ class Arbitraggio(Node):
                 "nome": "RicaricaBatteria",
                 "oggetto": self.comportamenti["RicaricaBatteria"],
                 "trigger": lambda: (
-                    self.livello_batteria < 80.0 or
-                    (self.in_carica and self.livello_batteria < 100.0)
+                    self.livello_batteria < 80.0  and  self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]#or
+                    #(self.in_carica and self.livello_batteria < 100.0)
                 )
             },
             {
@@ -146,7 +146,7 @@ class Arbitraggio(Node):
             candidato = "Riposo"
             obj = self.comportamenti["Riposo"]
 
-        
+        """
         # --- 3. BLOCCO SCENARI (Solo C può interrompere A/B, ma C deve persistere) ---
         if attivo in ("InteragisciScenarioA", "InteragisciScenarioB", "InteragisciScenarioC"):
             # Se l'attuale è C, resta in C finché non finisce
@@ -158,7 +158,22 @@ class Arbitraggio(Node):
                 # Consuma bottoni pendenti per non triggerare cambi indesiderati dopo
                 if self.bottone_premuto in ("InteragisciScenarioA", "InteragisciScenarioB", "InteragisciScenarioC"):
                     self.bottone_premuto = None
+        """
+        if attivo in ("InteragisciScenarioA", "InteragisciScenarioB", "InteragisciScenarioC"):
+            # C è assolutamente prioritario e non interrompibile
+            if attivo == "InteragisciScenarioC":
+                candidato = attivo
+                obj = self.comportamenti[attivo]
+            
+            # Se siamo in A o B, permettiamo l'interruzione SOLO se il candidato è C o RicaricaBatteria
+            elif candidato not in ("InteragisciScenarioC", "RicaricaBatteria"):
+                candidato = attivo
+                obj = self.comportamenti[attivo]
 
+            # Consumo dei bottoni pendenti per evitare trigger sporchi
+            if self.bottone_premuto in ("InteragisciScenarioA", "InteragisciScenarioB", "InteragisciScenarioC"):
+                self.bottone_premuto = None
+                
         # --- 4. TRANSIZIONE ---
         if candidato != attivo:
             # chiusura scenario precedente
@@ -337,17 +352,18 @@ class Arbitraggio(Node):
         self.pub.publish(msg)
         self.get_logger().info(msg.data)
 
-    """
+    
     def gestisci_batteria(self, msg):
         try:
             bat = json.loads(msg.data)
-            livello_unity = float(bat['level'])
+            livello_unity = float(bat.get('level', 0.0))
+            is_charging_unity=False
             is_charging_unity = (str(bat.get('is_charging')).lower() == "true")
             # FIX PER TESTING:
             # Se la mia simulazione interna dice che sono al 100%, ignoro Unity
             # se Unity mi dice che sono scarico (altrimenti tornerei subito in ricarica).
-            if self.livello_batteria == 100.0 and livello_unity < 90.0:
-                return
+            #if self.livello_batteria == 100.0 and livello_unity < 90.0:
+            #    return
             # Altrimenti aggiorno normalmente
             self.livello_batteria = livello_unity
             self.in_carica = is_charging_unity
@@ -369,7 +385,7 @@ class Arbitraggio(Node):
 
         except Exception as e:
             self.get_logger().error(f"Errore lettura batteria da Unity: {e}")
-
+    """
 
 def main(args=None):
     rclpy.init(args=args)

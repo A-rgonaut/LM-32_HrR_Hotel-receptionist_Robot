@@ -1,3 +1,5 @@
+from math import pi
+
 class Riposo:
     def __init__(self, nodo):
         self.nodo = nodo
@@ -10,7 +12,7 @@ class Riposo:
     def reset(self, ospite=None):
         self.nodo.get_logger().info("Entrato in modalità Riposo.")
         # Se la destinazione è già quella di home, non resettare il flag
-        nuovo_target = (10, 11)
+        nuovo_target = (10, 11, pi)
         if self.nodo.destinazione_target != nuovo_target:
             self.nodo.destinazione_target = nuovo_target
             self.nodo.raggiunta_destinazione = False
