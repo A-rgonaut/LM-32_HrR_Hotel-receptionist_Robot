@@ -31,6 +31,7 @@ class Naviga:
 
         self.robot_pose = None  # (x, y)
         self.robot_theta = 0.0  # yaw in radianti
+        self.goal_theta = None
 
         self.current_path_world = [] # Lista di waypoint (x, y)
         self.current_goal_idx = 0
@@ -50,7 +51,6 @@ class Naviga:
         self.pub_path = self.nodo.create_publisher(Path, '/pianifica_path', 10)
 
         self.nodo.create_subscription(OccupancyGrid, '/map', self.map_callback, map_qos)
-        # self.nodo.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self.nodo)
 
@@ -75,10 +75,21 @@ class Naviga:
         # --- GESTIONE FINE PERCORSO ---
         # Controllo se siamo all'ultimo punto PRIMA di fare calcoli
         if self.current_goal_idx >= len(self.current_path_world):
+            if self.goal_theta is not None:
+                angle_error = self.goal_theta - self.robot_theta
+                while angle_error > pi:
+                    angle_error -= 2 * pi
+                while angle_error < -pi:
+                    angle_error += 2 * pi
+                if abs(angle_error) > 0.05:
+                    cmd = Twist()
+                    cmd.angular.z = max(min(angle_error, 0.4), -0.4)
+                    self.pub_cmd_vel.publish(cmd)
+                    return
+
             self.stop_robot()
             self.nodo.get_logger().info("Naviga: Destinazione raggiunta!")
             self.nodo.raggiunta_destinazione = True
-            # FIX 2 OTTIMIZZATO: 
             # Invece di chiamare il comportamento_attivo (che è Naviga),
             # svegliamo solo il comportamento che ci ha chiamati (B o C).
             target = self.nodo.comportamento_precedente 
@@ -104,11 +115,10 @@ class Naviga:
         while angle_error < -pi:
             angle_error += 2 * pi
 
-        # --- LOGICA CAMBIO WAYPOINT (MODIFICATA) ---
+        # --- LOGICA CAMBIO WAYPOINT ---
         # Se siamo vicini al waypoint corrente
         if distance < self.dist_threshold:
             self.current_goal_idx += 1
-            # MODIFICA 1: Ho rimosso "self.state_rotating = True"
             # Non forziamo lo stop. Se il prossimo punto è dritto, continuerà fluido.
             # Se è una curva a 90°, l'if sulla "TOLLERANZA_START_ROT" qui sotto
             # lo fermerà nel prossimo ciclo del timer (0.1s dopo).
@@ -123,8 +133,8 @@ class Naviga:
 
         # --- PARAMETRI ---
         MAX_ANG_VEL = 0.4
-        TOLLERANZA_STOP_ROT = 0.10   # ~6 gradi
-        TOLLERANZA_START_ROT = 0.35  # Aumentato leggermente (~20 gradi) per renderlo meno nervoso
+        TOLLERANZA_STOP_ROT = 0.10   # gradi
+        TOLLERANZA_START_ROT = 0.35
 
         # --- MACCHINA A STATI ---
         if self.state_rotating:
@@ -182,6 +192,7 @@ class Naviga:
         self.nodo.raggiunta_destinazione = False
         start_pose = self.robot_pose
         goal_pose = self.nodo.destinazione_target
+        self.goal_theta = goal_pose[2] if len(goal_pose) == 3 else None
 
         if not start_pose or not goal_pose:
             return

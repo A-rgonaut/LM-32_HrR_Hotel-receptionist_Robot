@@ -26,6 +26,7 @@ amcl:
     sigma_hit: 0.3
 
     tf_broadcast: true
-    transform_tolerance: 3.0
+    publish_tf: true
+    transform_tolerance: 5.0
 
-    max_beams: 180
+    max_beams: 360
