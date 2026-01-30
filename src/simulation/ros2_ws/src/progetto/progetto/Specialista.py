@@ -1,18 +1,37 @@
 class Specialista():
     def chiama(self, nodo, chi_chiamare, riguardo_chi, perche):
-        
+        """
+        Crea una segnalazione identificando l'ospite per nome e cognome invece che per ID.
+        """
+        # Sostituiamo WHERE id(o) = $id_ospite con il match diretto sulle proprietà
         query = """
-            MATCH (s:Specialista)
-            WHERE s.specialita = $tipo
-            RETURN s
+            MATCH (s:Specialista {specialita: $tipo})
+            MATCH (o {nome: $nome_o, cognome: $cognome_o})
+            CREATE (seg:Segnalazione {
+                timestamp: datetime(),
+                stato: "aperta",
+                motivo: $motivo
+            })
+            CREATE (s)-[:GESTISCE]->(seg)
+            CREATE (seg)-[:RIFERITA_A]->(o)
+            RETURN (s.nome + " " + s.cognome) AS nome_completo, s.numero_telefono AS tel
             """
-        # Eseguo la query
-        risultati = nodo.sincro.interrogaGraphDatabase(query, {'tipo': chi_chiamare})
-        nodo.get_logger().info(f"Specialista {risultati} {riguardo_chi} {perche}")
+        
+        # Mappatura rigorosa dei parametri estratti dall'oggetto riguardo_chi
+        parametri = {
+            'tipo': chi_chiamare,
+            'nome_o': riguardo_chi.nome,    # Preso da o:Ospite {nome: "Peppe", ...} 
+            'cognome_o': riguardo_chi.cognome, # Preso da o:Ospite {cognome: "Rossi", ...} 
+            'motivo': perche
+        }
 
-        #response = nodo.sincro.interrogaGraphDatabase("MATCH (n) RETURN n LIMIT 1")  # INSERT della segnalazione
-        # response = nodo.sincro.interrogaGraphDatabase("MATCH (n) RETURN n LIMIT 1")  # SELECT nome, cognome, numero di telefono dello specialista
-        # nodo.sincro.ask_llm(msg_input, scenario="C", tipo="specialista") # implementare?
-        # nodo.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
-        #nodo.get_logger().info(f"{response}")
+        risultati = nodo.sincro.interrogaGraphDatabase(query, parametri)
+
+        if risultati:
+            sp = risultati[0]
+            nodo.get_logger().info(
+                f"Segnalazione creata per {riguardo_chi.nome} {riguardo_chi.cognome}. "
+                f"Tecnico: {sp['nome_completo']}"
+            )
+            return sp
         return None

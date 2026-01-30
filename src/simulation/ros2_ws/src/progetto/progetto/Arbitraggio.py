@@ -83,7 +83,7 @@ class Arbitraggio(Node):
                 "nome": "RicaricaBatteria",
                 "oggetto": self.comportamenti["RicaricaBatteria"],
                 "trigger": lambda: (
-                    self.livello_batteria < 20.0 or
+                    self.livello_batteria < 80.0 or
                     (self.in_carica and self.livello_batteria < 100.0)
                 )
             },
@@ -159,21 +159,6 @@ class Arbitraggio(Node):
                 if self.bottone_premuto in ("InteragisciScenarioA", "InteragisciScenarioB", "InteragisciScenarioC"):
                     self.bottone_premuto = None
 
-
-        """
-        # --- 3. BLOCCO SCENARI A/B (solo C può interrompere) ---
-        if attivo in ("InteragisciScenarioA", "InteragisciScenarioB"):
-            if candidato != "InteragisciScenarioC":
-                candidato = attivo
-                obj = self.comportamenti[attivo]
-
-                # consuma eventuali bottoni A/B
-                if self.bottone_premuto in (
-                    "InteragisciScenarioA",
-                    "InteragisciScenarioB",
-                ):
-                    self.bottone_premuto = None
-        """
         # --- 4. TRANSIZIONE ---
         if candidato != attivo:
             # chiusura scenario precedente
@@ -223,27 +208,31 @@ class Arbitraggio(Node):
         # da neo4j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non
         dati=self.emergenza.importa_dati()
         if dati:
-            self.get_logger().info(f"Iddu è {dati}")
+            self.get_logger().info(f"Dati dei soli ospiti :    {dati}")
             self.sincro.crea_ontologia_istanze(dati, braccialetti=True)
             assiomi = self.sincro.spiegami_tutto(parentClassName="Ospite", braccialetti=True)
             # stampare sti assiommi
             data = json.loads(assiomi)
-            self.get_logger().info(f"Iddu è assiomi {data}")
-            robotLibero=True #da gabriele
+            self.get_logger().info(f"assiomi per vedere in che stato sono le persone  {data}")
             """
             robotLibero = [x["nome"] for x in self.lista_priorita].index(self.comportamento_attivo) >= 2
             robotLibero = self.comportamento_attivo in ["InteragisciScenarioB", "InteragisciScenarioA", "Naviga", "Riposo"]
             """
+            #robotLibero = [x["nome"] for x in self.lista_priorita].index(self.comportamento_attivo) >= 2
             for ospite_json_str, risultati in data.items():
                 # 1. Decodifica dati ospite
                 dati_ospite = json.loads(ospite_json_str)
                 nome=dati_ospite.get('nome', '')
                 cognome=dati_ospite.get('cognome', '')
                 nome_completo = f"{dati_ospite.get('nome', '')} {dati_ospite.get('cognome', '')}".strip()
-                self.get_logger().info(nome_completo)
+                ospite_da_monitorare = Ospite(dati_ospite.get('id'), nome, cognome, "2000", "IT")
+                self.get_logger().info(f" Persone che sto analizzando {nome_completo}")
                 # 2. Itera sui risultati
                 for tipo_assioma, messaggio in risultati.items():
                     # Ci interessa agire solo in base all'assioma "OspiteInStatodiAllerta"
+                    robotLibero = self.comportamento_attivo in ["InteragisciScenarioB", "InteragisciScenarioA", "Naviga", "Riposo"]
+                    self.get_logger().info(f"robot:Libero  {robotLibero}   per  {tipo_assioma}")
+
                     if tipo_assioma == "OspiteInStatodiAllerta":
                         # Logica richiesta:
                         # 1. "NON deduce" è presente nel messaggio (quindi non c'è allerta dedotta logicamente)
@@ -251,17 +240,19 @@ class Arbitraggio(Node):
                         #self.get_logger().info(f"not non_ha_dedotto and robotLibero:  {messaggio}")
                         # 2. Condizione composta: Nessuna deduzione AND Robot Libero
                         if not non_ha_dedotto and robotLibero:
-                            self.get_logger().info(f"OspiteInStatodiAllerta:  {messaggio}")
-                            robotLibero=False
+                            self.get_logger().info(f"OspiteInStatodiAllerta:  {messaggio}") # queryTODO ,  salvo il cambio label
+                            #robotLibero=False
                             self.ospite_corrente=Ospite(self.emergenza.cambia_stato_allerta( nome,cognome), nome, cognome, "2000", "IT")
                             self.get_logger().info(f"ospite_corrente  { self.ospite_corrente}")
                             self.spiegazioneC = messaggio
                             self.parametri_vitali_sballati = True  # il robot inizia lo scenario C
+                            
                         elif not non_ha_dedotto and not robotLibero:
                             self.get_logger().info(f"not non_ha_dedotto and not robotLibero:{messaggio}")
                             self.emergenza.cambia_stato_spe(nome,cognome)
                             self.spiegazioneC=messaggio
-                            self.specialista.chiama(self, "medico",nome_completo, " Il Robot è impegnato in un'emergenza e non può andare dall'ospite in Allerta")
+                            self.specialista.chiama(self, "medico",ospite_da_monitorare, " Il Robot è impegnato in un'emergenza e non può andare dall'ospite in Allerta") # queryTODO ,  salvo la chiamata allo specialista
+                            
                     if tipo_assioma == "OspiteStatoChiamataSpecialista":
                         non_ha_dedottoSpecialista = "NON deduce" in messaggio
                         #self.get_logger().info(f"OspiteStatoChiamataSpecialista:  {messaggio}")
@@ -269,7 +260,7 @@ class Arbitraggio(Node):
                             self.get_logger().info(f"not non_ha_dedottoSpecialista: {messaggio}")
                             #chiama specialista per questa persona con id..
                             self.emergenza.cambia_stato_spe(nome,cognome)
-                            self.specialista.chiama(self, "medico",nome_completo, " l'ospite è in chiamataSpecialista")
+                            self.specialista.chiama(self, "medico",ospite_da_monitorare, " l'ospite è in chiamataSpecialista") # queryTODO ,  salvo la chiamata allo specialista
 
     def processa_input(self, msg):
         testo = msg.data.strip()
@@ -346,6 +337,7 @@ class Arbitraggio(Node):
         self.pub.publish(msg)
         self.get_logger().info(msg.data)
 
+    """
     def gestisci_batteria(self, msg):
         try:
             bat = json.loads(msg.data)
@@ -361,6 +353,23 @@ class Arbitraggio(Node):
             self.in_carica = is_charging_unity
         except Exception as e:
             self.get_logger().error(f"Errore lettura batteria: {e}")
+    """
+
+    def gestisci_batteria(self, msg):
+        try:
+            # Decodifica il JSON inviato da Unity
+            bat = json.loads(msg.data)
+            
+            # 1. Aggiorna il livello reale della batteria
+            self.livello_batteria = float(bat.get('level', 0.0))
+            
+            # 2. Aggiorna lo stato di connessione elettrica
+            # Trasforma la stringa "true"/"false" in un booleano Python
+            self.in_carica = (str(bat.get('is_charging')).lower() == "true")
+
+        except Exception as e:
+            self.get_logger().error(f"Errore lettura batteria da Unity: {e}")
+
 
 def main(args=None):
     rclpy.init(args=args)

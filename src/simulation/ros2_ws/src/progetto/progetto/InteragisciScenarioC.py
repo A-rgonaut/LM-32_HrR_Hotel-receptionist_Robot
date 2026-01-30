@@ -224,7 +224,7 @@ class InteragisciScenarioC(InteragisciConOspite):
             if spiegazione:
                 self.motivo_chiamata = spiegazione
                 self.cambia_stato()
-                self.stato = "CHIAMATA_SPECIALISTA"
+                self.stato = "CHIAMATA_SPECIALISTA"  # queryTODO ,  salvo la chiamata allo specialista
                 self.esegui("")
             else:
                 self.nodo.parla(self.dialogo("conferma_chiamata_manuale"))

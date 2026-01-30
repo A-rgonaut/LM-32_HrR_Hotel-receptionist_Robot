@@ -146,21 +146,36 @@ class InteragisciScenarioA(InteragisciConOspite):
                 valore_attivo = proprieta[chiave_attiva]
                 if chiave_attiva == "EventoConsigliabile":  # CASO 2: Solo Incentivo
                     self.nodo.parla(self.dialogo("evento_consigliabile_per", valore_attivo=valore_attivo))
+                    
                 elif chiave_attiva == "EventoNonConsigliabile":  # CASO 3: Solo Divieto
                     self.nodo.parla(self.dialogo("evento_sconsigliabile_per", valore_attivo=valore_attivo))
                 else:
                     self.nodo.parla(self.dialogo("evento_info_generica", chiave_attiva=chiave_attiva, valore_attivo=valore_attivo))
             self.nodo.parla("")
+            self.salva_suggerimento(nome_evento_locale)
         # risposta = self.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
         # self.nodo.parla(risposta)
         # salvare il suggerimento come 'idoneo' in neo4j
         # self.salva_suggerimento(evento_scelto['id'])
 
-    def salva_suggerimento(self):  # TODO
-        # (idoneo = true lo mette il reasoner)
-        query = ""
-        parametri = None
-        return False
+    def salva_suggerimento(self, nome_evento):
+        """
+        Crea un nodo Segnalazione tra Ospite ed Evento.
+        Usa datetime() di Neo4j per garantire la sincronizzazione temporale del DB.
+        """
+        query = """
+        MATCH (o:Ospite) WHERE id(o) = $id_ospite
+        MATCH (e) WHERE e.nome_evento_locale = $nome_evento
+        CREATE (o)-[:HA_SEGNALAZIONE]->(s:Segnalazione {
+            timestamp: datetime()
+        })-[:RIFERITA_A]->(e)
+        """
+        parametri = {
+            'id_ospite': self.contesto['ospite'].id,
+            'nome_evento': nome_evento
+        }
+        self.sincro.interrogaGraphDatabase(query, parametri)
+        self.nodo.get_logger().info(f"[DB] Collegamento registrato per l'evento: {nome_evento}")
 
     def recupera_eta(self):
         query = "MATCH (o:Ospite) WHERE id(o) = $id RETURN o.eta AS eta"

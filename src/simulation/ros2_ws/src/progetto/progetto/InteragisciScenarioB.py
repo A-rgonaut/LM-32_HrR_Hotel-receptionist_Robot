@@ -2,6 +2,7 @@ from progetto.InteragisciConOspite import InteragisciConOspite
 from progetto.utils import Ospite
 
 import json
+from math import pi
 
 class InteragisciScenarioB(InteragisciConOspite):
     def __init__(self, nodo, specialista):
@@ -18,9 +19,9 @@ class InteragisciScenarioB(InteragisciConOspite):
     def reset(self, ospite=None):
         super().reset(ospite)
         #self.nodo.destinazione_target = (-10, 11)
-        #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
+        # self.nodo.destinazione_target = (6, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
-        self.nodo.destinazione_target = (10,10)  # stanza 1
+        self.nodo.destinazione_target = (10,10,pi)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioB"
@@ -89,8 +90,9 @@ class InteragisciScenarioB(InteragisciConOspite):
             if risposta in [None, False]:
                 self.stato = "FINE"
             else:
+                #self.salva_guasto() # <--- Inserito qui
                 self.stato = "CONTATTA_SPECIALISTA"
-                self.esegui("")
+                self.esegui("") # queryTODO ,  salvo l'oggetto che è guasto e la chiamata allo specialista
         elif self.stato == "CONTATTA_SPECIALISTA":
             self.specialista.chiama(self.nodo,self.contesto['tipo_oggetto_guasto'], self.contesto['ospite'], self.contesto['spiegazioner']) 
             self.stato = "FINE"
@@ -102,10 +104,24 @@ class InteragisciScenarioB(InteragisciConOspite):
     def termostato(self):
         return 23  # random float tra 20.0 e 24.0
 
-    def salva_guasto(self, kb):  # TODO
-        # (guasto = true lo mette il reasoner)
-        query = ""
-        parametri = None
+    def salva_guasto(self):  # TODO
+        """
+        Aggiorna esclusivamente il timestamp del guasto sull'oggetto nel database.
+        """
+        label_oggetto = self.contesto['tipo_oggetto_guasto']
+        id_ospite = self.contesto['ospite'].id
+
+        # Query rigorosa: identifica l'oggetto tramite la relazione con l'ospite e la stanza
+        query = f"""
+        MATCH (o:Ospite)-[:EFFETTUA]->(:Prenotazione)-[:ASSOCIATA_A]->(:Stanza)<-[:CONTENUTO_IN]-(obj:{label_oggetto})
+        WHERE id(o) = $id_ospite
+        SET obj.timestamp_guasto = datetime()
+        RETURN obj
+        """
+    
+        parametri = {"id_ospite": id_ospite}
+        self.sincro.interrogaGraphDatabase(query, parametri)
+
         return False
 
     def rileva_guasto(self, testo):

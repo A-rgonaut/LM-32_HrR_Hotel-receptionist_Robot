@@ -1,3 +1,4 @@
+"""
 class RicaricaBatteria:
     def __init__(self, nodo):
         self.nodo = nodo
@@ -21,3 +22,33 @@ class RicaricaBatteria:
         if self.timer_simulazione:
             self.timer_simulazione.destroy()
             self.timer_simulazione = None
+"""
+class RicaricaBatteria:
+    def __init__(self, nodo):
+        self.nodo = nodo
+
+    def esegui(self, testo=None):
+        # Una volta arrivati alla stazione, il robot monitora lo stato 
+        # che arriva dai sensori di Unity tramite l'Arbitraggio.
+        if self.nodo.raggiunta_destinazione:
+            if self.nodo.in_carica:
+                self.nodo.get_logger().info(f"In carica: {self.nodo.livello_batteria}%", throttle_duration_sec=10.0)
+            else:
+                self.nodo.parla("Sono in posizione. In attesa di collegamento elettrico.")
+        else:
+            self.nodo.get_logger().info("In viaggio verso la stazione di ricarica...")
+
+    def reset(self, ospite=None):
+        self.nodo.get_logger().info("Comportamento RicaricaBatteria attivato.")
+        
+        # 1. Definiamo le coordinate della stazione di ricarica (es. la base)
+        target_stazione = (10, 11)
+        
+        # 2. Impostiamo il target solo se necessario per attivare il modulo Naviga
+        if self.nodo.destinazione_target != target_stazione:
+            self.nodo.destinazione_target = target_stazione
+            self.nodo.raggiunta_destinazione = False
+        
+        # 3. Aggiorniamo i riferimenti per la navigazione
+        self.nodo.comportamento_precedente = "RicaricaBatteria"
+        self.nodo.comportamenti["Naviga"].reset()
