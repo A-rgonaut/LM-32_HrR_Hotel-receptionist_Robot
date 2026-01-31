@@ -57,6 +57,8 @@ class Naviga:
         self.avoid_multiplier = 0.0
         self.nodo.create_subscription(LaserScan, '/scan', self.scan_callback, 10)
 
+        self.is_base_target=False
+
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self.nodo)
 
@@ -107,6 +109,9 @@ class Naviga:
 
             self.stop_robot()
             self.nodo.get_logger().info("Naviga: Destinazione raggiunta!")
+            if self.is_base_target:
+                self.esegui_retromarcia()
+                self.esegui_retromarcia()
             self.nodo.raggiunta_destinazione = True
             # Invece di chiamare il comportamento_attivo (che è Naviga),
             # svegliamo solo il comportamento che ci ha chiamati (B o C).
@@ -275,8 +280,8 @@ class Naviga:
                 return # Fallimento reale
 
         path_grid = []
-        is_base_target = abs(goal_pose[0] - 10.0) < 0.2 and abs(goal_pose[1] - 11.0) < 0.2
-        if is_base_target:
+        self.is_base_target = abs(goal_pose[0] - 10.0) < 0.2 and abs(goal_pose[1] - 11.0) < 0.2
+        if self.is_base_target:
             self.nodo.get_logger().info("Naviga: is_base_target")
             mx, my = self.world_to_grid(10.0, 10.0)
             path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (mx, my), bbox=None, allow_unknown=False)
