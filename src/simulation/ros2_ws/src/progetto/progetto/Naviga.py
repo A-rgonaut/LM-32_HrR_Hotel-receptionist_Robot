@@ -64,6 +64,18 @@ class Naviga:
 
         self.timer = self.nodo.create_timer(0.1, self.control_loop)
 
+    def esegui_retromarcia(self):
+        import time
+        self.nodo.get_logger().info("Eseguo retromarcia...")
+        cmd = Twist()
+        cmd.linear.x = -0.15
+        cmd.angular.z = 0.0
+        for _ in range(15):
+            self.pub_cmd_vel.publish(cmd)
+            time.sleep(0.1)
+        self.stop_robot()
+
+
     # --- 1. LOGICA DI CONTROLLO (Chiamata dall'Arbitraggio) ---
     def control_loop(self):
         # Prima cosa: aggiorna la posa
@@ -114,12 +126,12 @@ class Naviga:
         distance = sqrt(dx**2 + dy**2)
         angle_to_goal = atan2(dy, dx)
 
-        FRONT_BLOCKED_DIST = 0.35
+        FRONT_BLOCKED_DIST = 0.2
         if not self.state_rotating and self.front_min_dist < FRONT_BLOCKED_DIST and self.front_min_dist < (distance - 0.2):
             self.nodo.get_logger().warning("Percorso bloccato -> Ripianifico!")
-            self.reset()
             self.mark_blocked_ahead()
-            self.pianifica()
+            self.esegui_retromarcia()
+            self.reset()
             return
 
         # Errore angolare normalizzato (-PI a +PI)

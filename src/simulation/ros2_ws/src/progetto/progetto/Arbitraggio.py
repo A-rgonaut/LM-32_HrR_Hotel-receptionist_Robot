@@ -83,7 +83,7 @@ class Arbitraggio(Node):
                 "nome": "RicaricaBatteria",
                 "oggetto": self.comportamenti["RicaricaBatteria"],
                 "trigger": lambda: (
-                    self.livello_batteria < 80.0  and  self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]#or
+                    self.livello_batteria < -80.0  and  self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]#or
                     #(self.in_carica and self.livello_batteria < 100.0)
                 )
             },
