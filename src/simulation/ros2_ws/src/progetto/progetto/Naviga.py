@@ -2,6 +2,7 @@ import rclpy
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
 from nav_msgs.msg import OccupancyGrid, Odometry, Path
 from geometry_msgs.msg import Twist, PoseStamped
+from sensor_msgs.msg import LaserScan
 
 from math import sqrt, atan2, cos, sin, pi
 import array
@@ -51,6 +52,11 @@ class Naviga:
         self.pub_path = self.nodo.create_publisher(Path, '/pianifica_path', 10)
 
         self.nodo.create_subscription(OccupancyGrid, '/map', self.map_callback, map_qos)
+
+        self.front_min_dist = float('inf')
+        self.avoid_multiplier = 0.0
+        self.nodo.create_subscription(LaserScan, '/scan', self.scan_callback, 10)
+
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self.nodo)
 
@@ -92,7 +98,7 @@ class Naviga:
             self.nodo.raggiunta_destinazione = True
             # Invece di chiamare il comportamento_attivo (che è Naviga),
             # svegliamo solo il comportamento che ci ha chiamati (B o C).
-            target = self.nodo.comportamento_precedente 
+            target = self.nodo.comportamento_precedente
             if target in ["InteragisciScenarioB", "InteragisciScenarioC"]:
                 self.nodo.get_logger().info(f"Sveglio lo {target}...")
                 self.nodo.comportamenti[target].esegui("")
@@ -107,6 +113,14 @@ class Naviga:
         dy = ty - ry
         distance = sqrt(dx**2 + dy**2)
         angle_to_goal = atan2(dy, dx)
+
+        FRONT_BLOCKED_DIST = 0.35
+        if not self.state_rotating and self.front_min_dist < FRONT_BLOCKED_DIST and self.front_min_dist < (distance - 0.2):
+            self.nodo.get_logger().warning("Percorso bloccato -> Ripianifico!")
+            self.reset()
+            self.mark_blocked_ahead()
+            self.pianifica()
+            return
 
         # Errore angolare normalizzato (-PI a +PI)
         angle_error = angle_to_goal - self.robot_theta
@@ -170,17 +184,23 @@ class Naviga:
             # Clamp sull'errore per evitare scatti violenti mentre si guida
             correction = angle_error * 1.5 # Kp dinamico per la guida
 
+            AVOID_DIST = 0.6  # Distanza a cui inizio a schivare
+
+            # Schivo SOLO se l'ostacolo è più vicino del mio obiettivo (-0.15 margine)
+            if self.front_min_dist < AVOID_DIST and self.front_min_dist < (distance - 0.15):
+                # Più sono vicino, più spingo via
+                push = 1.0 * (AVOID_DIST - self.front_min_dist)
+                # Applico direzione calcolata dal Laser
+                correction += (push * self.avoid_multiplier)
+                self.nodo.get_logger().info("Schivo ostacolo senza ripianificare...", throttle_duration_sec=1.0)
+
             if abs(angle_error) < 0.03:
-                correction = 0.0
+                 # Se non sto schivando e l'errore è piccolo, vado dritto
+                 if self.front_min_dist > AVOID_DIST:
+                     correction = 0.0
 
-            # Limito la velocità angolare MENTRE guido per evitare sbandate
-            max_drive_ang_vel = 0.6
-            if correction > max_drive_ang_vel:
-                correction = max_drive_ang_vel
-            if correction < -max_drive_ang_vel:
-                correction = -max_drive_ang_vel
-
-            cmd.angular.z = correction
+            # Clamp finale
+            cmd.angular.z = max(min(correction, 0.6), -0.6)
 
         self.pub_cmd_vel.publish(cmd)
 
@@ -202,7 +222,7 @@ class Naviga:
             self.nodo.get_logger().info("Naviga: Già a destinazione (sotto soglia).")
             self.nodo.raggiunta_destinazione = True
             return
-    
+
         self.nodo.get_logger().info(f"Naviga: Calcolo percorso da {start_pose} a {goal_pose}...")
 
         # Coordinate Griglia
@@ -211,6 +231,36 @@ class Naviga:
 
         w = self.map_info.width
         h = self.map_info.height
+
+        # Se il robot si trova su un pixel "nero" (causa inflazione),
+        # cerchiamo il primo pixel libero in un raggio di 8 celle (circa 40cm)
+        start_idx = sy * w + sx
+        if self.map_data[start_idx] == 100:
+            self.nodo.get_logger().warn(f"Start {sx},{sy} bloccato dall'inflazione! Cerco via di fuga...")
+            found_free = False
+            raggio_max = 8  # Aumenta se la risoluzione è molto alta
+            for r in range(1, raggio_max + 1):
+                # Controlla un quadrato attorno al robot
+                for dy in range(-r, r + 1):
+                    for dx in range(-r, r + 1):
+                        nx = sx + dx
+                        ny = sy + dy
+                        # Controllo limiti mappa
+                        if 0 <= nx < w and 0 <= ny < h:
+                            if self.map_data[ny * w + nx] != 100:
+                                # Trovato un punto libero! Aggiorno lo start
+                                sx, sy = nx, ny
+                                found_free = True
+                                break
+                    if found_free:
+                        break
+                if found_free:
+                    break
+            if found_free:
+                self.nodo.get_logger().info(f"Nuovo start libero trovato: {sx},{sy}")
+            else:
+                self.nodo.get_logger().error("Impossibile trovare punto libero vicino al robot!")
+                return # Fallimento reale
 
         # Bounding Box per ottimizzare A*
         dx = abs(sx - gx)
@@ -253,6 +303,13 @@ class Naviga:
 
             self.pub_path.publish(ros_path)
             self.current_goal_idx = 0
+
+            # --- FORZO LA ROTAZIONE ---
+            # Dico al robot che sta già ruotando.
+            # Così nel prossimo loop salta il check del muro (che ha 'if not state_rotating')
+            # e inizia subito a girarsi verso la nuova via di fuga.
+            self.state_rotating = True
+            self.sum_angular_error = 0.0
         else:
             self.nodo.get_logger().error("Impossibile trovare un percorso!")
             # Per evitare loop infiniti, diciamo che siamo arrivati (fallimento)
@@ -307,6 +364,85 @@ class Naviga:
                     new_map[neighbor_idx] = 100
 
         return new_map
+
+    def scan_callback(self, msg):
+        center = len(msg.ranges) // 2
+        # Prendo un cono stretto centrale (+/- 15 gradi circa)
+        left_window = msg.ranges[center : center + 15]
+        right_window = msg.ranges[center - 15 : center]
+
+        # Trovo la distanza minima valida per lato
+        l_min = min((r for r in left_window if msg.range_min < r < msg.range_max), default=float('inf'))
+        r_min = min((r for r in right_window if msg.range_min < r < msg.range_max), default=float('inf'))
+
+        self.front_min_dist = min(l_min, r_min)
+
+        # Se l'ostacolo è a DESTRA (r_min < l_min), devo spingere a SINISTRA (+1.0)
+        # Se l'ostacolo è a SINISTRA, devo spingere a DESTRA (-1.0)
+        if self.front_min_dist < float('inf'):
+            self.avoid_multiplier = 1.0 if r_min < l_min else -1.0
+        else:
+            self.avoid_multiplier = 0.0
+
+    def mark_blocked_ahead(self):
+        if self.map_data is None or self.robot_pose is None:
+            return
+
+        res = self.resolution if self.resolution > 0 else 0.05
+        w_map = self.map_info.width
+        h_map = self.map_info.height
+
+        rx, ry = self.robot_pose
+        theta = self.robot_theta
+
+        # 1. Calcolo il centro del muro (cm davanti al robot)
+        DIST_AVANTI = 0.8
+        cx = rx + DIST_AVANTI * cos(theta)
+        cy = ry + DIST_AVANTI * sin(theta)
+
+        # Converto il centro in coordinate griglia
+        gx, gy = self.world_to_grid(cx, cy)
+
+        # 2. Configurazione Dimensioni
+        LARGHEZZA_METRI = 2.5  # Quanto è lungo il muro
+        SPESSORE_METRI = 0.20  # Spessore (20cm)
+
+        half_len_px = int((LARGHEZZA_METRI / 2) / res)
+        half_thick_px = int((SPESSORE_METRI / 2) / res)
+        # Assicuro almeno 1 pixel di spessore
+        if half_thick_px < 1: half_thick_px = 1
+
+        updated = 0
+
+        # 3. DECISIONE ORIENTAMENTO (Snap to Grid)
+        # Se |cos| > |sin|, il robot si muove più in orizzontale -> Muro VERTICALE
+        # Se |sin| > |cos|, il robot si muove più in verticale -> Muro ORIZZONTALE
+
+        if abs(cos(theta)) > abs(sin(theta)):
+            # --- MURO VERTICALE (Nord-Sud) ---
+            # Varia Y (Lunghezza), Fisso X (Spessore)
+            for dy in range(-half_len_px, half_len_px + 1):
+                for dx in range(-half_thick_px, half_thick_px + 1):
+                    nx = gx + dx
+                    ny = gy + dy
+                    if 0 <= nx < w_map and 0 <= ny < h_map:
+                        self.map_data[ny * w_map + nx] = 100
+                        updated += 1
+            type_str = "VERTICALE (N-S)"
+
+        else:
+            # --- MURO ORIZZONTALE (Ovest-Est) ---
+            # Varia X (Lunghezza), Fisso Y (Spessore)
+            for dx in range(-half_len_px, half_len_px + 1):
+                for dy in range(-half_thick_px, half_thick_px + 1):
+                    nx = gx + dx
+                    ny = gy + dy
+                    if 0 <= nx < w_map and 0 <= ny < h_map:
+                        self.map_data[ny * w_map + nx] = 100
+                        updated += 1
+            type_str = "ORIZZONTALE (W-E)"
+
+        self.nodo.get_logger().warn(f"Disegnato muro {type_str} di 3m davanti al robot.")
 
     def update_pose(self):
         try:
@@ -363,10 +499,9 @@ class Naviga:
         return wx, wy
 
     def reset(self):
-        pass
-        # self.current_path_world = []
-        # self.current_goal_idx = 0
-        # self.stop_robot()
+        self.current_path_world = []
+        self.current_goal_idx = 0
+        self.stop_robot()
 
     def esegui(self, testo):
         pass

@@ -19,9 +19,9 @@ class InteragisciScenarioB(InteragisciConOspite):
     def reset(self, ospite=None):
         super().reset(ospite)
         #self.nodo.destinazione_target = (-10, 11)
-        # self.nodo.destinazione_target = (6, -7.8)  # Stanza 3
+        self.nodo.destinazione_target = (6, -7.8,-pi)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
-        self.nodo.destinazione_target = (10,10,pi)  # stanza 1
+        #self.nodo.destinazione_target = (10,10,pi)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioB"
