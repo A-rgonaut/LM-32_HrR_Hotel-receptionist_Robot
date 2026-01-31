@@ -64,6 +64,18 @@ class Naviga:
 
         self.timer = self.nodo.create_timer(0.1, self.control_loop)
 
+    def esegui_retromarcia(self):
+        import time
+        self.nodo.get_logger().info("Eseguo retromarcia...")
+        cmd = Twist()
+        cmd.linear.x = -0.15
+        cmd.angular.z = 0.0
+        for _ in range(15):
+            self.pub_cmd_vel.publish(cmd)
+            time.sleep(0.1)
+        self.stop_robot()
+
+
     # --- 1. LOGICA DI CONTROLLO (Chiamata dall'Arbitraggio) ---
     def control_loop(self):
         # Prima cosa: aggiorna la posa
@@ -114,12 +126,12 @@ class Naviga:
         distance = sqrt(dx**2 + dy**2)
         angle_to_goal = atan2(dy, dx)
 
-        FRONT_BLOCKED_DIST = 0.35
+        FRONT_BLOCKED_DIST = 0.2
         if not self.state_rotating and self.front_min_dist < FRONT_BLOCKED_DIST and self.front_min_dist < (distance - 0.2):
             self.nodo.get_logger().warning("Percorso bloccato -> Ripianifico!")
-            self.reset()
             self.mark_blocked_ahead()
-            self.pianifica()
+            self.esegui_retromarcia()
+            self.reset()
             return
 
         # Errore angolare normalizzato (-PI a +PI)
@@ -262,22 +274,34 @@ class Naviga:
                 self.nodo.get_logger().error("Impossibile trovare punto libero vicino al robot!")
                 return # Fallimento reale
 
-        # Bounding Box per ottimizzare A*
-        dx = abs(sx - gx)
-        dy = abs(sy - gy)
-        margin = max(30, int(0.5 * max(dx, dy)))
-        minx = max(0, min(sx, gx) - margin)
-        maxx = min(w - 1, max(sx, gx) + margin)
-        miny = max(0, min(sy, gy) - margin)
-        maxy = min(h - 1, max(sy, gy) + margin)
-        bbox = (minx, maxx, miny, maxy)
+        path_grid = []
+        is_base_target = abs(goal_pose[0] - 10.0) < 0.2 and abs(goal_pose[1] - 11.0) < 0.2
+        if is_base_target:
+            self.nodo.get_logger().info("Naviga: is_base_target")
+            mx, my = self.world_to_grid(10.0, 10.0)
+            path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (mx, my), bbox=None, allow_unknown=False)
+            if path_grid:
+                path_grid.append((gx, gy))
+            else:
+                 self.nodo.get_logger().error("Fallito calcolo is_base_target")
+        else:
 
-        # Chiamata A* (dal file Pianifica.py)
-        path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=bbox, allow_unknown=False)
+            # Bounding Box per ottimizzare A*
+            dx = abs(sx - gx)
+            dy = abs(sy - gy)
+            margin = max(30, int(0.5 * max(dx, dy)))
+            minx = max(0, min(sx, gx) - margin)
+            maxx = min(w - 1, max(sx, gx) + margin)
+            miny = max(0, min(sy, gy) - margin)
+            maxy = min(h - 1, max(sy, gy) + margin)
+            bbox = (minx, maxx, miny, maxy)
 
-        if not path_grid:
-            self.nodo.get_logger().warning("A* nel BBox fallito, provo mappa intera...")
-            path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=None, allow_unknown=False)
+            # Chiamata A* (dal file Pianifica.py)
+            path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=bbox, allow_unknown=False)
+
+            if not path_grid:
+                self.nodo.get_logger().warning("A* nel BBox fallito, provo mappa intera...")
+                path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=None, allow_unknown=False)
 
         if path_grid:
             self.nodo.get_logger().info(f"Path trovato: {len(path_grid)} passi.")
