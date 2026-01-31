@@ -274,22 +274,34 @@ class Naviga:
                 self.nodo.get_logger().error("Impossibile trovare punto libero vicino al robot!")
                 return # Fallimento reale
 
-        # Bounding Box per ottimizzare A*
-        dx = abs(sx - gx)
-        dy = abs(sy - gy)
-        margin = max(30, int(0.5 * max(dx, dy)))
-        minx = max(0, min(sx, gx) - margin)
-        maxx = min(w - 1, max(sx, gx) + margin)
-        miny = max(0, min(sy, gy) - margin)
-        maxy = min(h - 1, max(sy, gy) + margin)
-        bbox = (minx, maxx, miny, maxy)
+        path_grid = []
+        is_base_target = abs(goal_pose[0] - 10.0) < 0.2 and abs(goal_pose[1] - 11.0) < 0.2
+        if is_base_target:
+            self.nodo.get_logger().info("Naviga: is_base_target")
+            mx, my = self.world_to_grid(10.0, 10.0)
+            path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (mx, my), bbox=None, allow_unknown=False)
+            if path_grid:
+                path_grid.append((gx, gy))
+            else:
+                 self.nodo.get_logger().error("Fallito calcolo is_base_target")
+        else:
 
-        # Chiamata A* (dal file Pianifica.py)
-        path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=bbox, allow_unknown=False)
+            # Bounding Box per ottimizzare A*
+            dx = abs(sx - gx)
+            dy = abs(sy - gy)
+            margin = max(30, int(0.5 * max(dx, dy)))
+            minx = max(0, min(sx, gx) - margin)
+            maxx = min(w - 1, max(sx, gx) + margin)
+            miny = max(0, min(sy, gy) - margin)
+            maxy = min(h - 1, max(sy, gy) + margin)
+            bbox = (minx, maxx, miny, maxy)
 
-        if not path_grid:
-            self.nodo.get_logger().warning("A* nel BBox fallito, provo mappa intera...")
-            path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=None, allow_unknown=False)
+            # Chiamata A* (dal file Pianifica.py)
+            path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=bbox, allow_unknown=False)
+
+            if not path_grid:
+                self.nodo.get_logger().warning("A* nel BBox fallito, provo mappa intera...")
+                path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (gx, gy), bbox=None, allow_unknown=False)
 
         if path_grid:
             self.nodo.get_logger().info(f"Path trovato: {len(path_grid)} passi.")
