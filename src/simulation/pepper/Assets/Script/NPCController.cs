@@ -1,9 +1,10 @@
-using UnityEngine;
-using UnityEngine.AI;
+using RosMessageTypes.Std;
+using System.Collections;
 using System.Collections.Generic;
 // 1. Aggiungiamo i namespace ROS
 using Unity.Robotics.ROSTCPConnector;
-using RosMessageTypes.Std;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NPCController : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class NPCController : MonoBehaviour
     private bool isWaiting = false;
     private bool visitingRoom = false;
     private bool isPatrolling = true;
+    private bool _rotateOnArrival = false;
 
     public bool isCriticalCondition = false;
     private bool isDancing = false;
@@ -59,18 +61,28 @@ public class NPCController : MonoBehaviour
 
     void Update()
     {
-        if (animator != null)
+        if (animator != null) animator.SetFloat("Speed", agent.velocity.magnitude);
+
+        if (!isPatrolling && _rotateOnArrival)
         {
-            animator.SetFloat("Speed", agent.velocity.magnitude);
+            // Controlliamo se il NavMeshAgent è arrivato a destinazione
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            {
+                if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
+                {
+                    // Siamo arrivati: avvia rotazione e spegni il flag
+                    StartCoroutine(Rotate180());
+                    _rotateOnArrival = false;
+                }
+            }
         }
 
         if (!isPatrolling) return;
         if (isWaiting) return;
 
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
-        {
             StartCoroutine(WaitAndDecide());
-        }
+        
     }
 
     //Funzione chiamata ogni volta che ROS invia un messaggio su /unity/stato
@@ -113,6 +125,32 @@ public class NPCController : MonoBehaviour
         }
 
         Debug.Log("[NPC] Vado al target e attendo il comando ROS 'FINE_SCENARIO'...");
+    }
+
+    public void EnableRotationOnArrival()
+    {
+        _rotateOnArrival = true;
+    }
+
+    IEnumerator Rotate180()
+    {
+        Quaternion startRotation = transform.rotation;
+        // Calcola la rotazione opposta (180 gradi sull'asse Y)
+        Quaternion endRotation = transform.rotation * Quaternion.Euler(0, 180, 0);
+
+        float duration = 1.5f; // Durata della rotazione in secondi
+        float elapsed = 0.0f;
+
+        while (elapsed < duration)
+        {
+            // Interpolazione sferica (Slerp) per una rotazione fluida
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Assicura la rotazione finale esatta
+        transform.rotation = endRotation;
     }
 
     // SCENARIO C1: Inginocchiarsi

@@ -325,7 +325,9 @@ public class CharacterSelector : MonoBehaviour
         if (controller != null){
             Debug.Log($"{activeChar.nome} ha avviato lo scenario B");
             controller.GoToTargetAndStay(WaypointScenarioB);
-        }else{
+            controller.EnableRotationOnArrival();
+        }
+        else{
             Debug.LogError("Non ho trovato lo script NPCController sul personaggio attivo!");
         }
 
