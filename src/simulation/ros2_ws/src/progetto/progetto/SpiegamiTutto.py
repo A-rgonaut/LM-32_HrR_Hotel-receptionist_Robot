@@ -60,7 +60,7 @@ class SpiegamiTutto(Node):
                     owl_path = os.getenv("PATH_TEMP_ONTO_BRACCIALETTI")
                 else:
                     owl_path = os.getenv("PATH_TEMP_ONTO")
-                self.get_logger().info(f"Usando owl_path: {owl_path}")
+                # self.get_logger().info(f"Usando owl_path: {owl_path}")
                 risultato = self.logic_spiegami_tutto(
                     owl_path=owl_path,
                     parentClassName=data.get("parentClassName"),
@@ -87,20 +87,12 @@ class SpiegamiTutto(Node):
             self.get_logger().error(f"Errore callback SpiegamiTutto: {e}")
 
     def literal(self, value):
-        # if isinstance(value, bool):
-            # return Literal(value, datatype=XSD.boolean)
         if isinstance(value, int):
             return Literal(value, datatype=XSD.integer)
         if isinstance(value, float):
             return Literal(value, datatype=XSD.double)
         if isinstance(value, str) and "T" in value and value[0].isdigit():
              return Literal(value, datatype=XSD.dateTime)
-        """
-        if hasattr(value, 'isoformat'):
-            iso_val = value.isoformat()
-            if 'T' in iso_val:
-                return Literal(iso_val, datatype=XSD.dateTime)
-        """
         if isinstance(value, str):
             return Literal(value, datatype=XSD.string)
         return Literal(value)
@@ -118,7 +110,7 @@ class SpiegamiTutto(Node):
             BASE_IRI = os.getenv("BASE_IRI")
             if not BASE_IRI.endswith('#'):
                 BASE_IRI += '#'
-        self.get_logger().info(f"Usando BASE_IRI: {BASE_IRI}")
+        # self.get_logger().info(f"Usando BASE_IRI: {BASE_IRI}")
         NS = Namespace(BASE_IRI)
         g.bind("ex",  NS)
         g.bind("owl", OWL)
@@ -154,7 +146,7 @@ class SpiegamiTutto(Node):
             g.add((pred, RDF.type, OWL.ObjectProperty))        # Dichiara la proprieta' OWL
             g.add((subj, pred, obj))                           # Aggiungi la tripla
         g.serialize(destination=owl_path, format="xml")  # Salvataggio
-        self.get_logger().info(f"Export completato: {owl_path}")
+        # self.get_logger().info(f"Export completato: {owl_path}")
 
     def logic_spiegami_tutto(self, owl_path, parentClassName, debug):
         base_java_path = os.getenv("PATH_JAVA_PROJECT")
