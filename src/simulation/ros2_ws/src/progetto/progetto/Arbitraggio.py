@@ -83,7 +83,7 @@ class Arbitraggio(Node):
                 "nome": "RicaricaBatteria",
                 "oggetto": self.comportamenti["RicaricaBatteria"],
                 "trigger": lambda: (
-                    self.livello_batteria < -80.0  and  self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]#or
+                    self.livello_batteria < -10.0  and  self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]#or
                     #(self.in_carica and self.livello_batteria < 100.0)
                 )
             },
@@ -219,7 +219,7 @@ class Arbitraggio(Node):
         #self.get_logger().info("gestione_periodica_salute()")
         # self.get_logger().info(f"{self.dati_salute}")
         # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
-        self.emergenza.carica_dati()
+        self.get_logger().info(f"{self.emergenza.carica_dati()}")
         # da neo4j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non
         dati=self.emergenza.importa_dati()
         if dati:

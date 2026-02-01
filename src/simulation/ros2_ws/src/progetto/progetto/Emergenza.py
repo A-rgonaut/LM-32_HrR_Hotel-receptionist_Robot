@@ -8,7 +8,7 @@ class Emergenza():
         dati = self.nodo.dati_salute
         if dati is None:
             self.nodo.get_logger().info("[Emergenza] Nessun dato salute ricevuto dai braccialetti.")
-            return
+            return None,None
         query = """
         UNWIND $batch AS row MATCH (o)
         // Casting esplicito: l'ID nel JSON è stringa, id(o) è intero
@@ -16,13 +16,20 @@ class Emergenza():
         SET o.bpm_attuale = toInteger(row.hr),
             o.pressione_min_attuale = toInteger(row.pmin),
             o.pressione_max_attuale = toInteger(row.pmax)
-        RETURN id(o) as ID_Interno, o.nome, o.bpm_attuale, o.pressione_min_attuale, o.pressione_max_attuale
+        RETURN row.id AS id_estratto, row.x AS x, row.z AS z
         """
         parametri = {  # Mappiamo la lista Python sul parametro Cypher $batch
             "batch": dati
         }
-        self.nodo.sincro.interrogaGraphDatabase(query, parametri)  # Esecuzione
-        return None
+        risultati = self.nodo.sincro.interrogaGraphDatabase(query, parametri)
+    
+        # Se la query restituisce i valori direttamente da Cypher (scelta più efficiente)
+        if risultati:
+            # Esempio per il primo elemento del batch
+            primo_risultato = risultati[0]
+            return primo_risultato['x'], primo_risultato['z']
+        
+        return None, None
 
     def importa_dati(self):
         # Recuperiamo gli ID di tutti gli Ospiti, delle Soglie globali e delle loro Patologie specifiche.

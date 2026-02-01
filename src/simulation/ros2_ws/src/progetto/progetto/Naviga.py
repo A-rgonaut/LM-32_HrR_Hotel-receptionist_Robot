@@ -283,9 +283,10 @@ class Naviga:
         self.is_base_target = abs(goal_pose[0] - 10.0) < 0.2 and abs(goal_pose[1] - 11.0) < 0.2
         if self.is_base_target:
             self.nodo.get_logger().info("Naviga: is_base_target")
-            mx, my = self.world_to_grid(10.0, 10.0)
+            mx, my = self.world_to_grid(6.0, 8.0)
             path_grid = astar_8conn(self.map_data, w, h, (sx, sy), (mx, my), bbox=None, allow_unknown=False)
             if path_grid:
+                path_grid.append( self.world_to_grid(10.0, 10.0))
                 path_grid.append((gx, gy))
             else:
                  self.nodo.get_logger().error("Fallito calcolo is_base_target")

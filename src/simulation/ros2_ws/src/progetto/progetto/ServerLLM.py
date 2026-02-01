@@ -86,6 +86,8 @@ class ServerLLM(Node):
         elif tipo == "explainability":
             if scenario == "A":
                 nome_file = "explainability_a.md"
+            if scenario == "B":
+                nome_file = "explainability_b.md"
             if scenario == "C":
                 nome_file = "explainability_c.md"
         elif tipo == "estrazione_temperatura":
