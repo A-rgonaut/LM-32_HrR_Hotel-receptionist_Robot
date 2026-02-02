@@ -4,7 +4,7 @@
 ![Neo4J](https://img.shields.io/badge/neo4j-008CC1?style=for-the-badge&logo=neo4j&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-> Implementation of an LLM and a robotic system for the simulation of an advanced mobile robotic agent for customer service and healthcare in the hospitality industry.
+> Implementation and simulation of an intelligent robotic system for customer service and healthcare in the hospitality industry.
 
 ## 📖 **Context**
 
@@ -16,10 +16,10 @@ _Andrea Spinelli - Gabriele Bova - Paolo Manuele Gulotta - Vincenzo Zizzo_
 ## 🛠️ **Technologies Used**
 
 * **Language:** Python 3.x
-* **Knowledge Base:** Neo4J (Graph Database)
-* **LLM Framework:** LangChain / OpenAI API (o specifica il modello locale se usato, es. Llama)
-* **Robotics Middleware:** QiBullet / NAOqi / ROS (specificare quale usato per la simulazione)
-* **Deployment:** Docker (per il container Neo4j)
+* **Knowledge Base:** Neo4J 
+* **LLM Framework:** OpenAI API
+* **Robotics Middleware:** ROS
+* **Deployment:** Docker 
 
 ## 🚀 **Installation and Startup**
 
@@ -73,38 +73,58 @@ To run this project, you will need Python, a running instance of Neo4j, and the 
 5.  **Run the Robot Agent**
     Launch the main application to start the simulation and the interaction loop.
     ```bash
-    python main.py
+    #
+    #TODO
+    #
+    #./startup.sh
+    #python main.py 
     ```
     *(Note: Replace `main.py` with your actual entry point, e.g., `src/app.py`)*
 
-## 📂 **Project Structure**
-The code is organized into a modular structure to ensure clarity and separation of concerns between the robotic control and the cognitive layer.
-
-- **`data/`**: Contains initialization scripts for the Neo4j database (Cypher queries).
-- **`src/`**: The core of the project.
-  - **`llm_module/`**: Handles the interaction with the Large Language Model (Prompt Engineering, Chains).
-  - **`knowledge_base/`**: Modules for connecting to and querying Neo4j.
-  - **`robot_control/`**: Scripts for controlling the robot's movement and gestures (simulation or physical).
-  - **`speech/`**: Speech-to-Text (STT) and Text-to-Speech (TTS) modules.
-- **`docker-compose.yml`**: Configuration for spinning up the Neo4j container.
-- **`requirements.txt`**: List of Python dependencies.
-- **`config.yaml`**: Central configuration file for simulation parameters.
-
 ## ✨ **Key Features**
 
-This project integrates a robotic system with a Large Language Model and a Knowledge Graph to create an intelligent hotel receptionist.
+The project integrates advanced robotics and symbolic artificial intelligence to create an autonomous agent capable of operating in non-deterministic environments.
 
-1.  **Conversational Intelligence (LLM)**
-    * The robot uses an **LLM** (e.g., GPT-4) to understand natural language user queries, maintaining context and intent.
-    * It generates human-like responses suitable for a hospitality setting.
+### 1. **Distributed Unity-ROS2 Architecture**
 
-2.  **Structured Knowledge Access (RAG with Neo4j)**
-    * Unlike a standard chatbot, HrR is grounded in factual data stored in **Neo4j**.
-    * It can query the graph database to retrieve real-time information about **room availability, hotel services, and guest bookings**, minimizing hallucinations.
+* **Simulation Bridge:** The architecture decouples the physical-visual simulation layer from the logical-cognitive control layer. Unity serves as the engine for physics and sensors, while ROS2 hosts the intelligence stack. The two ecosystems communicate via the TCP/IP protocol.
 
-3.  **Embodied Interaction**
-    * The system simulates a physical presence (e.g., Pepper Robot), combining voice interaction with movement.
-    * It handles task execution such as "Guiding the guest to the room" or "Check-in procedures".
 
-4.  **Speech Pipeline**
-    * Implements an end-to-end audio pipeline: **Speech-to-Text** to transcribe user voice and **Text-to-Speech** to vocalize the robot's response.
+* **Realistic Physics:** The robot is a digital replica of the Pepper model, modeled as a multi-body system with a real mass of approximately 28 kg. *ArticulationBody* components were used for wheel simulation to ensure joint stability and physical precision.
+
+
+
+### 2. **Hybrid Neuro-Symbolic AI**
+
+* **Form/Content Separation:** Integration with Large Language Models (LLM), specifically Google Gemini, is limited to *Natural Language Generation* (NLG) to transform structured data into empathetic responses. The model does not make operational decisions, reducing the risk of hallucinations.
+
+
+* **Ontology and Graph Database:** Long-term memory is entrusted to the Neo4j graph database. The ontological schema is formally defined via Protégé (TBox), while Neo4j manages the dynamic population of instances (ABox), ensuring high performance on large volumes of data.
+
+
+
+### 3. **Explainable AI (XAI) & Reasoning**
+
+* 
+**OWA (Open World Assumption) Management:** The system handles the ambiguities typical of open worlds by explicitly modeling validity and risk constraints within the ontology.
+
+
+* **Decision Transparency:** An external Java module (based on OWLAPI and Openllet) generates formal explanations for every inference. The robot inhibits or proposes actions based on the presence of axioms in prohibition or permission categories, making every behavior intelligible.
+
+
+
+### 4. **Robust Autonomous Navigation**
+
+* **Custom Path Planning:** A custom implementation of the A* algorithm was developed, optimized for occupancy grids with 8-neighbor connectivity and differentiated costs for diagonal movements (Octile heuristic). It includes *Corner Cutting Prevention* to avoid collisions on edges.
+
+
+* **AMCL Localization:** Localization uses the AMCL (Adaptive Monte Carlo Localization) probabilistic particle filter synchronized with simulated time. The filter dynamically adapts the number of particles based on system uncertainty.
+
+
+
+### 5. **Biometric Monitoring and Safety**
+
+* **Kalman Filter:** A dedicated module processes signals from smart wristbands (heart rate, blood pressure) via decoupled linear Kalman filters. This approach isolates faults on individual sensors and distinguishes between momentary artifacts and real clinical trends.
+
+
+* **Priority Arbitration:** Control is managed by a subsumption arbitration system with fixed priorities. Emergency management (Scenario C) has absolute priority over everything, including battery charging, ensuring guest safety above any other function.
