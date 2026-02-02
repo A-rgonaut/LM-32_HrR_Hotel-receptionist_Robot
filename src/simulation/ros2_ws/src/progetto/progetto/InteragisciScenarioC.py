@@ -3,11 +3,12 @@ from progetto.utils import Ospite
 import ast
 import json
 import time
+from progetto.Emergenza import Emergenza
 from math import pi
 
 class InteragisciScenarioC(InteragisciConOspite):
 
-    def __init__(self, nodo, specialista,spiegazione):  # , spiegazione): # da vedere dove viene chiamato e controllare il costruttore
+    def __init__(self, nodo, specialista,spiegazione=""):  # , spiegazione): # da vedere dove viene chiamato e controllare il costruttore
         super().__init__(nodo)
         self.specialista = specialista
         self.motivo_chiamata = ""
@@ -100,11 +101,12 @@ class InteragisciScenarioC(InteragisciConOspite):
         data = json.loads(assiomi)
         for evento_str, proprieta in data.items():
             if proprieta["OspiteStatoChiamataSpecialista"] == "Il reasoner NON deduce assiomi inerenti":
-                self.nodo.parla(self.dialogo("reasoner_negativo"))
+                #self.nodo.parla(self.dialogo("reasoner_negativo"))
+                spiegazione = ""
             else:
                 spiegazione = proprieta['OspiteStatoChiamataSpecialista']
                 # spiegazione = self.sincro.ask_llm(spiegazione, scenario="c", tipo="explainability") # da allineare il prompt
-                self.nodo.parla(spiegazione)
+                #self.nodo.parla(spiegazione)
                 # aggiornato = self.cambia_stato()
                 # cambiare stato da quello che è a Specialista o Ospite a ChiamatoSpecialista
                 # salvare il time stamp che è avvenuto questo  cambiamento?? Il date time?
@@ -188,12 +190,14 @@ class InteragisciScenarioC(InteragisciConOspite):
                 p = self.contesto['ospite']
                 self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT") 
                 if self.spiegazione:
-                    
                     self.nodo.parla(self.dialogo("emergenza_auto", spiegazione=self.spiegazione))
                     #self.nodo.parla(self.dialogo("emergenza_auto"))
                     self.inizio_stato_di_coscienza = time.time()
                     self.stato = "COSCIENZA"
                 else:
+                    #cambiare stato da ospite a
+                    em=Emergenza(self.nodo)
+                    em.cambia_stato_allerta(p.nome, p.cognome) 
                     self.nodo.parla(self.dialogo("emergenza_manuale"))
                     self.stato = "DESCRIZIONE_SINTOMI" 
             else:
@@ -223,6 +227,7 @@ class InteragisciScenarioC(InteragisciConOspite):
             self.nodo.get_logger().info(f"{self.aggiorna_sintomi(lista_sintomi)}")
             spiegazione = self.suggerisci_medico()
             if spiegazione:
+                self.nodo.parla(self.sincro.ask_llm(spiegazione, scenario="C", tipo="explainability"))
                 self.motivo_chiamata = spiegazione
                 self.cambia_stato()
                 self.stato = "CHIAMATA_SPECIALISTA"  # queryTODO ,  salvo la chiamata allo specialista

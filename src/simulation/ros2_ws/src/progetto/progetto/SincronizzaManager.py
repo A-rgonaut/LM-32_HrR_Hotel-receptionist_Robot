@@ -5,13 +5,13 @@ class SincronizzaManager():
         self.nodo = nodo
 
         self.neo4j_client = SincronizzamiTutto(self.nodo,
-            "/neo4j/request", "/neo4j/response", timeout=30.0)
+            "/neo4j/request", "/neo4j/response", timeout=120.0)
         self.onto_client = SincronizzamiTutto(self.nodo,
-            "/onto/request", "/onto/response", timeout=30.0)
+            "/onto/request", "/onto/response", timeout=120.0)
         self.llm_client = SincronizzamiTutto(self.nodo,
-            "/llm/request", "/llm/response", timeout=30.0)
+            "/llm/request", "/llm/response", timeout=120.0)
         self.explain_client = SincronizzamiTutto(self.nodo,
-            "/explain/request", "explain/response", timeout=60.0)
+            "/explain/request", "explain/response", timeout=120.0)
 
         self.nodo.get_logger().info('SincronizzaManager avviato.')
 

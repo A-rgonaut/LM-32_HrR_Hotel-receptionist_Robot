@@ -11,7 +11,7 @@ class InteragisciScenarioB(InteragisciConOspite):
 
         self.domande_diagnostica = {
             "setpoint_temperatura": "A che temperatura è impostata la stufa ?",
-            "tempo_accensione": "Da quanto tempo è accesa la stufa?",
+            "tempo_accensione": "Da quanti minuti è accesa la stufa?",
             "dom1": "temperatura_impostata",
             "dom2": "tempo_acceso",
         }
@@ -19,7 +19,7 @@ class InteragisciScenarioB(InteragisciConOspite):
     def reset(self, ospite=None):
         super().reset(ospite)
         #self.nodo.destinazione_target = (-10, 11)
-        self.nodo.destinazione_target = (6, -7.8,-pi)  # Stanza 3
+        self.nodo.destinazione_target = (6, -7.8,0)   # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
         #self.nodo.destinazione_target = (10,10,pi)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
@@ -32,7 +32,7 @@ class InteragisciScenarioB(InteragisciConOspite):
         self.nodo.get_logger().info(f"[ScenarioB] Stato: {self.stato}, Input: {testo}")
         if self.stato == "ASPETTA_ROBOT":
             if self.nodo.raggiunta_destinazione:
-                self.nodo.parla(f"Buonasera, sono qui per assisterLa e nel risolvere la situazione nel modo più rapido possibile. Mi dica l'oggetto  in questione danneggiato")
+                self.nodo.parla(f"Buonasera, sono qui per assisterLa e nel risolvere la situazione nel modo più rapido possibile. Mi dica l'oggetto in questione danneggiato")
                 p = self.contesto['ospite']
                 self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT") 
                 self.nodo.destinazione_target = None
@@ -45,18 +45,18 @@ class InteragisciScenarioB(InteragisciConOspite):
             if oggetto_guasto:
                 #self.nodo.parla(oggetto_guasto) 
                 self.contesto['oggetto_guasto'] = oggetto_guasto
-                self.nodo.parla(f"Se ho capito bene , l'oggetto in questione è {oggetto_guasto} , giusto?")
+                self.nodo.parla(f"Se ho capito bene, l'oggetto in questione è {oggetto_guasto}, giusto?")
                 #self.nodo.parla(self.dialogo(tipo="conferma_oggetto_guasto")) # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
                 self.stato = "CONFERMA_GUASTO"
             else :
-                self.nodo.parla("non ho capito bene, puoi ripetere?") # esempio self.nodo.get_logger().info(f"ES. Mi confermi che il problema è il condizionatore?")
+                self.nodo.parla("Non ho capito bene l'oggetto in questione, puoi ripetere?") 
                 self.stato = "RILEVA_GUASTO"
         elif self.stato == "CONFERMA_GUASTO":
             if self.rileva_conferma(testo):
-                self.nodo.parla(self.domande_diagnostica["setpoint_temperatura"]) #TODO alla gabriele
+                self.nodo.parla(self.domande_diagnostica["setpoint_temperatura"]) 
                 self.stato = "SUGGERISCI_SOLUZIONE_1" 
             else:
-                self.nodo.parla("non ho capito allora bene, puoi ripetere il guasto?")
+                self.nodo.parla("Allora non ho capito bene l'oggetto in questione, puoi ripetere?")
                 # dire che non ha capito bene il robot o probabilmente non ha detto qualcosa che concerne la stanza
                 self.stato = "RILEVA_GUASTO"
         elif self.stato == "SUGGERISCI_SOLUZIONE_1":
@@ -66,8 +66,7 @@ class InteragisciScenarioB(InteragisciConOspite):
                 self.nodo.parla(self.domande_diagnostica["tempo_accensione"]) #TODO alla gabriele
                 self.stato = "SUGGERISCI_SOLUZIONE_2"
             else:
-                self.nodo.parla("non ho capito allora bene, puoi ripetere?")
-                # print(non e' guasto perche non e' acceso da almeno xxx minuti...)
+                self.nodo.parla("Non ho ben capito il primo valore, puoi ripetere?")
                 self.stato = "SUGGERISCI_SOLUZIONE_1"
         elif self.stato == "SUGGERISCI_SOLUZIONE_2":
             dom2 = self.sincro.ask_llm(testo, scenario="B", tipo="dom")
@@ -76,14 +75,16 @@ class InteragisciScenarioB(InteragisciConOspite):
                 self.aggiorna_stato_oggetto()
                 spiegazione = self.suggerisci_specialista()
                 if spiegazione:
-                    self.nodo.parla(f"ti chiamo lo specialista perchè {spiegazione}  ")
+                    self.nodo.get_logger().info(f"{spiegazione}")
+                    spiegazione = self.sincro.ask_llm(spiegazione, scenario="B", tipo="explainability")
+                    self.nodo.parla(f"{spiegazione}  ")
                     self.stato = "CONTATTA_SPECIALISTA"
                     self.esegui("")
                 else:
-                    self.nodo.parla("non so che dirti, non ci sono assiomi che dicono che l'oggetto è rotto , vuoi che ti chiami cmq lo specialista ")
+                    self.nodo.parla("Dalle tue risposte non identifico il problema, vuoi che ti chiami comunque lo specialista? ")
                     self.stato = "SPECIALISTA_SI-NO"
             else:
-                self.nodo.parla("non ho capito allora bene, puoi ripetere?")
+                self.nodo.parla("Non ho ben capito il secondo valore, puoi ripetere?")
                 self.stato = "SUGGERISCI_SOLUZIONE_2"                
         elif self.stato == "SPECIALISTA_SI-NO":
             risposta = self.rileva_conferma(testo)
@@ -198,7 +199,7 @@ class InteragisciScenarioB(InteragisciConOspite):
         return False
 
     def suggerisci_specialista(self):
-        self.nodo.parla(self.dialogo("attesa_analisi_medico"))
+        self.nodo.parla("Un attimo, analizzo le risposte e chiedo al sistema esperto...")
         if not self.recupera_dati_per_suggerimento():
             self.nodo.parla(self.dialogo("dati_insufficienti"))
             return

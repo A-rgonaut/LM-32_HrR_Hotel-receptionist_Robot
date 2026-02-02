@@ -31,7 +31,7 @@ class Specialista():
             sp = risultati[0]
             nodo.get_logger().info(
                 f"Segnalazione creata per {riguardo_chi.nome} {riguardo_chi.cognome}. "
-                f"Tecnico: {sp['nome_completo']}"
+                f"Specialista: {sp['nome_completo']}"
             )
             return sp
         return None

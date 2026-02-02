@@ -134,13 +134,15 @@ class InteragisciScenarioA(InteragisciConOspite):
             data_ora_evento_locale = dettagli_evento.get('data_ora_evento_locale', 'N/A')
             proprieta_con_assiomi = [k for k, v in proprieta.items() if v != "Il reasoner NON deduce assiomi inerenti"]
             num_con_assiomi = len(proprieta_con_assiomi)
-            self.nodo.parla(self.dialogo("titolo_evento", nome_evento_locale=nome_evento_locale, data_ora_evento_locale=data_ora_evento_locale))
+            #self.nodo.parla(self.dialogo("titolo_evento", nome_evento_locale=nome_evento_locale, data_ora_evento_locale=data_ora_evento_locale))
             if num_con_assiomi == 0:  # CASO 1: Nessuna informazione
                 self.nodo.parla(self.dialogo("evento_consiglio_base"))
             elif num_con_assiomi > 1:  # CASO 4: Conflitto
                 valore_pro    = proprieta.get("EventoConsigliabile")
                 valore_contro = proprieta.get("EventoNonConsigliabile")
-                self.nodo.parla(self.dialogo("evento_conflitto", valore_pro=valore_pro, valore_contro=valore_contro))
+                risposta = self.sincro.ask_llm(f"consigliato: {valore_pro}, sconsigliato:{valore_contro} ", scenario="A", tipo="explainability")
+                self.nodo.parla(risposta)
+                #self.nodo.parla(self.dialogo("evento_conflitto", valore_pro=valore_pro, valore_contro=valore_contro))
             else:
                 chiave_attiva = proprieta_con_assiomi[0]
                 valore_attivo = proprieta[chiave_attiva]
@@ -151,12 +153,8 @@ class InteragisciScenarioA(InteragisciConOspite):
                     self.nodo.parla(self.dialogo("evento_sconsigliabile_per", valore_attivo=valore_attivo))
                 else:
                     self.nodo.parla(self.dialogo("evento_info_generica", chiave_attiva=chiave_attiva, valore_attivo=valore_attivo))
-            self.nodo.parla("")
+            #self.nodo.parla("")
             self.salva_suggerimento(nome_evento_locale)
-        # risposta = self.sincro.ask_llm(msg_input, scenario="A", tipo="explainability")
-        # self.nodo.parla(risposta)
-        # salvare il suggerimento come 'idoneo' in neo4j
-        # self.salva_suggerimento(evento_scelto['id'])
 
     def salva_suggerimento(self, nome_evento):
         """
@@ -212,6 +210,7 @@ class InteragisciScenarioA(InteragisciConOspite):
                 self.nodo.parla(self.dialogo(tipo="conferma_interesse"))
                 self.stato = "CONFERMA"
             else:
+                self.nodo.parla("Sorry, could you repeat please?")
                 self.stato = "RILEVA_INTERESSE"
         elif self.stato == "CONFERMA":
             risposta = self.rileva_conferma(testo)
