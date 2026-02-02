@@ -94,18 +94,10 @@ public class NPCController : MonoBehaviour
 
             if (data.comando == "FINE_SCENARIO")
             {
-                // --- NUOVA LOGICA DI CONTROLLO ---
-                // Controlliamo se il messaggio ROS si riferisce allo scenario che sto eseguendo io
-                if (data.scenario == currentActiveScenario)
-                {
-                    Debug.Log($"[NPC] Ricevuto FINE_SCENARIO corretto ({data.scenario}). Riprendo.");
+                if (data.scenario[^1] == currentActiveScenario[0])
                     ResumePatrol();
-                }
                 else
-                {
-                    Debug.LogWarning($"[NPC] Ignorato FINE_SCENARIO per '{data.scenario}' perché io sto eseguendo '{currentActiveScenario}'");
-                }
-                // ---------------------------------
+                    Debug.LogWarning($"Ho interrotto 'Scenario {data.scenario[^1]}', per eseguire lo 'Scenario {currentActiveScenario}'");
             }
         }
         catch (System.Exception e)
