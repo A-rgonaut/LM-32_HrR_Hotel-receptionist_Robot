@@ -61,6 +61,7 @@ public class CharacterSelector : MonoBehaviour
     public Transform WaypointScenarioB;
 
     private Coroutine vitalsCoroutine;
+
     async void Start()
     {
         // 1. Setup ROS
@@ -293,8 +294,9 @@ public class CharacterSelector : MonoBehaviour
         // 3. Esegui il comando
         if (controller != null){
             Debug.Log($"{activeChar.nome} ha avviato lo scenario A");
-            controller.GoToTargetAndStay(WaypointScenarioA);
-        }else{
+            controller.GoToTargetAndStay(WaypointScenarioA, "A");
+        }
+        else{
             Debug.LogError("Non ho trovato lo script NPCController sul personaggio attivo!");
         }
 
@@ -324,7 +326,7 @@ public class CharacterSelector : MonoBehaviour
         // 3. Esegui il comando
         if (controller != null){
             Debug.Log($"{activeChar.nome} ha avviato lo scenario B");
-            controller.GoToTargetAndStay(WaypointScenarioB);
+            controller.GoToTargetAndStay(WaypointScenarioB, "B");
             controller.EnableRotationOnArrival();
         }
         else{
@@ -399,6 +401,7 @@ public class CharacterSelector : MonoBehaviour
             sendToRos2(testoComponent, activeChar);
         }
     }
+    
     void TriggerEasterEgg()
     {
         if (_currentCharacterIndex == -1) return;

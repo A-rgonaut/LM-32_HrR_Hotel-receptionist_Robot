@@ -1,7 +1,6 @@
 using RosMessageTypes.Std;
 using System.Collections;
 using System.Collections.Generic;
-// 1. Aggiungiamo i namespace ROS
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 using UnityEngine.AI;
@@ -23,7 +22,7 @@ public class NPCController : MonoBehaviour
     public int waypointsOptionalChance = 30;
 
     [Header("ROS Settings")]
-    public string rosStateTopic = "/unity/stato"; // Topic da ascoltare
+    public string rosStateTopic = "/unity/stato";
 
     private int currentCorridorIndex = 0;
     private bool isWaiting = false;
@@ -37,9 +36,12 @@ public class NPCController : MonoBehaviour
     private enum StopState { None, Kneeling, Dying }
     private StopState currentStopState = StopState.None;
 
+    // --- NUOVO: Variabile per tracciare il nome dello scenario corrente ---
+    private string currentActiveScenario = "";
+    // ---------------------------------------------------------------------
+
     private Animator animator;
 
-    // Classe per leggere il JSON di ROS
     [System.Serializable]
     public class RosCommandData
     {
@@ -52,10 +54,8 @@ public class NPCController : MonoBehaviour
         if (agent == null) agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
-        // Iscrizione al topic ROS
         ROSConnection.GetOrCreateInstance().Subscribe<StringMsg>(rosStateTopic, OnRosStateReceived);
 
-        // Inizia il pattugliamento normale
         MoveToNextCorridorPoint();
     }
 
@@ -65,12 +65,10 @@ public class NPCController : MonoBehaviour
 
         if (!isPatrolling && _rotateOnArrival)
         {
-            // Controlliamo se il NavMeshAgent è arrivato a destinazione
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
                 if (!agent.hasPath || agent.velocity.sqrMagnitude == 0f)
                 {
-                    // Siamo arrivati: avvia rotazione e spegni il flag
                     StartCoroutine(Rotate180());
                     _rotateOnArrival = false;
                 }
@@ -82,29 +80,32 @@ public class NPCController : MonoBehaviour
 
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
             StartCoroutine(WaitAndDecide());
-        
     }
 
-    //Funzione chiamata ogni volta che ROS invia un messaggio su /unity/stato
+    // Callback ROS modificata per controllare lo scenario
     void OnRosStateReceived(StringMsg msg)
     {
-        // Se stiamo già pattugliando, ignoriamo i comandi di fine scenario
+        // Se stiamo già pattugliando, non c'è nulla da fermare
         if (isPatrolling) return;
 
         try
         {
-            // Decodifica il JSON
             RosCommandData data = JsonUtility.FromJson<RosCommandData>(msg.data);
 
-            // Controlla il comando
             if (data.comando == "FINE_SCENARIO")
             {
-                Debug.Log($"[NPC] Ricevuto FINE_SCENARIO (Scenario: {data.scenario}). Torno a pattugliare.");
-
-                // Opzionale: Puoi aggiungere un controllo su 'data.scenario' 
-                // se vuoi che risponda solo a scenari specifici (es: if scenario == "A")
-
-                ResumePatrol();
+                // --- NUOVA LOGICA DI CONTROLLO ---
+                // Controlliamo se il messaggio ROS si riferisce allo scenario che sto eseguendo io
+                if (data.scenario == currentActiveScenario)
+                {
+                    Debug.Log($"[NPC] Ricevuto FINE_SCENARIO corretto ({data.scenario}). Riprendo.");
+                    ResumePatrol();
+                }
+                else
+                {
+                    Debug.LogWarning($"[NPC] Ignorato FINE_SCENARIO per '{data.scenario}' perché io sto eseguendo '{currentActiveScenario}'");
+                }
+                // ---------------------------------
             }
         }
         catch (System.Exception e)
@@ -113,18 +114,22 @@ public class NPCController : MonoBehaviour
         }
     }
 
-    public void GoToTargetAndStay(Transform targetPoint)
+    // MODIFICATO: Ora accetta il nome dello scenario
+    public void GoToTargetAndStay(Transform targetPoint, string scenarioID)
     {
         StopAllCoroutines();
-        isPatrolling = false; // Entra in modalità Manuale/Scenario
+        isPatrolling = false;
         isWaiting = false;
+
+        // Impostiamo l'ID dello scenario (es. "A" o "B")
+        currentActiveScenario = scenarioID;
 
         if (targetPoint != null)
         {
             agent.SetDestination(targetPoint.position);
         }
 
-        Debug.Log("[NPC] Vado al target e attendo il comando ROS 'FINE_SCENARIO'...");
+        Debug.Log($"[NPC] Avviato Scenario {scenarioID}. Vado al target...");
     }
 
     public void EnableRotationOnArrival()
@@ -135,49 +140,47 @@ public class NPCController : MonoBehaviour
     IEnumerator Rotate180()
     {
         Quaternion startRotation = transform.rotation;
-        // Calcola la rotazione opposta (180 gradi sull'asse Y)
         Quaternion endRotation = transform.rotation * Quaternion.Euler(0, 180, 0);
 
-        float duration = 1.5f; // Durata della rotazione in secondi
+        float duration = 1.5f;
         float elapsed = 0.0f;
 
         while (elapsed < duration)
         {
-            // Interpolazione sferica (Slerp) per una rotazione fluida
             transform.rotation = Quaternion.Slerp(startRotation, endRotation, elapsed / duration);
             elapsed += Time.deltaTime;
             yield return null;
         }
-
-        // Assicura la rotazione finale esatta
         transform.rotation = endRotation;
     }
 
-    // SCENARIO C1: Inginocchiarsi
     public void PerformKneeling()
     {
         PrepareForStop();
         currentStopState = StopState.Kneeling;
-        isCriticalCondition = false; // I parametri vitali rimangono normali
+        isCriticalCondition = false;
+
+        // Impostiamo hardcoded "C" perché questa funzione è specifica per lo scenario C
+        currentActiveScenario = "C";
 
         if (animator != null) animator.SetTrigger("TriggerKneel");
     }
 
-    // SCENARIO C2: Morte (con parametri a zero)
     public void PerformDying()
     {
         PrepareForStop();
         currentStopState = StopState.Dying;
-        isCriticalCondition = true; // I parametri vitali andranno a ZERO
+        isCriticalCondition = true;
+
+        // Impostiamo hardcoded "C2" 
+        currentActiveScenario = "C2";
 
         if (animator != null) animator.SetTrigger("TriggerDie");
 
-        // Gestione Collider (Opzionale: abbassa il collider)
         CapsuleCollider col = GetComponent<CapsuleCollider>();
         if (col != null) { col.height = 0.2f; col.center = new Vector3(0, 0.1f, 0); }
     }
 
-    // Metodo helper per fermare l'agente (comune a entrambi)
     private void PrepareForStop()
     {
         StopAllCoroutines();
@@ -193,11 +196,10 @@ public class NPCController : MonoBehaviour
 
     public void ResumePatrol()
     {
-        // 1. Ripristina stato
-        isCriticalCondition = false; // Parametri vitali tornano normali
+        isCriticalCondition = false;
         isPatrolling = true;
+        currentActiveScenario = ""; // Reset dello scenario
 
-        // 2. Animazione di recupero corretta
         if (animator != null)
         {
             if (currentStopState == StopState.Kneeling)
@@ -207,7 +209,6 @@ public class NPCController : MonoBehaviour
             else if (currentStopState == StopState.Dying)
             {
                 animator.SetTrigger("RecoverDie");
-                // Ripristina Collider se l'avevi abbassato
                 CapsuleCollider col = GetComponent<CapsuleCollider>();
                 if (col != null) { col.height = 1.8f; col.center = new Vector3(0, 0.9f, 0); }
             }
@@ -215,12 +216,12 @@ public class NPCController : MonoBehaviour
 
         currentStopState = StopState.None;
 
-        // 3. Riattiva movimento
         if (agent != null) agent.isStopped = false;
 
-        MoveToNextCorridorPoint(); // Ricomincia a camminare
+        MoveToNextCorridorPoint();
     }
 
+    // ... Resto dei metodi (WaitAndDecide, MoveToRandomRoom, ToggleDance) uguali a prima ...
     System.Collections.IEnumerator WaitAndDecide()
     {
         isWaiting = true;
@@ -267,10 +268,11 @@ public class NPCController : MonoBehaviour
 
         if (isDancing)
         {
-            PrepareForStop(); 
+            PrepareForStop();
 
             currentStopState = StopState.None;
             isCriticalCondition = false;
+            currentActiveScenario = "EASTER_EGG"; // Giusto per completezza
 
             if (animator != null) animator.SetBool("IsDancing", true);
         }
