@@ -93,6 +93,9 @@ class ServerLLM(Node):
         elif tipo == "estrazione_temperatura":
             if scenario == "B":
                 nome_file = "estrazione_temperatura.md"
+        elif tipo == "explainability_auto":
+            if scenario == "C":
+                nome_file = "explainability_auto.md" 
         system_instruction = "Sei un assistente utile. Rispondi brevemente."
         if nome_file:
             full_path = os.path.join(base_folder, nome_file)

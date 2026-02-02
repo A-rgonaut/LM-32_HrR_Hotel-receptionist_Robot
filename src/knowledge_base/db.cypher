@@ -2,7 +2,7 @@ MATCH (n) DETACH DELETE n;
 
 CREATE
 
-(o:Ospite {nome: "Peppe", cognome: "Rossi", eta: 30, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80, soglia_bpm_anomala: 100, soglia_bpm_allerta: 150}),
+(o:Ospite {nome: "Peppe", cognome: "Rossi", eta: 30, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80, soglia_bpm_anomala: 100, soglia_bpm_allerta: 180}),
 (o1:Ospite {nome: "Carletta", cognome: "Bianchi", eta: 40, lingua: "IT", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80, soglia_bpm_anomala: 120, soglia_bpm_allerta: 170}),
 (o2:Ospite {nome: "Mr", cognome: "President", eta: 50, lingua: "EN", bpm_attuale: 80, pressione_max_attuale: 120, pressione_min_attuale: 80, soglia_bpm_anomala: 110, soglia_bpm_allerta: 160}),
 

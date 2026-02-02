@@ -55,7 +55,7 @@ class Arbitraggio(Node):
         self.destinazione_target = None
         self.raggiunta_destinazione = True
 
-        #self.livello_batteria = 100.0
+        self.livello_batteria = 100.0
         self.in_carica = False
         self.bottone_premuto = None
         self.parametri_vitali_sballati = False
@@ -83,7 +83,7 @@ class Arbitraggio(Node):
                 "nome": "RicaricaBatteria",
                 "oggetto": self.comportamenti["RicaricaBatteria"],
                 "trigger": lambda: (
-                    self.livello_batteria < -10.0  and  self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]#or
+                    self.livello_batteria < 30.0  and  self.comportamento_attivo in ["InteragisciScenarioA", "InteragisciScenarioB"]#or
                     #(self.in_carica and self.livello_batteria < 100.0)
                 )
             },
@@ -118,6 +118,12 @@ class Arbitraggio(Node):
         self.timer_arbitraggio = self.create_timer(0.1, self.loop_arbitraggio, callback_group=self.cb_group)
 
     def loop_arbitraggio(self):
+        if self.livello_batteria<=0.0:
+            self.comportamenti["Naviga"].reset()
+            self.comportamento_attivo = "Riposo" 
+            self.get_logger().warn("Batteria scarica", throttle_duration_sec=5.0)
+            return
+            
         attivo = self.comportamento_attivo
         obj_attivo = self.comportamenti.get(attivo)
         # SE LO SCENARIO HA FINITO, LIBERA IL ROBOT
@@ -184,6 +190,10 @@ class Arbitraggio(Node):
                 f"Cambio comportamento: {attivo} -> {candidato}"
             )
             self.comportamento_attivo = candidato
+            if self.comportamento_attivo=="InteragisciScenarioC":
+                x,z=self.emergenza.carica_dati()
+                from math import pi
+                self.destinazione_target=(x+0.6,z,pi)
 
             # notifica Unity
             msg = String()
@@ -220,6 +230,7 @@ class Arbitraggio(Node):
         # self.get_logger().info(f"{self.dati_salute}")
         # - Ogni minuto scrivere dati aggiornati dei braccialetti output_data Neo4j!
         self.get_logger().info(f"{self.emergenza.carica_dati()}")
+        x,z=self.emergenza.carica_dati()
         # da neo4j mi devo far riornare le soglie di anomali e di allerta di ciascun Ospite ... sia per i cardiopatici che per i non
         dati=self.emergenza.importa_dati()
         if dati:
@@ -261,7 +272,7 @@ class Arbitraggio(Node):
                             self.get_logger().info(f"ospite_corrente  { self.ospite_corrente}")
                             self.spiegazioneC = messaggio
                             self.parametri_vitali_sballati = True  # il robot inizia lo scenario C
-                            
+                            self.destinazione_target=(x,z)
                         elif not non_ha_dedotto and not robotLibero:
                             self.get_logger().info(f"not non_ha_dedotto and not robotLibero:{messaggio}")
                             self.emergenza.cambia_stato_spe(nome,cognome)

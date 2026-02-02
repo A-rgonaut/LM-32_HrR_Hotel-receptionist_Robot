@@ -59,8 +59,8 @@
     "EN": "The analysis does not indicate an immediate medical emergency based on the described symptoms. If you prefer, I can call the doctor anyway."
   },
   "emergenza_auto": {
-    "IT": "{spiegazione} Puoi dirmi se sei cosciente?",
-    "EN": "{spiegazione} Can you tell me if you are conscious?"
+    "IT": "Puoi dirmi se sei cosciente?",
+    "EN": "Can you tell me if you are conscious?"
   },
   "emergenza_manuale": {
     "IT": "Dal mio ultimo rilevamento i parametri sembrano stabili, ma hai richiesto assistenza. Dimmi quali sintomi avverti.",

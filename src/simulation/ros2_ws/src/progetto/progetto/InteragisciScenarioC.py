@@ -22,7 +22,7 @@ class InteragisciScenarioC(InteragisciConOspite):
         #self.nodo.destinazione_target = (-10, 11)
         #self.nodo.destinazione_target = (7, -7.8)  # Stanza 3
         #self.nodo.destinazione_target = (-10, 7)  # Intra u divanu
-        self.nodo.destinazione_target = (10,10,pi)  # stanza 1
+        #self.nodo.destinazione_target = (10,10,pi)  # stanza 1
         #self.nodo.destinazione_target = (11, 11)  # narrè
         self.nodo.raggiunta_destinazione = False
         self.nodo.comportamento_precedente = "InteragisciScenarioC"
@@ -35,15 +35,15 @@ class InteragisciScenarioC(InteragisciConOspite):
         lista_sintomi = ast.literal_eval(lista_sintomi)
         # lista_sintomi=['cefalea', 'tosse']
         self.contesto['sintomi'] = lista_sintomi
-        if not lista_sintomi:
-            return []
+        #if not lista_sintomi:
+        #    return []
         self.nodo.get_logger().info(f"Sintomi estratti: {lista_sintomi}, {type(lista_sintomi)}")
         nome_classe_ufficiale = self.sincro.trova_classe_da_sinonimo(lista_sintomi, nome_radice="Sintomo")
         if nome_classe_ufficiale:
             self.nodo.get_logger().info(f"Sintomi mappati: '{lista_sintomi}' -> Mapped to: '{nome_classe_ufficiale}'")
             return nome_classe_ufficiale
         else:
-            self.nodo.get_logger().warning(f"Nessuna classe ontologica trovata per: '{lista_sintomi}'")
+            self.nodo.get_logger().info(f"Nessuna classe ontologica trovata per: '{lista_sintomi}'")
             return []
 
     def aggiorna_sintomi(self,lista_label):
@@ -190,7 +190,9 @@ class InteragisciScenarioC(InteragisciConOspite):
                 p = self.contesto['ospite']
                 self.contesto['ospite'] = Ospite(p.id, p.nome, p.cognome, "2000", "IT") 
                 if self.spiegazione:
-                    self.nodo.parla(self.dialogo("emergenza_auto", spiegazione=self.spiegazione))
+                    self.sspiegazione=self.sincro.ask_llm(self.spiegazione, scenario="C", tipo="explainability_auto")
+                    self.nodo.parla(self.sspiegazione)
+                    self.nodo.parla(self.dialogo("emergenza_auto"))
                     #self.nodo.parla(self.dialogo("emergenza_auto"))
                     self.inizio_stato_di_coscienza = time.time()
                     self.stato = "COSCIENZA"
