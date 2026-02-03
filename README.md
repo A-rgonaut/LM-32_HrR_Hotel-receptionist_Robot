@@ -4,7 +4,7 @@
 ![Neo4J](https://img.shields.io/badge/neo4j-008CC1?style=for-the-badge&logo=neo4j&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-> Implementation and simulation of an intelligent robotic system for customer service and healthcare in the hospitality industry.
+> Implementation and simulation of an intelligent robotic system for customer service and healthcare in the hotel.
 
 ## 📖 **Context**
 
